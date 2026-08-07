@@ -1,0 +1,6 @@
+com.alaznah.calling
+id rnc_accept
+id rnc_decline
+id rnc_incoming_caller
+id rnc_incoming_subtitle
+layout alaznah_activity_incoming_call

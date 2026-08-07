@@ -1,0 +1,5 @@
+int id rnc_accept 0x0
+int id rnc_decline 0x0
+int id rnc_incoming_caller 0x0
+int id rnc_incoming_subtitle 0x0
+int layout alaznah_activity_incoming_call 0x0

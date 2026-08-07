@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "description": "Phase 1 benchmark baseline — update intentionally when optimizations land.",
+  "targets": {
+    "joinTimeMs": { "max": 5000, "unit": "ms" },
+    "iceTimeMs": { "max": 8000, "unit": "ms" },
+    "firstAudioMs": { "max": 3000, "unit": "ms" },
+    "firstVideoMs": { "max": 6000, "unit": "ms" },
+    "reconnectCount": { "max": 2, "unit": "count" },
+    "iceRestartCount": { "max": 3, "unit": "count" },
+    "lastPacketLoss": { "max": 0.15, "unit": "ratio" },
+    "lastRttMs": { "max": 500, "unit": "ms" },
+    "lastAudioBitrateKbps": { "min": 32, "unit": "kbps" },
+    "turnRelayUsed": { "maxRate": 0.25, "unit": "ratio" }
+  },
+  "sample": {
+    "callId": "baseline-sample",
+    "joinTimeMs": 2200,
+    "iceTimeMs": 1800,
+    "firstAudioMs": 450,
+    "firstVideoMs": 900,
+    "reconnectCount": 0,
+    "iceRestartCount": 0,
+    "turnRelayUsed": false,
+    "lastRttMs": 85,
+    "lastPacketLoss": 0.02,
+    "lastAudioBitrateKbps": 36,
+    "lastVideoBitrateKbps": 480,
+    "lastTier": "medium"
+  }
+}

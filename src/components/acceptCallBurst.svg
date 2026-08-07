@@ -1,0 +1,46 @@
+<svg fill="none" height="150" width="150" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+  <!-- Cleaned from Untitled file.svg: 2s loop, green accept, icon never hides -->
+  <g transform="translate(75,75)">
+    <!-- ripple 1 -->
+    <g opacity="0.25">
+      <animate attributeName="opacity" dur="2s" repeatCount="indefinite" values="0.25;0.25;0;0" keyTimes="0;0.085;0.492;1"/>
+      <ellipse rx="75" ry="75" fill="#ffffff">
+        <animateTransform attributeName="transform" type="scale" dur="2s" repeatCount="indefinite"
+          values="0.622;0.622;1;1" keyTimes="0;0.051;0.492;1"
+          keySplines="0 0 1 1;0.167 0.167 0.314 1;0 0 1 1" calcMode="spline"/>
+      </ellipse>
+    </g>
+    <!-- ripple 2 -->
+    <g opacity="0">
+      <animate attributeName="opacity" dur="2s" repeatCount="indefinite" begin="0.17s" values="0.25;0.25;0;0" keyTimes="0;0.085;0.492;1"/>
+      <ellipse rx="75" ry="75" fill="#ffffff">
+        <animateTransform attributeName="transform" type="scale" dur="2s" repeatCount="indefinite" begin="0.17s"
+          values="0.622;0.622;1;1" keyTimes="0;0.051;0.492;1"
+          keySplines="0 0 1 1;0.167 0.167 0.314 1;0 0 1 1" calcMode="spline"/>
+      </ellipse>
+    </g>
+    <!-- ripple 3 -->
+    <g opacity="0">
+      <animate attributeName="opacity" dur="2s" repeatCount="indefinite" begin="0.34s" values="0.25;0.25;0;0" keyTimes="0;0.085;0.492;1"/>
+      <ellipse rx="75" ry="75" fill="#ffffff">
+        <animateTransform attributeName="transform" type="scale" dur="2s" repeatCount="indefinite" begin="0.34s"
+          values="0.622;0.622;1;1" keyTimes="0;0.051;0.492;1"
+          keySplines="0 0 1 1;0.167 0.167 0.314 1;0 0 1 1" calcMode="spline"/>
+      </ellipse>
+    </g>
+    <!-- green button (scale pulse only) -->
+    <ellipse rx="75" ry="75" fill="#16a34a" transform="scale(0.622)">
+      <animateTransform attributeName="transform" type="scale" dur="2s" repeatCount="indefinite"
+        values="0.622;0.622;0.702;0.622;0.622" keyTimes="0;0.051;0.492;0.933;1"
+        keySplines="0 0 1 1;0.333 0 0.667 1;0.333 0 0.667 1;0 0 1 1" calcMode="spline"/>
+    </ellipse>
+    <!-- phone / video icon area (rotate shake only) -->
+    <g transform="rotate(-4) scale(0.94)">
+      <animateTransform attributeName="transform" type="rotate" dur="2s" repeatCount="indefinite"
+        values="-4;-4;-8;4;-8;4;-8;4;-4;-4"
+        keyTimes="0;0.085;0.151;0.216;0.282;0.348;0.414;0.48;0.543;1"
+        calcMode="linear"/>
+      <path fill="#ffffff" d="M-23.013,-21.156C-24.803,-17.182,-27.335,-10.896,-20.109,0.263C-15.207,8.563,-4.762,18.424,-4.762,18.424C-4.762,18.424,9,29.75,20.625,21.75C31.136,15.44,18.189,6.324,14.75,5.5C9.375,6.437,10.25,9.875,6,10.125C1.75,10.375,-9.246,-4.333,-9.5,-6.875C-7.875,-11.375,-5.72,-11.097,-5.114,-15.082C-4.816,-18.423,-15.848,-34.96,-23.013,-21.156Z"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,112 @@
+{
+  "name": "@alaznah/calling",
+  "version": "0.1.0-beta.1",
+  "description": "Alaznah Calling — voice & video for real-time experiences in React Native",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "react-native": "./dist/index.js",
+  "app.plugin": "./app.plugin.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "react-native": "./dist/index.js",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./ui": {
+      "types": "./dist/components/index.d.ts",
+      "react-native": "./dist/components/index.js",
+      "import": "./dist/components/index.js",
+      "default": "./dist/components/index.js"
+    },
+    "./app.plugin.js": "./app.plugin.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "android/build.gradle",
+    "android/src",
+    "dist",
+    "ios/AlaznahCalling.h",
+    "ios/AlaznahCalling.mm",
+    "ios/AlaznahCallingPip.h",
+    "ios/AlaznahCallingPip.mm",
+    "ios/AlaznahCallingManager.swift",
+    "src/specs",
+    "assets",
+    "app.plugin.js",
+    "react-native.config.cjs",
+    "AlaznahCalling.podspec",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build": "npm run clean && tsc -p tsconfig.json",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run build",
+    "pack:check": "npm pack --dry-run",
+    "publish:beta": "npm publish --access public --tag beta",
+    "test": "vitest run",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "peerDependencies": {
+    "@react-native-community/netinfo": ">=11.0.0",
+    "react": ">=18.0.0",
+    "react-native": ">=0.73.0",
+    "react-native-callkeep": ">=4.3.0",
+    "react-native-incall-manager": ">=4.0.0",
+    "react-native-svg": ">=15.0.0",
+    "react-native-webrtc": ">=118.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react-native-callkeep": {
+      "optional": true
+    },
+    "react-native-svg": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@alaznah/protocol": "0.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "@types/ws": "^8.5.13",
+    "react": "19.2.3",
+    "react-native-svg": "^15.15.5",
+    "ws": "^8.18.0"
+  },
+  "codegenConfig": {
+    "name": "AlaznahCallingSpec",
+    "type": "modules",
+    "jsSrcsDir": "src/specs",
+    "android": {
+      "javaPackageName": "com.alaznah.calling"
+    },
+    "ios": {
+      "modulesProvider": {
+        "AlaznahCalling": "AlaznahCalling"
+      }
+    }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alaznah/calling.git"
+  },
+  "homepage": "https://docs.alaznah.com",
+  "keywords": [
+    "react-native",
+    "calling",
+    "voice",
+    "video",
+    "voip",
+    "alaznah"
+  ],
+  "author": "Alaznah",
+  "bugs": {
+    "url": "https://github.com/alaznah/calling/issues"
+  }
+}
