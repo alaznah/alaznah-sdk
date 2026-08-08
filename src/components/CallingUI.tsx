@@ -207,5 +207,5 @@ export function CallingUI({
 }
 
 const styles = StyleSheet.create({
-  host: { ...StyleSheet.absoluteFill },
+  host: { ...StyleSheet.absoluteFillObject },
 });

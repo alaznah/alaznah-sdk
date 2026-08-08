@@ -1,5 +1,9 @@
-import type { CodegenTypes, TurboModule } from 'react-native';
+import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
+
+/** Minimal EventEmitter shape used by RN codegen specs. */
+type EventSubscription = { remove: () => void };
+type EventEmitter<T> = (listener: (event: T) => void) => EventSubscription;
 
 export type IncomingCallAction = {
   callId: string;
@@ -57,8 +61,8 @@ export interface Spec extends TurboModule {
   /** Turn camera torch/flash on or off for the given facing mode. */
   setCameraTorch(enabled: boolean, facingMode: string): Promise<boolean>;
 
-  readonly onVoipPushToken: CodegenTypes.EventEmitter<VoipPushToken>;
-  readonly onIncomingCallAction: CodegenTypes.EventEmitter<IncomingCallAction>;
+  readonly onVoipPushToken: EventEmitter<VoipPushToken>;
+  readonly onIncomingCallAction: EventEmitter<IncomingCallAction>;
 }
 
 export default TurboModuleRegistry.get<Spec>('AlaznahCalling');

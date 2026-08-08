@@ -364,12 +364,12 @@ const styles = StyleSheet.create({
     paddingTop: 64,
   },
   previewLayer: {
-    ...StyleSheet.absoluteFill,
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: '#0b1220',
   },
   fillVideo: { width: '100%', height: '100%' },
   previewDim: {
-    ...StyleSheet.absoluteFill,
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.28)',
   },
   top: {

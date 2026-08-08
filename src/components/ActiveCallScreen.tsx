@@ -688,18 +688,18 @@ export function ActiveCallScreen({
 const styles = StyleSheet.create({
   fill: { flex: 1, backgroundColor: '#000' },
   videoLayer: {
-    ...StyleSheet.absoluteFill,
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: '#000',
   },
   fullVideo: {
-    ...StyleSheet.absoluteFill,
+    ...StyleSheet.absoluteFillObject,
   },
   fillVideo: {
     width: '100%',
     height: '100%',
   },
   placeholder: {
-    ...StyleSheet.absoluteFill,
+    ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -718,7 +718,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#111',
   },
   chromeToggleHit: {
-    ...StyleSheet.absoluteFill,
+    ...StyleSheet.absoluteFillObject,
     zIndex: 1,
   },
   localMuteBadge: {
