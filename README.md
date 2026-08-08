@@ -11,6 +11,7 @@ Add **1:1 voice and video calling** to your mobile app with Alaznah Cloud — pr
 
 | Resource | URL |
 | --- | --- |
+| npm | [`@alaznah/calling`](https://www.npmjs.com/package/@alaznah/calling) |
 | Docs | [docs.alaznah.com](https://docs.alaznah.com) |
 | Console | [console.alaznah.com](https://console.alaznah.com) |
 | Signaling | `wss://signal.alaznah.com` |
