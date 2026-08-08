@@ -1,43 +1,45 @@
 # Alaznah SDK
 
-**Repository:** [Alaznah/alaznah-sdk](https://github.com/Alaznah/alaznah-sdk)  
-**Package:** `@alaznah/calling` (confirm in `package.json`)  
-**Status:** Public · Beta
+**Package:** `@alaznah/calling`  
+**Repo:** [alaznah/alaznah-sdk](https://github.com/alaznah/alaznah-sdk)  
+**Status:** Public · Beta  
+**Platform:** React Native (iOS & Android)
 
-WebRTC **1:1 voice and video calling** for React Native (iOS + Android), built for the Alaznah real-time stack.
+Add **1:1 voice and video calling** to your mobile app with Alaznah Cloud — provider, hooks, and ready-made call UI.
 
-## Related repositories
+## Links
 
-| Repository | Role |
+| Resource | URL |
 | --- | --- |
-| [alaznah-protocol](https://github.com/Alaznah/alaznah-protocol) | Shared signaling contracts |
-| [alaznah-signaling](https://github.com/Alaznah/alaznah-signaling) | Hosted / self-host signaling + TURN |
-| [alaznah-docs](https://github.com/Alaznah/alaznah-docs) | Developer portal & JWT mint (`alaznah.dev`) |
-| [alaznah-examples](https://github.com/Alaznah/alaznah-examples) | Sample apps |
+| Docs | [docs.alaznah.com](https://docs.alaznah.com) |
+| Console | [console.alaznah.com](https://console.alaznah.com) |
+| Signaling | `wss://signal.alaznah.com` |
+| Protocol | [alaznah/alaznah-protocol](https://github.com/alaznah/alaznah-protocol) |
+| Signaling server (private) | [alaznah/alaznah-signaling](https://github.com/alaznah/alaznah-signaling) |
+| Examples | [alaznah/alaznah-examples](https://github.com/alaznah/alaznah-examples) |
+| Docs site (private) | [alaznah/alaznah-docs](https://github.com/alaznah/alaznah-docs) |
 
 ## Requirements
 
-- React Native CLI app or Expo **development build** (not Expo Go)
-- Peer packages as declared in `package.json` (typically `react-native-webrtc`, `react-native-incall-manager`, `@react-native-community/netinfo`)
-- Calling JWT from your backend (never embed secrets in the app)
+- React Native CLI app, or Expo **development build** (Expo Go is not supported)
+- Peer dependencies declared in this package’s `package.json` (install what your package manager reports)
+- Short-lived calling tokens from **your** backend (never ship secrets in the app)
 
 ## Install
 
 ```bash
 npm install @alaznah/calling
-# install peers when prompted
+# resolve any peer dependency prompts from your package manager
 cd ios && pod install && cd ..
 ```
+
+Full steps: [Installation](https://docs.alaznah.com/docs/installation).
 
 ## Quickstart
 
 ```tsx
 import { Button } from 'react-native';
-import {
-  CallingProvider,
-  useCallingClient,
-  useCallingReady,
-} from '@alaznah/calling';
+import { CallingProvider, useCallingClient, useCallingReady } from '@alaznah/calling';
 import { CallingUI } from '@alaznah/calling/ui';
 
 async function fetchCallingToken(): Promise<string> {
@@ -54,9 +56,7 @@ function Dialer() {
       <Button
         disabled={!ready}
         title="Call"
-        onPress={() =>
-          void client.startCall({ calleeId: 'bob', mediaType: 'video' })
-        }
+        onPress={() => void client.startCall({ calleeId: 'bob', mediaType: 'video' })}
       />
       <CallingUI client={client} />
     </>
@@ -78,27 +78,30 @@ export function App() {
 }
 ```
 
-## Production endpoints (Alaznah Cloud)
+More: [Quick start](https://docs.alaznah.com/docs/quick-start).
 
-| Service | URL |
-| --- | --- |
-| Signaling (WSS) | `wss://signal.alaznah.com` |
-| Health | `https://signal.alaznah.com/health` |
-| Docs / console | `https://alaznah.dev` |
+## Alaznah Cloud
 
-Self-host: point `signalingUrl` at your own `wss://` from **alaznah-signaling**.
+| Service   | Endpoint                                           |
+| --------- | -------------------------------------------------- |
+| Signaling | `wss://signal.alaznah.com`                         |
+| Health    | `https://signal.alaznah.com/health`                |
+| Docs      | [docs.alaznah.com](https://docs.alaznah.com)       |
+| Console   | [console.alaznah.com](https://console.alaznah.com) |
 
-## Mobile setup (summary)
+Self-hosting: point `signalingUrl` at your own `wss://` endpoint. Server source for operators: [alaznah/alaznah-signaling](https://github.com/alaznah/alaznah-signaling) (private). Operator guides are also in the product docs under **Platform**.
 
-- **Android:** FCM + app permissions (`CAMERA`, `RECORD_AUDIO`, notifications)
-- **iOS:** microphone/camera usage strings, Push Notifications, VoIP background mode, APNs VoIP for kill-state
-- Push credentials are configured on the **signaling** side; the SDK registers handlers only
+## Mobile checklist
 
-## Known beta limits
+- Camera / microphone permissions (and usage strings on iOS)
+- Push wake for background / killed-state calls (configure credentials in the Console; register tokens from the app — see docs)
+- Physical devices recommended for end-to-end call tests
 
-- 1:1 calls only (group/SFU not shipped)
-- Cellular networks need reachable TURN
-- APIs may change before `1.0.0`
+## Beta notes
+
+- 1:1 calls in this release (group calling on the roadmap)
+- Reliable connectivity on restricted networks may require relay settings from your Alaznah project
+- Public APIs can still change before `1.0.0`
 
 ## Develop in this repo
 
@@ -111,4 +114,4 @@ npm run pack:check
 
 ## License
 
-MIT (confirm in `package.json` / `LICENSE`).
+MIT — see `LICENSE`.
