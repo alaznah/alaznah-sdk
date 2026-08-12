@@ -46,7 +46,7 @@
     "prepack": "npm run build",
     "prepublishOnly": "npm run build",
     "pack:check": "npm pack --dry-run",
-    "publish:beta": "npm publish --access public --tag beta",
+    "publish:beta": "npm publish --access public",
     "test": "vitest run",
     "lint": "tsc -p tsconfig.json --noEmit",
     "typecheck": "tsc -p tsconfig.json --noEmit"
@@ -83,8 +83,7 @@
     "ws": "^8.18.0"
   },
   "publishConfig": {
-    "access": "public",
-    "tag": "beta"
+    "access": "public"
   },
   "codegenConfig": {
     "name": "AlaznahCallingSpec",
