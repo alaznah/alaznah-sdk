@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Animated,
   ImageBackground,
+  Modal,
   PanResponder,
   Pressable,
   StyleSheet,
@@ -15,6 +16,7 @@ import { CallDeclineIcon, ChevronUpIcon, VideoIcon, VideoOffIcon } from './icons
 import { AcceptCallBurst, ACCEPT_BTN_SIZE } from './AcceptCallBurst.js';
 import type { CallingTheme } from './theme.js';
 import type { CallingUISlots } from './ui-types.js';
+import { getPeerDisplayName, getPeerInitials } from './peerDisplay.js';
 
 type Props = {
   call: ActiveCall;
@@ -192,6 +194,7 @@ export function IncomingCallScreen({
 
   useEffect(() => {
     if (!isVideo) return undefined;
+
     let cancelled = false;
     (async () => {
       try {
@@ -229,50 +232,30 @@ export function IncomingCallScreen({
   }, []);
 
   const handleAccept = useCallback(() => {
-    releasePreview();
+    // Free the camera for CallManager, but do NOT setPreview(null) here —
+    // that unmounts the nested chrome Modal one frame before Active mounts and
+    // makes the whole Incoming→Active transition jump.
+    stopPreview(previewRef.current);
+    previewRef.current = null;
     onAccept({ videoEnabled: isVideo ? joinWithVideo : false });
-  }, [isVideo, joinWithVideo, onAccept, releasePreview]);
+  }, [isVideo, joinWithVideo, onAccept]);
 
   const handleReject = useCallback(() => {
     releasePreview();
     onReject();
   }, [onReject, releasePreview]);
 
-  const initials =
-    call.peerId
-      .replace(/[^a-zA-Z0-9]/g, ' ')
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((p) => p[0]?.toUpperCase() ?? '')
-      .join('') || call.peerId.slice(0, 2).toUpperCase();
+  const initials = getPeerInitials(call);
+  const peerName = getPeerDisplayName(call);
 
-  const content = (
-    <View style={styles.container}>
-      {isVideo && preview && joinWithVideo ? (
-        <View style={styles.previewLayer} pointerEvents="none">
-          <LocalVideoView
-            stream={preview}
-            mirror
-            objectFit="cover"
-            style={styles.fillVideo}
-            zOrder={0}
-          />
-          <View style={styles.previewDim} />
-        </View>
-      ) : (
-        <View
-          style={[
-            styles.previewLayer,
-            { backgroundColor: backgroundColor ?? theme.colors.background },
-          ]}
-        />
-      )}
+  const showLivePreview = Boolean(isVideo && preview && joinWithVideo);
 
-      <View style={styles.top}>
+  const chrome = (
+    <>
+      <View style={styles.top} pointerEvents="box-none">
         {
           (slots?.renderHeader?.(call) ?? (
-            <Text style={styles.name}>{call.peerId}</Text>
+            <Text style={styles.name}>{peerName}</Text>
           )) as React.JSX.Element
         }
         {
@@ -308,7 +291,7 @@ export function IncomingCallScreen({
         ) : null}
       </View>
 
-      <View style={styles.bottom}>
+      <View style={styles.bottom} pointerEvents="box-none">
         {
           (slots?.renderControls?.(call) ?? (
             <View style={styles.actions}>
@@ -337,10 +320,57 @@ export function IncomingCallScreen({
       </View>
 
       {(slots?.renderOverlay?.(call) ?? null) as React.JSX.Element | null}
+    </>
+  );
+
+  const content = (
+    <View style={styles.stage}>
+      {showLivePreview ? (
+        <View style={styles.previewLayer} pointerEvents="none" collapsable={false}>
+          <LocalVideoView
+            stream={preview}
+            mirror
+            objectFit="cover"
+            style={styles.fillVideo}
+            zOrder={0}
+          />
+          <View style={styles.previewDim} />
+        </View>
+      ) : (
+        <View
+          style={[
+            styles.previewLayer,
+            { backgroundColor: backgroundColor ?? theme.colors.background },
+          ]}
+        />
+      )}
+
+      {/*
+        Parent CallingUI keeps one Modal; this nested chrome Modal only covers Accept/Decline
+        above RTCView (both platforms). Swapping Incoming→Active children unmounts it cleanly.
+      */}
+      {showLivePreview ? (
+        <Modal
+          transparent
+          visible
+          animationType="none"
+          statusBarTranslucent
+          hardwareAccelerated
+          presentationStyle="overFullScreen"
+        >
+          <View style={styles.container} pointerEvents="box-none">
+            {chrome}
+          </View>
+        </Modal>
+      ) : (
+        <View style={styles.container} pointerEvents="box-none">
+          {chrome}
+        </View>
+      )}
     </View>
   );
 
-  if (backgroundImage && !(isVideo && preview && joinWithVideo)) {
+  if (backgroundImage && !showLivePreview) {
     return (
       <ImageBackground source={backgroundImage} style={styles.fill} resizeMode="cover">
         {content}
@@ -357,6 +387,7 @@ export function IncomingCallScreen({
 
 const styles = StyleSheet.create({
   fill: { flex: 1, backgroundColor: '#0b1220' },
+  stage: { flex: 1 },
   container: {
     flex: 1,
     paddingHorizontal: 24,
@@ -366,6 +397,7 @@ const styles = StyleSheet.create({
   previewLayer: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#0b1220',
+    zIndex: 0,
   },
   fillVideo: { width: '100%', height: '100%' },
   previewDim: {
@@ -376,6 +408,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingTop: 12,
+    zIndex: 2,
   },
   name: {
     color: '#fff',
@@ -425,6 +458,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     paddingBottom: 28,
+    zIndex: 3,
+    elevation: 8,
   },
   actions: {
     flexDirection: 'row',

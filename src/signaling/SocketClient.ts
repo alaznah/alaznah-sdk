@@ -44,6 +44,11 @@ export class SignalingClient {
   private reconnectInFlight: Promise<void> | null = null;
   /** Suppress auto-reconnect when we intentionally close the old socket. */
   private replacingSocket = false;
+  /**
+   * Active call in background / PiP — JS timers are throttled; do not kill the
+   * socket on short heartbeat gaps, and keep retrying reconnect forever.
+   */
+  private backgroundCallMode = false;
   private readonly seenIds = new Set<string>();
   private readonly emitter = new EventEmitter<SignalingClientEvents>();
   private readonly options: SignalingClientOptions;
@@ -83,6 +88,26 @@ export class SignalingClient {
   /** Whether the client is authenticated on an open socket. */
   isConnected(): boolean {
     return Boolean(this.ws && this.ws.readyState === WebSocket.OPEN && this.authenticated);
+  }
+
+  /**
+   * Call while a media call is backgrounded / in system PiP so heartbeat
+   * timeouts and reconnect exhaustion do not tear down the call.
+   */
+  setBackgroundCallMode(enabled: boolean): void {
+    this.backgroundCallMode = enabled;
+    if (enabled) {
+      this.lastAckAt = Date.now();
+      this.reconnectGaveUp = false;
+      this.reconnectAttempt = 0;
+    }
+  }
+
+  /** Allow another auto-reconnect cycle after exhaustion (active call keep-alive). */
+  resetReconnectBudget(): void {
+    this.reconnectGaveUp = false;
+    this.reconnectAttempt = 0;
+    this.reconnectGeneration += 1;
   }
 
   /** Re-fetch pending invites after returning from background. */
@@ -256,7 +281,10 @@ export class SignalingClient {
     this.stopHeartbeat();
     this.lastAckAt = Date.now();
     this.heartbeatTimer = setInterval(() => {
-      if (Date.now() - this.lastAckAt > HEARTBEAT_TIMEOUT_MS) {
+      const timeoutMs = this.backgroundCallMode
+        ? HEARTBEAT_TIMEOUT_MS * 6
+        : HEARTBEAT_TIMEOUT_MS;
+      if (Date.now() - this.lastAckAt > timeoutMs) {
         this.ws?.close(4000, 'heartbeat timeout');
         return;
       }
@@ -278,7 +306,9 @@ export class SignalingClient {
     if (this.reconnectInFlight) {
       return this.reconnectInFlight;
     }
-    const max = this.options.maxReconnectAttempts ?? 6;
+    const max = this.backgroundCallMode
+      ? Number.POSITIVE_INFINITY
+      : (this.options.maxReconnectAttempts ?? 6);
     if (this.reconnectAttempt >= max) {
       if (!this.reconnectGaveUp) {
         this.reconnectGaveUp = true;

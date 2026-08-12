@@ -8,7 +8,11 @@ export {
   type IncomingPushPayload,
   type NativeIncomingAction,
 } from './native/PushWakeBridge.js';
-export { requestCallPermissions } from './native/MediaPermissions.js';
+export {
+  requestCallPermissions,
+  type CallPermissionMode,
+  type MediaPermissionResult,
+} from './native/MediaPermissions.js';
 export { createDevEntitlementProvider } from './entitlement/DevEntitlementProvider.js';
 export {
   assertEntitlementActive,
@@ -32,6 +36,8 @@ export {
   useWakingForCall,
 } from './hooks/CallingContext.js';
 export { CallingScreen, type CallingScreenProps } from './components/CallingScreen.js';
+export { CallingUI } from './components/CallingUI.js';
+export type { CallingUIProps, CallingUISlots } from './components/ui-types.js';
 export { VideoView, LocalVideoView, RemoteVideoView } from './components/VideoView.js';
 export type {
   ActiveCall,

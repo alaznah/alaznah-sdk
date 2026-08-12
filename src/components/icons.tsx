@@ -224,13 +224,14 @@ export function FlashOffIcon({ size = 24, color = '#fff', style }: IconProps) {
   ]);
 }
 
+/** Corner arrows pointing inward (minimize) — opposite of maximize arrows-out. */
 export function MinimizeIcon({ size = 24, color = '#fff', style }: IconProps) {
   const s = stroke(color);
   return strokeSvg(size, style, [
-    <Path key="1" d="M9 4H4v5" {...s} strokeLinecap="round" strokeLinejoin="round" />,
-    <Path key="2" d="M4 4l6 6" {...s} strokeLinecap="round" />,
-    <Path key="3" d="M15 20h5v-5" {...s} strokeLinecap="round" strokeLinejoin="round" />,
-    <Path key="4" d="M20 20l-6-6" {...s} strokeLinecap="round" />,
+    <Path key="1" d="M4 14h6v6" {...s} strokeLinecap="round" strokeLinejoin="round" />,
+    <Path key="2" d="m3 21 7-7" {...s} strokeLinecap="round" />,
+    <Path key="3" d="M20 10h-6V4" {...s} strokeLinecap="round" strokeLinejoin="round" />,
+    <Path key="4" d="m21 3-7 7" {...s} strokeLinecap="round" />,
   ]);
 }
 

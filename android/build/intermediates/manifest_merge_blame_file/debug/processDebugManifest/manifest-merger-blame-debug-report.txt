@@ -5,80 +5,97 @@
 5    <uses-sdk android:minSdkVersion="24" />
 6
 7    <uses-permission android:name="android.permission.CAMERA" />
-7-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:2:3-63
-7-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:2:20-60
+7-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:2:3-63
+7-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:2:20-60
 8    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-8-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:3:3-69
-8-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:3:20-66
+8-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:3:3-69
+8-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:3:20-66
 9    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-9-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:4:3-78
-9-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:4:20-75
+9-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:4:3-78
+9-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:4:20-75
 10    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-10-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:5:3-74
-10-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:5:20-71
+10-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:5:3-74
+10-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:5:20-71
 11    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-11-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:6:3-75
-11-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:6:20-72
+11-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:6:3-75
+11-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:6:20-72
 12    <uses-permission android:name="android.permission.WAKE_LOCK" />
-12-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:7:3-66
-12-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:7:20-63
+12-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:7:3-66
+12-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:7:20-63
 13    <uses-permission android:name="android.permission.VIBRATE" />
-13-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:8:3-64
-13-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:8:20-61
+13-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:8:3-64
+13-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:8:20-61
 14    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
-14-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:9:3-79
-14-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:9:20-76
+14-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:9:3-79
+14-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:9:20-76
 15    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-15-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:10:3-75
-15-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:10:20-72
+15-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:10:3-75
+15-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:10:20-72
 16    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
-16-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:11:3-86
-16-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:11:20-83
-17
-18    <application>
-18-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:13:3-36:17
-19        <activity
-19-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:14:5-21:72
-20            android:name="com.alaznah.calling.IncomingCallActivity"
-20-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:15:7-62
-21            android:excludeFromRecents="true"
-21-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:16:7-40
-22            android:exported="true"
-22-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:17:7-30
-23            android:launchMode="singleTop"
-23-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:18:7-37
-24            android:showWhenLocked="true"
-24-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:19:7-36
-25            android:theme="@android:style/Theme.DeviceDefault.NoActionBar"
-25-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:21:7-69
-26            android:turnScreenOn="true" />
-26-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:20:7-34
-27
-28        <service
-28-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:23:5-26:51
-29            android:name="com.alaznah.calling.IncomingCallService"
-29-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:24:7-61
-30            android:exported="false"
-30-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:25:7-31
-31            android:foregroundServiceType="phoneCall" />
-31-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:26:7-48
-32
-33        <receiver
-33-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:28:5-35:16
-34            android:name="com.alaznah.calling.IncomingCallActionReceiver"
-34-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:29:7-68
-35            android:exported="false" >
-35-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:30:7-31
-36            <intent-filter>
-36-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:31:7-34:23
-37                <action android:name="com.alaznah.calling.INCOMING_CALL_ACCEPT" />
-37-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:32:9-75
-37-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:32:17-72
-38                <action android:name="com.alaznah.calling.INCOMING_CALL_DECLINE" />
-38-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:33:9-76
-38-->/Users/mac/Desktop/MuhammadHuzaifa/Test/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:33:17-73
-39            </intent-filter>
-40        </receiver>
-41    </application>
-42
-43</manifest>
+16-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:11:3-86
+16-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:11:20-83
+17    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+17-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:12:3-86
+17-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:12:20-83
+18    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
+18-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:13:3-82
+18-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:13:20-79
+19    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+19-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:14:3-90
+19-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:14:20-87
+20
+21    <application>
+21-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:16:3-44:17
+22        <activity
+22-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:17:5-24:72
+23            android:name="com.alaznah.calling.IncomingCallActivity"
+23-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:18:7-62
+24            android:excludeFromRecents="true"
+24-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:19:7-40
+25            android:exported="true"
+25-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:20:7-30
+26            android:launchMode="singleTop"
+26-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:21:7-37
+27            android:showWhenLocked="true"
+27-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:22:7-36
+28            android:theme="@android:style/Theme.DeviceDefault.NoActionBar"
+28-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:24:7-69
+29            android:turnScreenOn="true" />
+29-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:23:7-34
+30
+31        <service
+31-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:26:5-29:51
+32            android:name="com.alaznah.calling.IncomingCallService"
+32-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:27:7-61
+33            android:exported="false"
+33-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:28:7-31
+34            android:foregroundServiceType="phoneCall" />
+34-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:29:7-48
+35        <service
+35-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:31:5-34:83
+36            android:name="com.alaznah.calling.ActiveCallKeepAliveService"
+36-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:32:7-68
+37            android:exported="false"
+37-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:33:7-31
+38            android:foregroundServiceType="microphone|camera|phoneCall|mediaPlayback" />
+38-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:34:7-80
+39
+40        <receiver
+40-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:36:5-43:16
+41            android:name="com.alaznah.calling.IncomingCallActionReceiver"
+41-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:37:7-68
+42            android:exported="false" >
+42-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:38:7-31
+43            <intent-filter>
+43-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:39:7-42:23
+44                <action android:name="com.alaznah.calling.INCOMING_CALL_ACCEPT" />
+44-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:40:9-75
+44-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:40:17-72
+45                <action android:name="com.alaznah.calling.INCOMING_CALL_DECLINE" />
+45-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:41:9-76
+45-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:41:17-73
+46            </intent-filter>
+47        </receiver>
+48    </application>
+49
+50</manifest>

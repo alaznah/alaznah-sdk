@@ -1,25 +1,49 @@
-import React, { useEffect, useState } from 'react';
-import { AppState, Modal, StyleSheet, View } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  AppState,
+  Modal,
+  NativeEventEmitter,
+  NativeModules,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  View,
+} from 'react-native';
 import type { ActiveCall, CallingClient } from '../types/index.js';
-import { ActiveCallScreen, MinimizedCallBubble } from './ActiveCallScreen.js';
+import {
+  ActiveCallScreen,
+  MinimizedCallBubble,
+  resetCallFloatPositions,
+} from './ActiveCallScreen.js';
 import { IncomingCallScreen } from './IncomingCallScreen.js';
 import { mergeTheme } from './theme.js';
 import type { CallingUIProps } from './ui-types.js';
+import { useAndroidPipArming } from '../native/PictureInPicture.js';
 
 const TERMINAL = new Set(['ended', 'failed', 'rejected', 'missed', 'busy']);
+const IN_CALL = new Set(['accepted', 'connecting', 'connected', 'reconnecting']);
 
 function shouldShowIncomingCall(
   call: ActiveCall | null,
   client: CallingClient,
+  suppressedCallId: string | null,
 ): boolean {
   if (!call || call.state !== 'ringing' || call.direction !== 'inbound') return false;
-  // Only suppress Incoming for the call that was Accept'd from native/CallKit.
-  // A stale wake for another callId must not hide a new foreground invite.
+  if (suppressedCallId && call.callId === suppressedCallId) return false;
   if (client.isAutoAcceptingCall(call.callId)) return false;
-  if (AppState.currentState !== 'active') return false;
+  if (AppState.currentState === 'background') return false;
   return true;
 }
 
+/**
+ * STATE A — normal call: RN Modal (proven layout; controls bottom, remote video).
+ * STATE B — Android system PiP: same ActiveCallScreen in an Activity-sized host
+ *            (explicit window width/height so flex:1 cannot collapse).
+ *
+ * PiP never rewrites ActiveCallScreen styles. Native enterIfEnabled notifies JS
+ * first, then enters after a short frame so STATE B is mounted before the window
+ * shrinks.
+ */
 export function CallingUI({
   client,
   theme: themePartial,
@@ -35,6 +59,17 @@ export function CallingUI({
   const [call, setCall] = useState<ActiveCall | null>(client.getActiveCall());
   const [incoming, setIncoming] = useState<ActiveCall | null>(null);
   const [minimized, setMinimized] = useState(false);
+  /** Android STATE B — Activity presentation for system PiP only. */
+  const [androidPipPresentation, setAndroidPipPresentation] = useState(false);
+  const [suppressedIncomingId, setSuppressedIncomingId] = useState<string | null>(null);
+  const suppressedRef = useRef<string | null>(null);
+  suppressedRef.current = suppressedIncomingId;
+
+  const suppressIncoming = useCallback((callId: string) => {
+    suppressedRef.current = callId;
+    setSuppressedIncomingId(callId);
+    setIncoming((prev) => (prev?.callId === callId ? null : prev));
+  }, []);
 
   useEffect(() => {
     const syncFromClient = () => {
@@ -42,26 +77,37 @@ export function CallingUI({
       if (!active || TERMINAL.has(active.state)) {
         setCall(null);
         setIncoming(null);
+        setSuppressedIncomingId(null);
+        suppressedRef.current = null;
+        setAndroidPipPresentation(false);
+        resetCallFloatPositions();
         return;
       }
+      if (IN_CALL.has(active.state)) {
+        suppressIncoming(active.callId);
+      }
       setCall(active);
-      setIncoming(shouldShowIncomingCall(active, client) ? active : null);
+      setIncoming(
+        shouldShowIncomingCall(active, client, suppressedRef.current) ? active : null,
+      );
     };
     syncFromClient();
-    const catchUp = setTimeout(syncFromClient, 300);
 
     const unsubs = [
       client.on('waking:for-call', () => {
         syncFromClient();
       }),
       client.on('call:incoming', (next) => {
-        if (!shouldShowIncomingCall(next, client)) return;
+        if (!shouldShowIncomingCall(next, client, suppressedRef.current)) return;
         setIncoming(next);
       }),
       client.on('call:updated', (next) => {
-        if (shouldShowIncomingCall(next, client)) {
+        if (IN_CALL.has(next.state)) {
+          suppressIncoming(next.callId);
+        }
+        if (shouldShowIncomingCall(next, client, suppressedRef.current)) {
           setIncoming(next);
-        } else {
+        } else if (next.callId === suppressedRef.current || next.state !== 'ringing') {
           setIncoming((prev) => (prev?.callId === next.callId ? null : prev));
         }
         if (!TERMINAL.has(next.state)) {
@@ -69,22 +115,35 @@ export function CallingUI({
         } else {
           setCall((prev) => (prev?.callId === next.callId ? null : prev));
           setIncoming((prev) => (prev?.callId === next.callId ? null : prev));
+          if (suppressedRef.current === next.callId) {
+            setSuppressedIncomingId(null);
+            suppressedRef.current = null;
+          }
           setMinimized(false);
+          setAndroidPipPresentation(false);
+          resetCallFloatPositions();
         }
       }),
       client.on('call:ended', (next) => {
         setIncoming((prev) => (prev?.callId === next.callId ? null : prev));
         setCall((prev) => (prev?.callId === next.callId ? null : prev));
+        if (suppressedRef.current === next.callId) {
+          setSuppressedIncomingId(null);
+          suppressedRef.current = null;
+        }
         setMinimized(false);
+        setAndroidPipPresentation(false);
+        resetCallFloatPositions();
       }),
       client.on('error', (error) => onError?.(error)),
     ];
 
     const appSub = AppState.addEventListener('change', (next) => {
-      if (next !== 'active') {
+      if (next === 'background') {
         setIncoming(null);
         return;
       }
+      if (next !== 'active') return;
       void client
         .drainNativeIncomingAction()
         .catch(() => false)
@@ -94,35 +153,64 @@ export function CallingUI({
     });
 
     return () => {
-      clearTimeout(catchUp);
       unsubs.forEach((off) => off());
       appSub.remove();
     };
-  }, [client, onError]);
+  }, [client, onError, suppressIncoming]);
+
+  useEffect(() => {
+    if (Platform.OS !== 'android') return undefined;
+    const pipMod = NativeModules.AlaznahCallingPip;
+    if (!pipMod) return undefined;
+    const emitter = new NativeEventEmitter(pipMod);
+    const sub = emitter.addListener(
+      'AlaznahCallingPipModeChanged',
+      (payload: { active?: boolean }) => {
+        setAndroidPipPresentation(Boolean(payload?.active));
+      },
+    );
+    return () => sub.remove();
+  }, []);
 
   const showIncoming =
     !!incoming &&
     incoming.state === 'ringing' &&
-    AppState.currentState === 'active' &&
+    suppressedIncomingId !== incoming.callId &&
+    AppState.currentState !== 'background' &&
     !client.isAutoAcceptingCall(incoming.callId) &&
-    !(
-      call &&
-      call.callId === incoming.callId &&
-      ['accepted', 'connecting', 'connected', 'reconnecting'].includes(call.state)
-    );
+    !(call && call.callId === incoming.callId && IN_CALL.has(call.state));
 
-  // Never show ActiveCallScreen for inbound ringing — that replaced Accept UI.
   const showActive =
     !!call &&
     !TERMINAL.has(call.state) &&
-    !(call.direction === 'inbound' && call.state === 'ringing') &&
+    !(call.direction === 'inbound' && call.state === 'ringing' && !suppressedIncomingId) &&
     !(showIncoming && call.callId === incoming?.callId);
 
-  useEffect(() => {
-    if (!showActive) setMinimized(false);
-  }, [showActive]);
+  const showActiveLocked =
+    showActive ||
+    (!!call &&
+      !TERMINAL.has(call.state) &&
+      suppressedIncomingId === call.callId &&
+      !showIncoming);
 
-  if (!showIncoming && !showActive) {
+  useEffect(() => {
+    if (!showActiveLocked) {
+      setMinimized(false);
+      setAndroidPipPresentation(false);
+    }
+  }, [showActiveLocked]);
+
+  const androidPipEligible =
+    Platform.OS === 'android' &&
+    !!call &&
+    call.mediaType === 'video' &&
+    (call.state === 'connected' || call.state === 'reconnecting') &&
+    Boolean(call.remoteStream || (call.videoEnabled && call.localStream)) &&
+    showActiveLocked &&
+    !showIncoming;
+  useAndroidPipArming(androidPipEligible);
+
+  if (!showIncoming && !showActiveLocked) {
     return null;
   }
 
@@ -131,26 +219,55 @@ export function CallingUI({
     void client.end(call.callId).catch((e) => onError?.(e));
   };
 
-  return (
-    <View style={[styles.host, style]} pointerEvents="box-none">
-      {showIncoming && incoming ? (
-        <Modal animationType="none" visible hardwareAccelerated presentationStyle="fullScreen">
-          {(
-            renderIncomingScreen ? (
-              renderIncomingScreen({
-                call: incoming,
-                onAccept: () => void client.accept(incoming.callId).catch((e) => onError?.(e)),
-                onReject: () =>
-                  void client.reject(incoming.callId, 'declined').catch((e) => onError?.(e)),
-              })
-            ) : (
-              <IncomingCallScreen
-                call={incoming}
-                theme={theme}
-                backgroundColor={backgroundColor}
-                backgroundImage={backgroundImage}
-                slots={slots}
-                onAccept={(options) => {
+  const beginAccept = (callId: string, run: () => void) => {
+    suppressIncoming(callId);
+    run();
+  };
+
+  const activeBody =
+    showActiveLocked && call && !showIncoming ? (
+      renderActiveCallScreen ? (
+        renderActiveCallScreen({
+          call,
+          onEnd: endCall,
+        })
+      ) : (
+        <ActiveCallScreen
+          call={call}
+          client={client}
+          theme={theme}
+          backgroundColor={backgroundColor}
+          backgroundImage={backgroundImage}
+          slots={slots}
+          onEnd={endCall}
+          onError={onError}
+          onMinimize={() => setMinimized(true)}
+          androidSystemPipActive={androidPipPresentation}
+        />
+      )
+    ) : null;
+
+  const incomingBody =
+    showIncoming && incoming
+      ? renderIncomingScreen
+        ? renderIncomingScreen({
+            call: incoming,
+            onAccept: () =>
+              beginAccept(incoming.callId, () => {
+                void client.accept(incoming.callId).catch((e) => onError?.(e));
+              }),
+            onReject: () =>
+              void client.reject(incoming.callId, 'declined').catch((e) => onError?.(e)),
+          })
+        : (
+            <IncomingCallScreen
+              call={incoming}
+              theme={theme}
+              backgroundColor={backgroundColor}
+              backgroundImage={backgroundImage}
+              slots={slots}
+              onAccept={(options) => {
+                beginAccept(incoming.callId, () => {
                   void client
                     .accept(incoming.callId)
                     .then(() => {
@@ -160,52 +277,103 @@ export function CallingUI({
                       return undefined;
                     })
                     .catch((e) => onError?.(e));
-                }}
-                onReject={() =>
-                  void client.reject(incoming.callId, 'declined').catch((e) => onError?.(e))
-                }
-              />
-            )
-          ) as React.JSX.Element}
+                });
+              }}
+              onReject={() =>
+                void client.reject(incoming.callId, 'declined').catch((e) => onError?.(e))
+              }
+            />
+          )
+      : null;
+
+  const usePipActivityHost =
+    Platform.OS === 'android' && androidPipPresentation && Boolean(activeBody) && !showIncoming;
+
+  // STATE A Modal — never mount ACS while minimized (bubble needs the video sink)
+  // or while Android system PiP host is active.
+  const modalBody = showIncoming
+    ? incomingBody
+    : usePipActivityHost || minimized
+      ? null
+      : activeBody;
+  const showCallModal = Boolean(modalBody);
+
+  return (
+    <View style={[styles.host, style]} pointerEvents="box-none">
+      {usePipActivityHost ? (
+        <View collapsable={false} style={styles.pipActivityHost}>
+          <StatusBar barStyle="light-content" backgroundColor="#000000" translucent />
+          {activeBody as React.JSX.Element}
+        </View>
+      ) : null}
+
+      {modalBody ? (
+        <Modal
+          animationType="none"
+          visible={showCallModal}
+          hardwareAccelerated
+          transparent={false}
+          presentationStyle="overFullScreen"
+          statusBarTranslucent
+        >
+          {/*
+            Single flex root required — Modal with bare StatusBar+screen siblings
+            collapses absoluteFill children (black outgoing video).
+            StatusBar lives here so Incoming→Active does not remount it (Accept jump).
+          */}
+          <View style={styles.modalRoot}>
+            <StatusBar barStyle="light-content" backgroundColor="#000000" translucent />
+            <View style={styles.modalBody}>{modalBody as React.JSX.Element}</View>
+          </View>
         </Modal>
       ) : null}
 
-      {showActive && call && !showIncoming ? (
-        minimized ? (
-          <MinimizedCallBubble
-            call={call}
-            onExpand={() => setMinimized(false)}
-            onEnd={endCall}
-          />
-        ) : (
-          <Modal animationType="fade" visible hardwareAccelerated presentationStyle="fullScreen">
-            {(
-              renderActiveCallScreen ? (
-                renderActiveCallScreen({
-                  call,
-                  onEnd: endCall,
-                })
-              ) : (
-                <ActiveCallScreen
-                  call={call}
-                  client={client}
-                  theme={theme}
-                  backgroundColor={backgroundColor}
-                  backgroundImage={backgroundImage}
-                  slots={slots}
-                  onEnd={endCall}
-                  onError={onError}
-                  onMinimize={() => setMinimized(true)}
-                />
-              )
-            ) as React.JSX.Element}
-          </Modal>
-        )
+      {showActiveLocked && call && !showIncoming && minimized && !usePipActivityHost ? (
+        <Modal
+          transparent
+          visible
+          animationType="none"
+          statusBarTranslucent
+          hardwareAccelerated
+          presentationStyle="overFullScreen"
+        >
+          <View style={styles.bubbleOverlay} pointerEvents="box-none">
+            <MinimizedCallBubble
+              call={call}
+              onExpand={() => setMinimized(false)}
+              onEnd={endCall}
+            />
+          </View>
+        </Modal>
       ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  host: { ...StyleSheet.absoluteFillObject },
+  host: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 9999,
+    elevation: 9999,
+  },
+  bubbleOverlay: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  modalRoot: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  modalBody: {
+    flex: 1,
+  },
+  /**
+   * STATE B — fill the Activity content view. Must NOT use fixed screen WxH:
+   * a full-screen sized SurfaceView inside a PiP window crops to the top-left.
+   */
+  pipActivityHost: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#000',
+    zIndex: 10000,
+    elevation: 10000,
+  },
 });

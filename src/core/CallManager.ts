@@ -8,7 +8,7 @@ import {
   type ServerToClientMessage,
   type TurnCredentialsPayload,
 } from '@alaznah/protocol';
-import { AppState, Platform } from 'react-native';
+import { AppState, NativeEventEmitter, NativeModules, Platform } from 'react-native';
 import { isTerminalState, canTransition, transitionCallState } from '../call/CallStateMachine.js';
 import { shouldIgnoreDuplicateAccept } from '../call/inboundMessageGuards.js';
 import {
@@ -121,6 +121,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
   let networkOnlineTimer: ReturnType<typeof setTimeout> | null = null;
   let wakingForCall = false;
   let appStateSubscription: ReturnType<typeof AppState.addEventListener> | null = null;
+  let pipModeSubscription: { remove: () => void } | null = null;
 
   const setWakingForCall = (active: boolean) => {
     if (wakingForCall === active) return;
@@ -498,16 +499,24 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
       disconnectedRecoverTimer: _disconnectedRecoverTimer,
       ...rest
     } = call;
+    const participants =
+      rest.participants ??
+      [
+        { participantId: config.userId, state: 'joined' as const },
+        { participantId: rest.peerId, state: 'invited' as const },
+      ];
+    const peer = participants.find((p) => p.participantId === rest.peerId);
+    const peerDisplayName =
+      rest.peerDisplayName?.trim() ||
+      peer?.displayName?.trim() ||
+      rest.peerId;
     return {
       ...rest,
       kind: rest.kind ?? 'direct',
       conversationId: rest.conversationId ?? rest.callId,
-      participants:
-        rest.participants ??
-        [
-          { participantId: config.userId, state: 'joined' as const },
-          { participantId: rest.peerId, state: 'invited' as const },
-        ],
+      participants,
+      peerDisplayName,
+      remoteMuted: Boolean(rest.remoteMuted ?? peer?.muted),
     };
   };
 
@@ -977,7 +986,11 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
           conversationId: message.payload.conversationId ?? message.callId,
           kind: message.payload.kind ?? 'direct',
           participants: [
-            { participantId: config.userId, state: 'joined' },
+            {
+              participantId: config.userId,
+              displayName: config.displayName?.trim() || undefined,
+              state: 'joined',
+            },
             {
               participantId: message.from,
               displayName: message.payload.callerDisplayName,
@@ -985,6 +998,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
             },
           ],
           peerId: message.from,
+          peerDisplayName: message.payload.callerDisplayName?.trim() || message.from,
           mediaType: message.payload.mediaType,
           direction: 'inbound',
           // Pending native Accept → never land in 'ringing' for JS IncomingCallScreen.
@@ -992,6 +1006,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
           localStream: null,
           remoteStream: null,
           muted: false,
+          remoteMuted: false,
           videoEnabled: message.payload.mediaType === 'video',
           speakerOn: message.payload.mediaType === 'video',
           facingMode: config.facingMode ?? 'user',
@@ -1183,6 +1198,18 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
         }
         break;
 
+      case 'call.mute': {
+        if (!message.callId) break;
+        const call = calls.get(message.callId);
+        if (!call || message.from !== call.peerId) break;
+        const muted = Boolean(message.payload?.muted);
+        const participants = (call.participants ?? []).map((p) =>
+          p.participantId === call.peerId ? { ...p, muted } : p,
+        );
+        updateCall(message.callId, { remoteMuted: muted, participants });
+        break;
+      }
+
       case 'sdp': {
         if (!message.callId) break;
         const call = calls.get(message.callId);
@@ -1255,6 +1282,16 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
   signaling.on('close', (_code, reason) => emitter.emit('disconnected', reason));
   signaling.on('error', (err) => emitter.emit('error', err));
   signaling.on('reconnectExhausted', () => {
+    const active = activeCallId ? calls.get(activeCallId) : undefined;
+    if (active?.mediaConnectedOnce && !isTerminalState(active.state)) {
+      log.warn('signaling reconnect exhausted during active media — keep retrying');
+      signaling.setBackgroundCallMode(true);
+      signaling.resetReconnectBudget();
+      void signaling.connect().catch((err) => {
+        log.warn('signaling reconnect after exhaustion failed', err);
+      });
+      return;
+    }
     log.warn('signaling reconnect exhausted — ending active calls on both sides');
     void endAllCallsSignalingLost();
   });
@@ -1371,8 +1408,34 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     }
 
     if (!appStateSubscription) {
+      const hasLiveMediaCall = () =>
+        [...calls.values()].some(
+          (c) =>
+            c.mediaConnectedOnce &&
+            (c.state === 'connected' || c.state === 'reconnecting') &&
+            !isTerminalState(c.state),
+        );
+
+      const syncBackgroundCallMode = (forceBackground?: boolean) => {
+        const background =
+          forceBackground === true ||
+          AppState.currentState === 'background' ||
+          AppState.currentState === 'inactive';
+        const hasLiveMedia = hasLiveMediaCall();
+        signaling.setBackgroundCallMode(background && hasLiveMedia);
+        if (!background && hasLiveMedia && !signaling.isConnected()) {
+          void restoreSignalingAfterNetwork();
+        }
+      };
+
       appStateSubscription = AppState.addEventListener('change', (nextState) => {
         const background = nextState === 'background' || nextState === 'inactive';
+        const hasLiveMedia = hasLiveMediaCall();
+        // PiP / background: keep signaling alive (Android throttles JS timers).
+        signaling.setBackgroundCallMode(background && hasLiveMedia);
+        if (!background && hasLiveMedia && !signaling.isConnected()) {
+          void restoreSignalingAfterNetwork();
+        }
         for (const call of calls.values()) {
           if (!call.engine || isTerminalState(call.state)) continue;
           // Keep quality loop alive during active calls — pausing caused false downgrades.
@@ -1383,6 +1446,31 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
           }
         }
       });
+
+      // Android Activity PiP does not always flip AppState; listen explicitly.
+      if (Platform.OS === 'android' && !pipModeSubscription) {
+        const pipNative = NativeModules.AlaznahCallingPip as
+          | { addListener?: (event: string) => void; removeListeners?: (count: number) => void }
+          | undefined;
+        if (pipNative) {
+          const emitter = new NativeEventEmitter(NativeModules.AlaznahCallingPip);
+          pipModeSubscription = emitter.addListener(
+            'AlaznahCallingPipModeChanged',
+            (payload: { active?: boolean }) => {
+              const inPip = Boolean(payload?.active);
+              if (inPip && hasLiveMediaCall()) {
+                signaling.setBackgroundCallMode(true);
+                signaling.resetReconnectBudget();
+                if (!signaling.isConnected()) {
+                  void restoreSignalingAfterNetwork();
+                }
+              } else {
+                syncBackgroundCallMode(false);
+              }
+            },
+          );
+        }
+      }
     }
 
     if (!stopNetwork) {
@@ -1484,6 +1572,8 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
       stopNetwork = null;
       appStateSubscription?.remove();
       appStateSubscription = null;
+      pipModeSubscription?.remove();
+      pipModeSubscription = null;
       if (networkRecoverTimer) {
         clearTimeout(networkRecoverTimer);
         networkRecoverTimer = null;
@@ -1515,21 +1605,29 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
       const mediaType = options.mediaType ?? 'audio';
       // CallKeep/CallKit require RFC4122 UUIDs for call identifiers.
       const callId = generateCallUuid();
+      const peerDisplayName = options.calleeDisplayName?.trim() || options.calleeId;
+      const localDisplayName = config.displayName?.trim() || undefined;
       const call: InternalCall = {
         callId,
         conversationId: options.conversationId ?? callId,
         kind: options.kind ?? 'direct',
         participants: [
-          { participantId: config.userId, state: 'joined' },
-          { participantId: options.calleeId, state: 'invited' },
+          { participantId: config.userId, displayName: localDisplayName, state: 'joined' },
+          {
+            participantId: options.calleeId,
+            displayName: options.calleeDisplayName?.trim() || undefined,
+            state: 'invited',
+          },
         ],
         peerId: options.calleeId,
+        peerDisplayName,
         mediaType,
         direction: 'outbound',
         state: 'connecting',
         localStream: null,
         remoteStream: null,
         muted: false,
+        remoteMuted: false,
         videoEnabled: mediaType === 'video',
         speakerOn: mediaType === 'video',
         facingMode: config.facingMode ?? 'user',
@@ -1564,7 +1662,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
           offer,
           conversationId: options.conversationId ?? callId,
           kind: options.kind ?? 'direct',
-          callerDisplayName: config.userId,
+          callerDisplayName: localDisplayName || config.userId,
         },
         {
           callId,
@@ -1682,7 +1780,15 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
       if (!call) return;
       call.engine?.setMuted(muted);
       callKeep.setMuted(id, muted);
-      updateCall(id, { muted });
+      const participants = (call.participants ?? []).map((p) =>
+        p.participantId === config.userId ? { ...p, muted } : p,
+      );
+      updateCall(id, { muted, participants });
+      try {
+        await signaling.send('call.mute', { muted }, { callId: id, to: call.peerId });
+      } catch (err) {
+        log.warn('call.mute send failed', id, err);
+      }
     },
 
     async setVideoEnabled(enabled, callId) {

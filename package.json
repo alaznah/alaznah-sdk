@@ -1,6 +1,6 @@
 {
   "name": "@alaznah/calling",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0-beta.2",
   "description": "Alaznah Calling — voice & video for real-time experiences in React Native",
   "type": "module",
   "main": "./dist/index.js",
@@ -54,7 +54,7 @@
   "peerDependencies": {
     "@react-native-community/netinfo": ">=11.0.0",
     "react": ">=18.0.0",
-    "react-native": ">=0.73.0",
+    "react-native": ">=0.76.0",
     "react-native-callkeep": ">=4.3.0",
     "react-native-incall-manager": ">=4.0.0",
     "react-native-svg": ">=15.0.0",
@@ -62,9 +62,6 @@
   },
   "peerDependenciesMeta": {
     "react-native-callkeep": {
-      "optional": true
-    },
-    "react-native-svg": {
       "optional": true
     }
   },

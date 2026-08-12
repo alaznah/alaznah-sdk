@@ -41,12 +41,16 @@ export type ActiveCall = {
   /** Participant collection; `peerId` remains the direct-call compatibility field. */
   participants?: CallParticipant[];
   peerId: string;
+  /** Best-effort peer display name for UI (falls back to `peerId`). */
+  peerDisplayName?: string;
   mediaType: CallMediaType;
   direction: CallDirection;
   state: CallState;
   localStream: MediaStreamLike | null;
   remoteStream: MediaStreamLike | null;
   muted: boolean;
+  /** True when the remote peer reported muted via `call.mute`. */
+  remoteMuted?: boolean;
   videoEnabled: boolean;
   speakerOn: boolean;
   /** Front (`user`) or back (`environment`) camera for local preview mirror. */
@@ -116,6 +120,11 @@ export type CallingClientConfig = {
   /** JWT or opaque auth token verifier contract on server */
   getAuthToken: () => Promise<string> | string;
   userId: string;
+  /**
+   * Optional human-readable name for this user. Sent on invite as
+   * `callerDisplayName` and used by default UI labels.
+   */
+  displayName?: string;
   deviceId?: string;
   /** Optional static ICE servers; otherwise fetched via signaling */
   iceServers?: IceServerConfig[];
@@ -154,6 +163,8 @@ export type CallingClientConfig = {
 
 export type StartCallOptions = {
   calleeId: string;
+  /** Optional display name for the callee shown in local UI. */
+  calleeDisplayName?: string;
   mediaType?: CallMediaType;
   conversationId?: string;
   kind?: CallKind;

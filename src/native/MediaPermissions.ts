@@ -6,16 +6,27 @@ export type MediaPermissionResult = {
   bluetooth: boolean;
 };
 
+/** Runtime permission mode for calling. */
+export type CallPermissionMode = 'audio' | 'video';
+
 /**
  * Request runtime media permissions before getUserMedia.
  * Returns granted flags; callers should fail clearly when mic is denied.
+ *
+ * - `'audio'` — microphone (+ Bluetooth on Android 12+)
+ * - `'video'` — microphone + camera (+ Bluetooth)
+ *
+ * If the app offers voice and video, call `'audio'` or `'video'` for the
+ * upcoming call (or `'video'` once at startup to cover both).
  */
 export async function requestCallPermissions(
-  mediaType: 'audio' | 'video',
+  mode: CallPermissionMode,
 ): Promise<MediaPermissionResult> {
+  const wantCamera = mode === 'video';
+
   if (Platform.OS !== 'android') {
     // iOS prompts via getUserMedia / Info.plist usage strings.
-    return { microphone: true, camera: mediaType === 'video', bluetooth: true };
+    return { microphone: true, camera: wantCamera, bluetooth: true };
   }
 
   const micPerm = PermissionsAndroid.PERMISSIONS.RECORD_AUDIO;
@@ -26,15 +37,14 @@ export async function requestCallPermissions(
   // Fast path: skip the system dialog round-trip when already granted
   // (common on kill-state Accept after the user has used the app once).
   const micOk = await PermissionsAndroid.check(micPerm);
-  const camOk =
-    mediaType === 'audio' ? true : await PermissionsAndroid.check(camPerm);
+  const camOk = wantCamera ? await PermissionsAndroid.check(camPerm) : true;
   const btOk = btPerm ? await PermissionsAndroid.check(btPerm) : true;
   if (micOk && camOk && btOk) {
-    return { microphone: true, camera: camOk, bluetooth: btOk };
+    return { microphone: true, camera: wantCamera ? camOk : true, bluetooth: btOk };
   }
 
   const needed: string[] = [micPerm];
-  if (mediaType === 'video') needed.push(camPerm);
+  if (wantCamera) needed.push(camPerm);
   if (btPerm) needed.push(btPerm);
 
   const result = await PermissionsAndroid.requestMultiple(needed as never);
@@ -43,7 +53,7 @@ export async function requestCallPermissions(
 
   return {
     microphone: granted(micPerm),
-    camera: mediaType === 'audio' ? true : granted(camPerm),
+    camera: wantCamera ? granted(camPerm) : true,
     bluetooth: btPerm ? granted(btPerm) : true,
   };
 }

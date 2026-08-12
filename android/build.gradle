@@ -1,9 +1,10 @@
 buildscript {
+  // Defaults target RN 0.76–0.80 (compileSdk 35). Hosts on 0.81+ (36) inherit rootProject.
   ext.AlaznahCalling = [
     kotlinVersion: "2.0.21",
     minSdkVersion: 24,
-    compileSdkVersion: 36,
-    targetSdkVersion: 36
+    compileSdkVersion: 35,
+    targetSdkVersion: 35
   ]
 
   ext.getExtOrDefault = { prop ->
@@ -47,5 +48,7 @@ repositories {
 
 dependencies {
   implementation "com.facebook.react:react-android"
-  implementation "androidx.core:core:1.17.0"
+  // 1.15.x works with compileSdk 35 (RN 0.76–0.80) and 36 (RN 0.81+).
+  // Do not bump to 1.17+ — it forces compileSdk 36 and breaks default RN 0.80 apps.
+  implementation "androidx.core:core:1.15.0"
 }

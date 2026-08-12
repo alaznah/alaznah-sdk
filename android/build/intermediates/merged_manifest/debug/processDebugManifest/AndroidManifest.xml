@@ -14,6 +14,9 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <application>
         <activity
@@ -29,6 +32,10 @@
             android:name="com.alaznah.calling.IncomingCallService"
             android:exported="false"
             android:foregroundServiceType="phoneCall" />
+        <service
+            android:name="com.alaznah.calling.ActiveCallKeepAliveService"
+            android:exported="false"
+            android:foregroundServiceType="microphone|camera|phoneCall|mediaPlayback" />
 
         <receiver
             android:name="com.alaznah.calling.IncomingCallActionReceiver"
