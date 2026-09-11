@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { RefObject } from 'react';
 import {
-  AppState,
   findNodeHandle,
   NativeEventEmitter,
   NativeModules,
@@ -9,12 +8,14 @@ import {
   UIManager,
   type View,
 } from 'react-native';
+import { silenceWebRtcDebugLogs } from '../debug/webrtcLogging.js';
 
 type PipNative = {
   setEnabled: (enabled: boolean) => Promise<boolean>;
   enter: () => Promise<boolean>;
   isSupported: () => Promise<boolean>;
   isActive?: () => Promise<boolean>;
+  setRemoteStreamUrl?: (url: string) => Promise<boolean>;
   updatePictureInPicture?: (
     width: number,
     height: number,
@@ -43,13 +44,19 @@ function pushAndroidPipParams(layoutRef: RefObject<View | null>): void {
 
 function startIosWebRtcPip(ref: RefObject<unknown>): boolean {
   try {
-    const node = findNodeHandle(ref.current as never);
+    const current = ref.current as { __nativeTag?: number; _nativeTag?: number } | null;
+    const node =
+      findNodeHandle(ref.current as never) ??
+      current?.__nativeTag ??
+      current?._nativeTag ??
+      null;
     if (node == null) return false;
 
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const webrtc = require('react-native-webrtc') as {
       startIOSPIP?: (ref: RefObject<unknown>) => void;
     };
+    silenceWebRtcDebugLogs();
     if (typeof webrtc.startIOSPIP === 'function') {
       webrtc.startIOSPIP(ref);
       return true;
@@ -67,12 +74,24 @@ function startIosWebRtcPip(ref: RefObject<unknown>): boolean {
   }
 }
 
+async function startIosPipViaNativeModule(): Promise<boolean> {
+  const native = NativeModules.AlaznahCallingPip as
+    | { enter?: () => Promise<boolean> }
+    | undefined;
+  if (!native?.enter) return false;
+  try {
+    return Boolean(await native.enter());
+  } catch {
+    return false;
+  }
+}
+
 /**
- * Arm / disarm Android Activity PiP from a stable parent (CallingUI).
- * Must NOT live in ActiveCallScreen — Modal↔Activity presentation remounts
- * would call setEnabled(false) mid-enter and abort/crash PiP.
+ * Arm Android native PiP (stream URL + enable flag).
+ * Home enter is onUserLeaveHint → MainActivity.enterPictureInPictureMode.
+ * Minimize enter is CallingUI → AlaznahPipActivity. Same renderer either way.
  */
-export function useAndroidPipArming(enabled: boolean): void {
+export function useAndroidPipArming(enabled: boolean, streamUrl?: string | null): void {
   useEffect(() => {
     if (Platform.OS !== 'android') return undefined;
     const native = getPipNative();
@@ -82,14 +101,24 @@ export function useAndroidPipArming(enabled: boolean): void {
       void native.setEnabled(false).catch(() => undefined);
     };
   }, [enabled]);
+
+  useEffect(() => {
+    if (Platform.OS !== 'android') return undefined;
+    const native = getPipNative();
+    const setUrl = native?.setRemoteStreamUrl;
+    if (!setUrl) return undefined;
+    void setUrl(enabled ? streamUrl ?? '' : '').catch(() => undefined);
+    return undefined;
+  }, [enabled, streamUrl]);
 }
 
 /**
  * Picture-in-Picture for an active video call.
  *
- * Android: observes Activity PiP mode + sourceRect updates.
- *          Arming is via [useAndroidPipArming] on CallingUI.
- * iOS: react-native-webrtc AVKit path (unchanged).
+ * Android: AlaznahPipVideoController TextureView (Home: host Activity PiP,
+ *          Minimize: AlaznahPipActivity). Restore drops that overlay.
+ * iOS: one AVKit PIPController on ActiveCallScreen's in-Modal remote RTCView.
+ *      Native lifecycle is forwarded via AlaznahCallingPipModeChanged.
  */
 export function useCallPictureInPicture(options: {
   enabled: boolean;
@@ -121,7 +150,20 @@ export function useCallPictureInPicture(options: {
   useEffect(() => {
     if (Platform.OS === 'ios') {
       setSupported(true);
-      return undefined;
+      const pipMod = NativeModules.AlaznahCallingPip;
+      if (!pipMod) return undefined;
+      const emitter = new NativeEventEmitter(pipMod);
+      const sub = emitter.addListener(
+        'AlaznahCallingPipModeChanged',
+        (payload: { active?: boolean }) => {
+          if (!enabledRef.current) return;
+          setIsInPictureInPicture(Boolean(payload?.active));
+        },
+      );
+      return () => {
+        sub.remove();
+        setIsInPictureInPicture(false);
+      };
     }
 
     const native = getPipNative();
@@ -162,23 +204,7 @@ export function useCallPictureInPicture(options: {
   useEffect(() => {
     if (!options.enabled) {
       setIsInPictureInPicture(false);
-      return undefined;
     }
-    if (Platform.OS !== 'ios') return undefined;
-
-    // Track iOS PiP for remote objectFit contain. Do NOT call stopIOSPIP on
-    // foreground — that races RN-WebRTC stopAutomatically and blinks video.
-    const sub = AppState.addEventListener('change', (next) => {
-      if (!enabledRef.current) return;
-      if (next === 'background' || next === 'inactive') {
-        setIsInPictureInPicture(true);
-        return;
-      }
-      if (next === 'active') {
-        setIsInPictureInPicture(false);
-      }
-    });
-    return () => sub.remove();
   }, [options.enabled]);
 
   return {
@@ -189,18 +215,20 @@ export function useCallPictureInPicture(options: {
       if (!enabledRef.current) return false;
 
       if (Platform.OS === 'ios') {
-        if (!iosRef) return false;
-        for (let attempt = 0; attempt < 10; attempt += 1) {
-          if (iosRef.current) {
-            const ok = startIosWebRtcPip(iosRef);
-            if (ok) {
-              setIsInPictureInPicture(true);
-              return true;
+        if (iosRef) {
+          for (let attempt = 0; attempt < 10; attempt += 1) {
+            if (iosRef.current) {
+              const ok = startIosWebRtcPip(iosRef);
+              if (ok) {
+                // Native AlaznahCallingPipModeChanged is the source of truth.
+                return true;
+              }
             }
+            await new Promise<void>((resolve) => setTimeout(resolve, 50));
           }
-          await new Promise<void>((resolve) => setTimeout(resolve, 50));
         }
-        return false;
+        // Fabric / findNodeHandle fallback — walk native view tree for RTCVideoView.
+        return startIosPipViaNativeModule();
       }
 
       refreshAndroidSourceHint();
@@ -208,7 +236,6 @@ export function useCallPictureInPicture(options: {
       if (!native) return false;
       try {
         const ok = Boolean(await native.enter());
-        if (ok) setIsInPictureInPicture(true);
         return ok;
       } catch {
         return false;

@@ -1,9 +1,11 @@
+import { silenceWebRtcDebugLogs } from '../debug/webrtcLogging.js';
 import type { WebRtcAdapters } from './PeerConnectionEngine.js';
 
 export function loadWebRtcAdapters(): WebRtcAdapters {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const webrtc = require('react-native-webrtc');
+    silenceWebRtcDebugLogs();
     return {
       RTCPeerConnection: webrtc.RTCPeerConnection,
       mediaDevices: webrtc.mediaDevices,

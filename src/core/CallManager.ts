@@ -48,6 +48,7 @@ import { EventEmitter } from '../utils/EventEmitter.js';
 import { PeerConnectionEngine } from './PeerConnectionEngine.js';
 import { sortIceCandidatesByPriority } from './iceCandidatePolicy.js';
 import { loadWebRtcAdapters } from './loadAdapters.js';
+import { resolvePeerDisplayName, requireDisplayName } from '../utils/displayName.js';
 
 type InternalCall = ActiveCall & {
   engine: PeerConnectionEngine | null;
@@ -100,6 +101,78 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     config.entitlementProvider ?? createDevEntitlementProvider();
   let entitlement: SdkEntitlement | null = null;
   const calls = new Map<string, InternalCall>();
+  /** Remote video track ids already wired for mute→avatar (per call). */
+  const remoteVideoTrackWireIds = new Map<string, Set<string>>();
+
+  /**
+   * Mirror sender camera pause onto `remoteVideoEnabled`.
+   * `call.video` signaling is primary; track mute/unmute is a media fallback.
+   *
+   * IMPORTANT (iOS): inbound video tracks often start with `muted === true`
+   * until the first decoded frame. Treating that as "camera off" hides the
+   * live RTCView and leaves a black/dark surface. Only apply mute→off after
+   * the track has unmuted at least once (media has flowed).
+   */
+  const wireRemoteVideoTrackListeners = (callId: string, stream: { getVideoTracks?: () => Array<{
+    id: string;
+    enabled?: boolean;
+    muted?: boolean;
+    readyState?: string;
+    addEventListener?: (type: string, fn: () => void) => void;
+    onmute?: (() => void) | null;
+    onunmute?: (() => void) | null;
+    onended?: (() => void) | null;
+  }> }) => {
+    let wired = remoteVideoTrackWireIds.get(callId);
+    if (!wired) {
+      wired = new Set();
+      remoteVideoTrackWireIds.set(callId, wired);
+    }
+    const tracks = typeof stream.getVideoTracks === 'function' ? stream.getVideoTracks() : [];
+    for (const track of tracks) {
+      if (wired.has(track.id)) continue;
+      wired.add(track.id);
+      let sawMedia = track.muted === false;
+      const apply = () => {
+        const ended = track.readyState === 'ended';
+        if (ended) {
+          updateCall(callId, { remoteVideoEnabled: false });
+          return;
+        }
+        if (track.muted === false) {
+          sawMedia = true;
+          updateCall(callId, { remoteVideoEnabled: true });
+          return;
+        }
+        // muted === true: only treat as camera-off after we have seen media.
+        if (sawMedia) {
+          updateCall(callId, { remoteVideoEnabled: false });
+        }
+      };
+      apply();
+      if (typeof track.addEventListener === 'function') {
+        track.addEventListener('mute', apply);
+        track.addEventListener('unmute', apply);
+        track.addEventListener('ended', apply);
+      } else {
+        const prevMute = track.onmute;
+        const prevUnmute = track.onunmute;
+        const prevEnded = track.onended;
+        track.onmute = () => {
+          prevMute?.();
+          apply();
+        };
+        track.onunmute = () => {
+          prevUnmute?.();
+          apply();
+        };
+        track.onended = () => {
+          prevEnded?.();
+          apply();
+        };
+      }
+    }
+  };
   let iceServers: IceServerConfig[] = config.iceServers ?? [];
   let turnRequestInFlight: Promise<void> | null = null;
   let callKeepConfigured = false;
@@ -321,6 +394,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     if (!call.engine) return;
     const engine = call.engine;
     call.engine = null;
+    remoteVideoTrackWireIds.delete(call.callId);
     try {
       updateCall(call.callId, { localStream: null, remoteStream: null });
     } catch {
@@ -506,10 +580,10 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
         { participantId: rest.peerId, state: 'invited' as const },
       ];
     const peer = participants.find((p) => p.participantId === rest.peerId);
-    const peerDisplayName =
-      rest.peerDisplayName?.trim() ||
-      peer?.displayName?.trim() ||
-      rest.peerId;
+    const peerDisplayName = resolvePeerDisplayName(
+      rest.peerDisplayName,
+      peer?.displayName,
+    );
     return {
       ...rest,
       kind: rest.kind ?? 'direct',
@@ -517,6 +591,12 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
       participants,
       peerDisplayName,
       remoteMuted: Boolean(rest.remoteMuted ?? peer?.muted),
+      remoteVideoEnabled:
+        typeof rest.remoteVideoEnabled === 'boolean'
+          ? rest.remoteVideoEnabled
+          : typeof peer?.videoEnabled === 'boolean'
+            ? peer.videoEnabled
+            : true,
     };
   };
 
@@ -580,9 +660,6 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
       void requestTurnCredentials(1_200).catch(() => undefined);
     }
     const adapters = loadWebRtcAdapters();
-    const preferSpeaker =
-      call.mediaType === 'video' ||
-      (Platform.OS === 'ios' && isIosSimulator());
     const engine = new PeerConnectionEngine({
       mediaType: call.mediaType,
       iceServers: stunOnlyIceServers(iceServers),
@@ -597,8 +674,27 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
         },
         onRemoteStream: (stream) => {
           const current = calls.get(call.callId);
-          if (current?.remoteStream?.id === stream.id) return;
-          updateCall(call.callId, { remoteStream: stream });
+          const nextVideoId =
+            typeof stream.getVideoTracks === 'function'
+              ? stream.getVideoTracks()[0]?.id
+              : undefined;
+          const prevVideoId =
+            current?.remoteStream &&
+            typeof current.remoteStream.getVideoTracks === 'function'
+              ? current.remoteStream.getVideoTracks()[0]?.id
+              : undefined;
+          // Same MediaStream id is reused when audio arrives first and video is
+          // added later. Skipping updateCall left iOS RTCView with a stale
+          // streamURL attach (no videoTracks → permanent black Metal surface).
+          if (
+            current?.remoteStream?.id !== stream.id ||
+            nextVideoId !== prevVideoId
+          ) {
+            updateCall(call.callId, { remoteStream: stream, remoteVideoEnabled: true });
+          }
+          // Always (re)wire — video tracks often arrive after the first audio track
+          // on the same MediaStream id.
+          wireRemoteVideoTrackListeners(call.callId, stream);
         },
         onLocalStreamChanged: (stream) => {
           const current = calls.get(call.callId);
@@ -614,18 +710,36 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
               clearDisconnectedRecoverTimer(current);
             }
             callMetrics.markConnected(call.callId, null);
-            const preferSpeakerOnConnect =
-              call.mediaType === 'video' ||
-              (Platform.OS === 'ios' && isIosSimulator());
-            // Re-assert audio route after ICE connect (InCallManager can lose speaker).
-            audioSession.setSpeaker(preferSpeakerOnConnect);
+            const latestBefore = calls.get(call.callId) ?? call;
+            // Preserve ringing-time speaker preference — do not re-default video→speaker.
+            const speakerOn = Boolean(latestBefore.speakerOn);
+            // Re-assert audio route after ICE connect (InCallManager can lose the route).
+            audioSession.setSpeaker(speakerOn);
             updateCall(call.callId, {
               state: 'connected',
               startedAt: Date.now(),
-              speakerOn: preferSpeakerOnConnect,
+              speakerOn,
             });
             setWakingForCall(false);
             reportIosCallKitForPiP(call);
+            // Re-apply session media intent after PC/audio/CallKit settle so
+            // ringing-time mute / camera-off is not cleared by side effects.
+            const latest = calls.get(call.callId) ?? call;
+            engine.setMuted(Boolean(latest.muted));
+            void engine.setVideoEnabled(Boolean(latest.videoEnabled), true);
+            callKeep.setMuted(call.callId, Boolean(latest.muted));
+            // Sync camera intent to peer (engine path does not send call.video).
+            if (latest.mediaType === 'video') {
+              try {
+                void signaling.send(
+                  'call.video',
+                  { videoEnabled: Boolean(latest.videoEnabled) },
+                  { callId: call.callId, to: call.peerId },
+                );
+              } catch {
+                // best-effort
+              }
+            }
             engine.startQualityLoop();
           } else if (state === 'failed') {
             if (current) clearDisconnectedRecoverTimer(current);
@@ -671,11 +785,19 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     calls.set(call.callId, call);
     await engine.acquireLocalMedia();
     await flushQueuedIce(call, engine);
-    audioSession.setSpeaker(preferSpeaker);
+    // Preserve session speaker intent (same pattern as muted / videoEnabled).
+    const latest = calls.get(call.callId) ?? call;
+    const speakerOn = Boolean(latest.speakerOn);
+    audioSession.setSpeaker(speakerOn);
+    engine.setMuted(Boolean(latest.muted));
+    if (latest.mediaType === 'video' && !latest.videoEnabled) {
+      void engine.setVideoEnabled(false, true);
+    }
     updateCall(call.callId, {
       localStream: engine.getLocalStream(),
-      videoEnabled: call.mediaType === 'video',
-      speakerOn: preferSpeaker,
+      videoEnabled: Boolean(latest.videoEnabled),
+      muted: Boolean(latest.muted),
+      speakerOn,
       facingMode: engine.getFacingMode(),
     });
     void refreshTorchForCall(call.callId);
@@ -998,7 +1120,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
             },
           ],
           peerId: message.from,
-          peerDisplayName: message.payload.callerDisplayName?.trim() || message.from,
+          peerDisplayName: resolvePeerDisplayName(message.payload.callerDisplayName),
           mediaType: message.payload.mediaType,
           direction: 'inbound',
           // Pending native Accept → never land in 'ringing' for JS IncomingCallScreen.
@@ -1008,6 +1130,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
           muted: false,
           remoteMuted: false,
           videoEnabled: message.payload.mediaType === 'video',
+          remoteVideoEnabled: true,
           speakerOn: message.payload.mediaType === 'video',
           facingMode: config.facingMode ?? 'user',
           cameraGeneration: 0,
@@ -1210,6 +1333,20 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
         break;
       }
 
+      case 'call.video': {
+        if (!message.callId) break;
+        const call = calls.get(message.callId);
+        if (!call || message.from !== call.peerId) break;
+        const videoEnabled = Boolean(
+          (message.payload as { videoEnabled?: boolean } | undefined)?.videoEnabled,
+        );
+        const participants = (call.participants ?? []).map((p) =>
+          p.participantId === call.peerId ? { ...p, videoEnabled } : p,
+        );
+        updateCall(message.callId, { remoteVideoEnabled: videoEnabled, participants });
+        break;
+      }
+
       case 'sdp': {
         if (!message.callId) break;
         const call = calls.get(message.callId);
@@ -1318,6 +1455,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     });
 
   const connectInternal = async () => {
+    requireDisplayName(config.displayName, 'CallingProvider config.displayName');
     if (config.enableCallKeep && Platform.OS === 'ios') {
       log.warn(
         '[Calling] enableCallKeep=true adds a second CallKit provider on iOS. ' +
@@ -1603,10 +1741,14 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
 
     async startCall(options: StartCallOptions) {
       const mediaType = options.mediaType ?? 'audio';
+      const calleeDisplayName = requireDisplayName(
+        options.calleeDisplayName,
+        'startCall calleeDisplayName',
+      );
+      const localDisplayName = requireDisplayName(config.displayName, 'config.displayName');
       // CallKeep/CallKit require RFC4122 UUIDs for call identifiers.
       const callId = generateCallUuid();
-      const peerDisplayName = options.calleeDisplayName?.trim() || options.calleeId;
-      const localDisplayName = config.displayName?.trim() || undefined;
+      const peerDisplayName = calleeDisplayName;
       const call: InternalCall = {
         callId,
         conversationId: options.conversationId ?? callId,
@@ -1615,7 +1757,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
           { participantId: config.userId, displayName: localDisplayName, state: 'joined' },
           {
             participantId: options.calleeId,
-            displayName: options.calleeDisplayName?.trim() || undefined,
+            displayName: calleeDisplayName,
             state: 'invited',
           },
         ],
@@ -1629,6 +1771,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
         muted: false,
         remoteMuted: false,
         videoEnabled: mediaType === 'video',
+        remoteVideoEnabled: true,
         speakerOn: mediaType === 'video',
         facingMode: config.facingMode ?? 'user',
         cameraGeneration: 0,
@@ -1662,7 +1805,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
           offer,
           conversationId: options.conversationId ?? callId,
           kind: options.kind ?? 'direct',
-          callerDisplayName: localDisplayName || config.userId,
+          callerDisplayName: localDisplayName,
         },
         {
           callId,
@@ -1803,13 +1946,49 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
           // ignore
         }
       }
-      await call.engine.setVideoEnabled(enabled, true);
+      const participants = (call.participants ?? []).map((p) =>
+        p.participantId === config.userId ? { ...p, videoEnabled: enabled } : p,
+      );
+
+      if (!enabled) {
+        // Publish UI intent before stopping capture so the peer can swap to
+        // avatar instead of showing a black/frozen last frame.
+        updateCall(id, {
+          videoEnabled: false,
+          torchOn: false,
+          participants,
+        });
+        try {
+          await signaling.send(
+            'call.video',
+            { videoEnabled: false },
+            { callId: id, to: call.peerId },
+          );
+        } catch (err) {
+          log.warn('call.video send failed', id, err);
+        }
+        await call.engine.setVideoEnabled(false, true);
+        updateCall(id, { localStream: call.engine.getLocalStream() });
+        await refreshTorchForCall(id);
+        return;
+      }
+
+      await call.engine.setVideoEnabled(true, true);
       updateCall(id, {
-        videoEnabled: enabled,
+        videoEnabled: true,
         localStream: call.engine.getLocalStream(),
-        torchOn: enabled ? call.torchOn : false,
+        participants,
       });
       await refreshTorchForCall(id);
+      try {
+        await signaling.send(
+          'call.video',
+          { videoEnabled: true },
+          { callId: id, to: call.peerId },
+        );
+      } catch (err) {
+        log.warn('call.video send failed', id, err);
+      }
     },
 
     async switchCamera(callId) {

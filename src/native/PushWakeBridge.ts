@@ -10,6 +10,7 @@ export type IncomingPushPayload = {
   type?: string;
   callId: string;
   callerId?: string;
+  callerDisplayName?: string;
   handle?: string;
   mediaType?: 'audio' | 'video' | string;
   conversationId?: string;
@@ -195,13 +196,17 @@ export async function handleBackgroundIncomingCall(
     }
   }
 
-  const callerId = data.callerId ?? data.handle ?? 'Incoming call';
+  const callerDisplayName =
+    data.callerDisplayName?.trim() ||
+    data.handle?.trim() ||
+    data.callerId?.trim() ||
+    'Unknown caller';
   const mediaType = data.mediaType === 'video' ? 'video' : 'audio';
   await NativeAlaznahCalling?.showIncoming(
     `Incoming ${mediaType} call`,
-    `${callerId} is calling…`,
+    `${callerDisplayName} is calling…`,
     callId,
-    callerId,
+    callerDisplayName,
     mediaType,
   );
 }

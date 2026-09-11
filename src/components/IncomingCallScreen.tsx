@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import type { ImageSourcePropType } from 'react-native';
+import { silenceWebRtcDebugLogs } from '../debug/webrtcLogging.js';
 import type { ActiveCall, MediaStreamLike } from '../types/index.js';
 import { LocalVideoView } from './VideoView.js';
 import { CallDeclineIcon, ChevronUpIcon, VideoIcon, VideoOffIcon } from './icons.js';
@@ -204,6 +205,7 @@ export function IncomingCallScreen({
             getUserMedia: (c: object) => Promise<PreviewStream>;
           };
         };
+        silenceWebRtcDebugLogs();
         const stream = await mediaDevices.getUserMedia({
           audio: false,
           video: { facingMode: 'user' },

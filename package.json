@@ -26,6 +26,7 @@
   },
   "files": [
     "android/build.gradle",
+    "android/consumer-rules.pro",
     "android/src",
     "dist",
     "ios/AlaznahCalling.h",
@@ -38,6 +39,7 @@
     "app.plugin.js",
     "react-native.config.cjs",
     "AlaznahCalling.podspec",
+    "patches",
     "README.md"
   ],
   "scripts": {

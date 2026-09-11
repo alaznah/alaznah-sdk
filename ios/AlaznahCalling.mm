@@ -172,6 +172,7 @@ RCT_REMAP_METHOD(showIncoming,
   [[AlaznahCallingManager shared]
       reportIncomingCall:callId
                 callerId:callerId.length ? callerId : body
+        callerDisplayName:callerId.length ? callerId : body
                mediaType:mediaType
               completion:^(NSError *_Nullable error) {
     if (error) {

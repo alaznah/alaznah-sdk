@@ -18,46 +18,62 @@ import androidx.core.app.NotificationCompat
  *
  * Prefer microphone(+camera) FGS types: `phoneCall` often throws on Android 14+
  * unless the app is the dialer / owns a ConnectionService.
+ *
+ * Critical: after [Context.startForegroundService], Android requires a successful
+ * [startForeground] within the timeout — including when the first command is STOP.
+ * Skipping that crashes the whole app with ForegroundServiceDidNotStartInTimeException.
  */
 class ActiveCallKeepAliveService : Service() {
   override fun onBind(intent: Intent?): IBinder? = null
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    ensureChannel(this)
+    val notification = buildNotification(this)
+
+    // Always promote first — STOP may arrive before the original START is processed.
+    if (!startForegroundBestEffort(notification)) {
+      android.util.Log.e("AlaznahCalling", "ActiveCallKeepAlive could not startForeground")
+    }
+
     if (intent?.action == ACTION_STOP) {
-      stopForeground(STOP_FOREGROUND_REMOVE)
+      try {
+        stopForeground(STOP_FOREGROUND_REMOVE)
+      } catch (_: Exception) {
+        // ignore
+      }
       stopSelf()
       return START_NOT_STICKY
     }
 
-    ensureChannel(this)
-    val notification = buildNotification(this)
-    if (!startForegroundBestEffort(notification)) {
-      android.util.Log.w("AlaznahCalling", "ActiveCallKeepAlive startForeground failed")
-      stopSelf()
-      return START_NOT_STICKY
-    }
     return START_STICKY
   }
 
   private fun startForegroundBestEffort(notification: Notification): Boolean {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-      @Suppress("DEPRECATION")
-      startForeground(NOTIFICATION_ID, notification)
-      return true
+      return try {
+        @Suppress("DEPRECATION")
+        startForeground(NOTIFICATION_ID, notification)
+        true
+      } catch (err: Exception) {
+        android.util.Log.w("AlaznahCalling", "ActiveCallKeepAlive legacy startForeground failed", err)
+        false
+      }
     }
 
     val candidates = mutableListOf<Int>()
+    // microphone alone is the most reliable while-in-use type during a call.
+    candidates.add(ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE)
     if (Build.VERSION.SDK_INT >= 34) {
       candidates.add(
         ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE or
           ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA,
       )
-      candidates.add(ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE)
     }
-    candidates.add(ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL)
     if (Build.VERSION.SDK_INT >= 29) {
       candidates.add(ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
     }
+    // phoneCall usually requires dialer / MANAGE_OWN_CALLS — try last.
+    candidates.add(ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL)
 
     for (type in candidates) {
       try {
@@ -76,7 +92,7 @@ class ActiveCallKeepAliveService : Service() {
       startForeground(NOTIFICATION_ID, notification)
       true
     } catch (err: Exception) {
-      android.util.Log.w("AlaznahCalling", "ActiveCallKeepAlive legacy startForeground failed", err)
+      android.util.Log.w("AlaznahCalling", "ActiveCallKeepAlive untyped startForeground failed", err)
       false
     }
   }
@@ -105,7 +121,13 @@ class ActiveCallKeepAliveService : Service() {
       try {
         val intent =
           Intent(context, ActiveCallKeepAliveService::class.java).setAction(ACTION_STOP)
-        context.startService(intent)
+        // Must use startForegroundService on O+ so a racing STOP still enters
+        // onStartCommand under the FGS contract and can call startForeground.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          context.startForegroundService(intent)
+        } else {
+          context.startService(intent)
+        }
       } catch (_: Exception) {
         try {
           context.stopService(Intent(context, ActiveCallKeepAliveService::class.java))

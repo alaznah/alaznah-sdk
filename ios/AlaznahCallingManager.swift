@@ -113,10 +113,11 @@ public final class AlaznahCallingManager: NSObject {
     storedVoipToken
   }
 
-  @objc(reportIncomingCall:callerId:mediaType:completion:)
+  @objc(reportIncomingCall:callerId:callerDisplayName:mediaType:completion:)
   public func reportIncomingCall(
     _ callId: String,
     callerId: String,
+    callerDisplayName: String,
     mediaType: String,
     completion: ((NSError?) -> Void)?
   ) {
@@ -125,6 +126,7 @@ public final class AlaznahCallingManager: NSObject {
         self?.reportIncomingCall(
           callId,
           callerId: callerId,
+          callerDisplayName: callerDisplayName,
           mediaType: mediaType,
           completion: completion
         )
@@ -143,9 +145,11 @@ public final class AlaznahCallingManager: NSObject {
     #else
     let uuid = uuid(for: callId)
     let update = CXCallUpdate()
-    update.remoteHandle = CXHandle(type: .generic, value: callerId)
+    let displayName = callerDisplayName.trimmingCharacters(in: .whitespacesAndNewlines)
+    let label = displayName.isEmpty ? callerId : displayName
+    update.remoteHandle = CXHandle(type: .generic, value: label)
     let isVideo = mediaType.lowercased() == "video"
-    update.localizedCallerName = isVideo ? "\(callerId) · Video call" : "\(callerId) · Voice call"
+    update.localizedCallerName = isVideo ? "\(label) · Video call" : "\(label) · Voice call"
     update.hasVideo = isVideo
     update.supportsHolding = false
     update.supportsDTMF = false
@@ -627,6 +631,11 @@ extension AlaznahCallingManager: PKPushRegistryDelegate {
     let callerId = String(
       describing: data["callerId"] ?? data["handle"] ?? "Incoming call"
     )
+    let callerDisplayName = String(describing: data["callerDisplayName"] ?? "")
+    var displayName = callerDisplayName.trimmingCharacters(in: .whitespacesAndNewlines)
+    if displayName.isEmpty {
+      displayName = callerId
+    }
     let mediaType = String(describing: data["mediaType"] ?? "audio")
     storeCallEndpointFromPush(data)
 
@@ -641,6 +650,7 @@ extension AlaznahCallingManager: PKPushRegistryDelegate {
     reportIncomingCall(
       callId,
       callerId: callerId,
+      callerDisplayName: displayName,
       mediaType: mediaType
     ) { _ in completion() }
   }

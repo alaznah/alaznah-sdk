@@ -19,6 +19,8 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import com.facebook.react.bridge.BaseActivityEventListener
+import com.facebook.react.bridge.LifecycleEventListener
 
 class AlaznahCallingModule(reactContext: ReactApplicationContext) :
   NativeAlaznahCallingSpec(reactContext) {
@@ -26,6 +28,35 @@ class AlaznahCallingModule(reactContext: ReactApplicationContext) :
   init {
     ensureChannel(reactContext)
     moduleInstance = this
+    reactContext.addLifecycleEventListener(
+      object : LifecycleEventListener {
+        override fun onHostResume() {
+          reactContext.currentActivity?.let { AlaznahCallingHostHooks.onHostResume(it) }
+        }
+
+        override fun onHostPause() {
+          reactContext.currentActivity?.let { AlaznahCallingHostHooks.onHostPause(it) }
+        }
+
+        override fun onHostDestroy() {
+          AlaznahCallingPipModule.dismiss()
+        }
+      },
+    )
+    reactContext.addActivityEventListener(
+      object : BaseActivityEventListener() {
+        override fun onNewIntent(intent: Intent) {
+          val activity = reactContext.currentActivity ?: return
+          AlaznahCallingHostHooks.onNewIntent(activity, intent)
+        }
+
+        override fun onUserLeaveHint(activity: android.app.Activity) {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            AlaznahCallingPipModule.enterIfEnabled(activity)
+          }
+        }
+      },
+    )
   }
 
   override fun invalidate() {

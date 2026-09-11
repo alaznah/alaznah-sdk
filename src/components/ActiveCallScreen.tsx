@@ -1,10 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Dimensions,
   Easing,
+  Image,
   ImageBackground,
   Modal,
+  NativeModules,
   PanResponder,
   Platform,
   Pressable,
@@ -20,9 +22,25 @@ import { FlashIcon, FlashOffIcon, FlipCameraIcon, MicOffIcon, MinimizeIcon } fro
 import type { CallingTheme } from './theme.js';
 import type { CallingUISlots } from './ui-types.js';
 import { useCallPictureInPicture } from '../native/PictureInPicture.js';
-import { getPeerDisplayName, getPeerInitials, isRemoteMuted } from './peerDisplay.js';
+import {
+  getPeerDisplayName,
+  getPeerInitials,
+  getPeerAvatarUrl,
+  getLocalInitials,
+  getLocalAvatarUrl,
+  isRemoteMuted,
+  isRemoteVideoEnabled,
+} from './peerDisplay.js';
 
 type SafeInsets = { top: number; bottom: number; left: number; right: number };
+
+/** iOS: one AVKit controller on the in-Modal remote RTCView (last working Home PiP). */
+const IOS_PIP = {
+  enabled: true,
+  startAutomatically: true,
+  stopAutomatically: true,
+  preferredSize: { width: 160, height: 284 },
+} as const;
 
 const FLOAT_COMPACT_W = 112;
 const FLOAT_COMPACT_H = 168;
@@ -44,10 +62,22 @@ function floatTileSize(chromeVisible: boolean): { w: number; h: number } {
 function useSafeInsets(): SafeInsets {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { useSafeAreaInsets } = require('react-native-safe-area-context') as {
+    const mod = require('react-native-safe-area-context') as {
       useSafeAreaInsets: () => SafeInsets;
+      initialWindowMetrics: { insets: SafeInsets } | null;
     };
-    return useSafeAreaInsets();
+    const insets = mod.useSafeAreaInsets();
+    // Modal without a nested provider reports 0 top on iOS — fall back to
+    // window metrics so chrome never sits under the notch on first paint.
+    if (
+      Platform.OS === 'ios' &&
+      insets.top < 1 &&
+      mod.initialWindowMetrics?.insets &&
+      mod.initialWindowMetrics.insets.top > 0
+    ) {
+      return mod.initialWindowMetrics.insets;
+    }
+    return insets;
   } catch {
     return {
       top: Platform.OS === 'ios' ? 47 : 24,
@@ -150,7 +180,7 @@ type Props = {
   slots?: CallingUISlots;
   onEnd: () => void;
   onError?: (error: Error) => void;
-  /** Collapse full-screen call into an in-app floating bubble. */
+  /** Enter native OS Picture-in-Picture; host hides the call Modal so the app stays usable. */
   onMinimize?: () => void;
   /**
    * Android: CallingUI owns Activity PiP presentation. Pass true while ACS is
@@ -168,14 +198,6 @@ function statusLabel(call: ActiveCall): string {
   if (call.state === 'ringing') return 'Ringing…';
   return 'Calling…';
 }
-
-const IOS_PIP_BASE = {
-  enabled: true,
-  startAutomatically: true,
-  stopAutomatically: true,
-  // AVKit preferredContentSize aspect (matches known-good iOS PiP).
-  preferredSize: { width: 9, height: 16 },
-} as const;
 
 function RoundIconButton({
   label,
@@ -240,6 +262,10 @@ function FloatingPipTile({
   onTap,
   overlay,
   children,
+  /** When true, tile fills the screen — same mounted children, layout-only change. */
+  expanded = false,
+  /** Optional host ref for Android PiP source layout hints. */
+  hostRef,
 }: {
   insets: SafeInsets;
   mutedBadge?: boolean;
@@ -247,9 +273,14 @@ function FloatingPipTile({
   onTap: () => void;
   overlay?: React.JSX.Element | null;
   children: React.JSX.Element;
+  expanded?: boolean;
+  hostRef?: React.RefObject<View | null>;
 }) {
   // Animate layout W/H + dock pan. Keep RTCView mounted (no video blink).
-  const { w: tileW, h: tileH } = floatTileSize(chromeVisible);
+  const screen = Dimensions.get('screen');
+  const { w: tileW, h: tileH } = expanded
+    ? { w: screen.width, h: screen.height }
+    : floatTileSize(chromeVisible);
   const tileSizeRef = useRef({ w: tileW, h: tileH });
   tileSizeRef.current = { w: tileW, h: tileH };
 
@@ -262,6 +293,7 @@ function FloatingPipTile({
   const pan = useRef(
     new Animated.ValueXY(
       (() => {
+        if (expanded) return { x: 0, y: 0 };
         const b = boundsRef.current;
         const saved = persistedFloatPos;
         if (
@@ -281,24 +313,81 @@ function FloatingPipTile({
   const movedRef = useRef(false);
   const onTapRef = useRef(onTap);
   onTapRef.current = onTap;
+  const expandedRef = useRef(expanded);
+  expandedRef.current = expanded;
+  const prevExpandedRef = useRef(expanded);
 
   useEffect(() => {
     const { w, h } = tileSizeRef.current;
-    const { minX, minY, maxX, maxY } = boundsRef.current;
     const ease = Easing.bezier(0.22, 1, 0.36, 1);
+    const leavingExpanded = prevExpandedRef.current && !expanded;
+    prevExpandedRef.current = expanded;
+
+    if (expanded) {
+      // Save float dock before expanding so we can restore (or default TR) later.
+      pan.stopAnimation((value) => {
+        if (Math.abs(value.x) > 2 || Math.abs(value.y) > 2) {
+          persistedFloatPos = { x: value.x, y: value.y };
+        }
+      });
+      Animated.parallel([
+        Animated.timing(widthAnim, {
+          toValue: w,
+          duration: FLOAT_SIZE_MS,
+          easing: ease,
+          useNativeDriver: false,
+        }),
+        Animated.timing(heightAnim, {
+          toValue: h,
+          duration: FLOAT_SIZE_MS,
+          easing: ease,
+          useNativeDriver: false,
+        }),
+        Animated.timing(pan.x, {
+          toValue: 0,
+          duration: FLOAT_SIZE_MS,
+          easing: ease,
+          useNativeDriver: false,
+        }),
+        Animated.timing(pan.y, {
+          toValue: 0,
+          duration: FLOAT_SIZE_MS,
+          easing: ease,
+          useNativeDriver: false,
+        }),
+      ]).start();
+      return;
+    }
+
+    const { minX, minY, maxX, maxY } = boundsRef.current;
 
     pan.stopAnimation((value) => {
-      const onRight = Math.abs(value.x - maxX) <= Math.abs(value.x - minX);
-      const onBottom = Math.abs(value.y - maxY) <= Math.abs(value.y - minY);
-      let nextX = clamp(value.x, minX, maxX);
-      let nextY = clamp(value.y, minY, maxY);
-      if (onRight) nextX = maxX;
-      if (onBottom) nextY = maxY;
-      const nearCorner =
-        (nextX <= minX + 2 || nextX >= maxX - 2) && (nextY <= minY + 2 || nextY >= maxY - 2);
-      const placed = nearCorner
-        ? snapFloatToCorner(nextX, nextY, minX, minY, maxX, maxY, w, h)
-        : { x: nextX, y: nextY };
+      let placed: { x: number; y: number };
+
+      if (leavingExpanded) {
+        // Expanded sits at (0,0). Snapping from that origin wrongly docks top-left.
+        // Prefer saved float position; otherwise default top-right (safe-area aware).
+        const saved = persistedFloatPos;
+        const savedOk =
+          saved &&
+          saved.x >= minX - 1 &&
+          saved.x <= maxX + 1 &&
+          saved.y >= minY - 1 &&
+          saved.y <= maxY + 1;
+        placed = savedOk ? saved : defaultFloatTopRight(insets, w);
+      } else {
+        const onRight = Math.abs(value.x - maxX) <= Math.abs(value.x - minX);
+        const onBottom = Math.abs(value.y - maxY) <= Math.abs(value.y - minY);
+        let nextX = clamp(value.x, minX, maxX);
+        let nextY = clamp(value.y, minY, maxY);
+        if (onRight) nextX = maxX;
+        if (onBottom) nextY = maxY;
+        const nearCorner =
+          (nextX <= minX + 2 || nextX >= maxX - 2) && (nextY <= minY + 2 || nextY >= maxY - 2);
+        placed = nearCorner
+          ? snapFloatToCorner(nextX, nextY, minX, minY, maxX, maxY, w, h)
+          : { x: nextX, y: nextY };
+      }
       persistedFloatPos = placed;
 
       Animated.parallel([
@@ -329,6 +418,7 @@ function FloatingPipTile({
       ]).start();
     });
   }, [
+    expanded,
     insets.top,
     insets.bottom,
     insets.left,
@@ -341,6 +431,7 @@ function FloatingPipTile({
 
   useEffect(
     () => () => {
+      if (expandedRef.current) return;
       pan.stopAnimation((value) => {
         persistedFloatPos = { x: value.x, y: value.y };
       });
@@ -350,13 +441,16 @@ function FloatingPipTile({
 
   const responder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onStartShouldSetPanResponderCapture: () => true,
-      onMoveShouldSetPanResponder: (_, g) => Math.abs(g.dx) > 2 || Math.abs(g.dy) > 2,
-      onMoveShouldSetPanResponderCapture: (_, g) => Math.abs(g.dx) > 2 || Math.abs(g.dy) > 2,
+      onStartShouldSetPanResponder: () => !expandedRef.current,
+      onStartShouldSetPanResponderCapture: () => !expandedRef.current,
+      onMoveShouldSetPanResponder: (_, g) =>
+        !expandedRef.current && (Math.abs(g.dx) > 2 || Math.abs(g.dy) > 2),
+      onMoveShouldSetPanResponderCapture: (_, g) =>
+        !expandedRef.current && (Math.abs(g.dx) > 2 || Math.abs(g.dy) > 2),
       onPanResponderTerminationRequest: () => false,
-      onShouldBlockNativeResponder: () => true,
+      onShouldBlockNativeResponder: () => !expandedRef.current,
       onPanResponderGrant: () => {
+        if (expandedRef.current) return;
         movedRef.current = false;
         pan.stopAnimation((value) => {
           startRef.current = { x: value.x, y: value.y };
@@ -365,6 +459,7 @@ function FloatingPipTile({
         });
       },
       onPanResponderMove: (_, g) => {
+        if (expandedRef.current) return;
         if (Math.abs(g.dx) > 4 || Math.abs(g.dy) > 4) {
           movedRef.current = true;
         }
@@ -377,6 +472,7 @@ function FloatingPipTile({
         });
       },
       onPanResponderRelease: () => {
+        if (expandedRef.current) return;
         pan.flattenOffset();
         pan.stopAnimation((value) => {
           const { w, h } = tileSizeRef.current;
@@ -412,10 +508,12 @@ function FloatingPipTile({
 
   return (
     <Animated.View
+      ref={hostRef as never}
       collapsable={false}
-      pointerEvents="box-none"
+      pointerEvents={expanded ? 'none' : 'box-none'}
       style={[
         styles.floatTile,
+        expanded ? styles.floatTileExpanded : null,
         {
           width: widthAnim,
           height: heightAnim,
@@ -427,7 +525,11 @@ function FloatingPipTile({
         Pan/drag + tap-to-swap only on the video surface — not overlay buttons
         (flip/torch), which otherwise lose to PanResponder and swap local/remote.
       */}
-      <View collapsable={false} style={styles.fillVideo} {...responder.panHandlers}>
+      <View
+        collapsable={false}
+        style={styles.fillVideo}
+        {...(expanded ? {} : responder.panHandlers)}
+      >
         {children}
       </View>
       {mutedBadge ? (
@@ -437,6 +539,80 @@ function FloatingPipTile({
       ) : null}
       {overlay}
     </Animated.View>
+  );
+}
+
+function CallVideoAvatar({
+  initials,
+  theme,
+  compact,
+  imageUri,
+}: {
+  initials: string;
+  theme: CallingTheme;
+  compact?: boolean;
+  imageUri?: string;
+}) {
+  const [box, setBox] = useState({ w: 0, h: 0 });
+  const minSide = Math.min(box.w, box.h);
+  // Size circle from the participant container. Guard against pre-layout /
+  // tiny bounds — Android Fabric crashes on fontSize <= 0.
+  const fallback = compact ? 56 : 120;
+  const ratio = compact ? 0.45 : 0.28;
+  const maxSide = compact ? 72 : 168;
+  const minCircle = compact ? 40 : 88;
+  const circle =
+    minSide >= minCircle
+      ? Math.round(Math.min(Math.max(minSide * ratio, minCircle), maxSide))
+      : minSide > 0
+        ? Math.max(24, Math.round(minSide * (compact ? 0.55 : 0.4)))
+        : fallback;
+  const fontSize = Math.max(12, Math.round(circle * 0.34));
+
+  return (
+    <View
+      collapsable={false}
+      style={[
+        // Android: keep working flex fill. iOS: % fill so the circle centers in
+        // the participant/avatar layer (flex:1 inside absoluteFill pins to top).
+        Platform.OS === 'ios' ? styles.videoAvatarHostIos : styles.videoAvatarHost,
+        { backgroundColor: theme.colors.surface },
+      ]}
+      onLayout={(e) => {
+        const { width, height } = e.nativeEvent.layout;
+        if (width !== box.w || height !== box.h) {
+          setBox({ w: width, h: height });
+        }
+      }}
+    >
+      <View
+        style={[
+          styles.videoAvatarCircleBase,
+          {
+            width: circle,
+            height: circle,
+            borderRadius: circle / 2,
+            backgroundColor: theme.colors.overlay,
+          },
+        ]}
+      >
+        {imageUri ? (
+          <Image
+            source={{ uri: imageUri }}
+            style={{
+              width: circle,
+              height: circle,
+              borderRadius: circle / 2,
+            }}
+            accessibilityIgnoresInvertColors
+          />
+        ) : (
+          <Text style={[styles.videoAvatarText, { fontSize, color: theme.colors.accent }]}>
+            {initials}
+          </Text>
+        )}
+      </View>
+    </View>
   );
 }
 
@@ -458,11 +634,8 @@ export function ActiveCallScreen({
   /** When true, local camera is full-screen and remote floats (tap the small tile to swap). */
   const [localIsPrimary, setLocalIsPrimary] = useState(false);
   const [elapsedLabel, setElapsedLabel] = useState(() => formatCallDuration(call.startedAt));
-  /** Android SurfaceView often stays black until remount after tracks attach. */
+  /** Android TextureView/Surface attach epoch — remount once after connect if needed. */
   const [androidVideoEpoch, setAndroidVideoEpoch] = useState(0);
-  /** Remount remote SurfaceView when PiP window size is known (not on early signal). */
-  const [androidPipSurfaceEpoch, setAndroidPipSurfaceEpoch] = useState(0);
-  const androidPipLayoutKeyRef = useRef('');
   const remoteVideoRef = useRef<unknown>(null);
   const androidRemoteLayoutRef = useRef<View>(null);
   const chromeOpacity = useRef(new Animated.Value(1)).current;
@@ -486,19 +659,6 @@ export function ActiveCallScreen({
     iosRemoteVideoRef: remoteVideoRef,
     androidVideoLayoutRef: androidRemoteLayoutRef,
   });
-
-  const localStreamUrl =
-    call.videoEnabled && call.localStream && typeof call.localStream.toURL === 'function'
-      ? call.localStream.toURL()
-      : undefined;
-
-  const iosPipOptions = useMemo(
-    () =>
-      Platform.OS === 'ios'
-        ? { ...IOS_PIP_BASE, ...(localStreamUrl ? { localStreamURL: localStreamUrl } : {}) }
-        : undefined,
-    [localStreamUrl],
-  );
 
   const clearChromeTimer = useCallback(() => {
     if (chromeHideTimer.current) {
@@ -551,7 +711,7 @@ export function ActiveCallScreen({
     return () => clearInterval(timer);
   }, [call, call.startedAt, call.state]);
 
-  // Remount SurfaceView once after connect so first frame attaches (Android).
+  // Remount Android video once after connect so first frame attaches.
   useEffect(() => {
     if (Platform.OS !== 'android' || !isVideo) return undefined;
     if (call.state !== 'connected') return undefined;
@@ -561,12 +721,12 @@ export function ActiveCallScreen({
     return () => clearTimeout(t);
   }, [isVideo, call.state]);
 
-  useEffect(() => {
-    if (Platform.OS !== 'android') return;
-    if (pip.isInPictureInPicture) return;
-    androidPipLayoutKeyRef.current = '';
-    setAndroidPipSurfaceEpoch(0);
-  }, [pip.isInPictureInPicture]);
+  const androidPipUiActive =
+    Platform.OS === 'android' &&
+    (androidSystemPipActive || pip.isInPictureInPicture);
+  /** iOS: hide chrome/local float while PiP is active through didStop — never remount remote. */
+  const iosPipChromeSuppressed = Platform.OS === 'ios' && pip.isInPictureInPicture;
+  const suppressCallChrome = androidPipUiActive || iosPipChromeSuppressed;
 
   const toggleChrome = useCallback(() => {
     if (chromeLocked) {
@@ -582,11 +742,27 @@ export function ActiveCallScreen({
   }, [scheduleChromeHide]);
 
   const handleMinimize = useCallback(() => {
-    // Dismiss full-screen call Modal → previous screen + in-app floating video bubble.
-    // Android Activity PiP is only for Home/leave (blocks using the app if used here).
-    // iOS AVKit system PiP still auto-starts when the app backgrounds (iosPIP props).
-    onMinimize?.();
-  }, [onMinimize]);
+    // System PiP (same as Home). Android: companion Activity. iOS: AVKit startPIP.
+    if (Platform.OS === 'ios') {
+      void (async () => {
+        // Native enter posts AlaznahWebRTCPipRequestStart to PIPController —
+        // works under Fabric where findNodeHandle often fails.
+        const native = NativeModules.AlaznahCallingPip as
+          | { enter?: () => Promise<boolean> }
+          | undefined;
+        const ok = await native?.enter?.();
+        if (!ok) {
+          await pip.enter();
+        }
+      })();
+      return;
+    }
+    if (onMinimize) {
+      onMinimize();
+      return;
+    }
+    void pip.enter();
+  }, [onMinimize, pip]);
 
   const swapPrimaryVideo = useCallback(() => {
     setLocalIsPrimary((prev) => !prev);
@@ -598,25 +774,67 @@ export function ActiveCallScreen({
   }, [call.remoteStream]);
 
   if (isVideo) {
-    const localStream = call.videoEnabled ? call.localStream : null;
     const remoteStream = call.remoteStream;
-    const localIsShown = Boolean(localStream);
+    // Keep stream handle even when camera-off so the tile stays mounted for avatars.
+    const localStreamHandle = call.localStream;
+    const showLocalVideo = Boolean(call.videoEnabled && localStreamHandle);
+    // Video call always keeps a local tile (camera preview or avatar) — never empty.
+    const showLocalAvatar = call.mediaType === 'video' && !showLocalVideo;
+    const localIsShown = showLocalVideo || showLocalAvatar;
     const remoteIsShown = Boolean(remoteStream);
+    const showRemoteVideo = Boolean(remoteStream && isRemoteVideoEnabled(call));
     // Parent CallingUI keeps androidSystemPipActive across ACS remount (Modal→Activity).
-    const hideChrome =
-      Platform.OS === 'android' && (androidSystemPipActive || pip.isInPictureInPicture);
+    // Android: hideChrome unmounts RTCViews so native TextureView owns the track.
+    // iOS: never unmount remote — only suppress chrome/local float while PiP runs
+    // so restore morphs into the same remote surface (not an "old screen").
+    const hideChrome = androidPipUiActive;
+    const suppressChrome = suppressCallChrome;
     /** Both streams → one full + one float; tap float (or full) to swap. */
-    const showFloat = remoteIsShown && localIsShown && !hideChrome;
+    const showFloat = remoteIsShown && localIsShown && !suppressChrome;
     /** Outgoing / pre-connect: full-bleed local like WhatsApp ringing UI. */
     const fullLocalPhase = localIsShown && !remoteIsShown;
-    const primaryIsLocal = hideChrome ? false : showFloat ? localIsPrimary : fullLocalPhase;
-    // Android PiP uses a dedicated contain surface (hideChrome). iOS AVKit PiP
-    // samples the remote RTCView — switch to contain while PiP is active only.
-    const remoteFit =
-      Platform.OS === 'ios' && pip.isInPictureInPicture ? ('contain' as const) : ('cover' as const);
+    const primaryIsLocal = suppressChrome ? false : showFloat ? localIsPrimary : fullLocalPhase;
+    const remoteFull = remoteIsShown && !(showFloat && primaryIsLocal);
+    const localFull = fullLocalPhase || (showFloat && primaryIsLocal && localIsShown);
+    const floatShowsLocal = showFloat && !primaryIsLocal;
+    const floatShowsRemote = showFloat && primaryIsLocal;
+
+    // Android PiP: native TextureView overlay owns the live remote track.
+    // Unmount inline video here so its renderer cannot fight the PiP surface.
+    //
+    // iOS/Android inline: cover = fullscreen remote (pre-PiP behavior).
+    // PiP sample-buffer gravity stays ResizeAspect via the webrtc patch —
+    // do NOT switch this to contain (that letterboxed the normal call UI).
+    const remoteFit = 'cover' as const;
+
+    /** iOS: keep a full-bleed remote RTCView mounted for inline display
+     * even when the user swaps local to primary. One AVKit controller lives
+     * on this view (in the call Modal / key window). */
+    const mountIosPipSource =
+      Platform.OS === 'ios' && remoteIsShown && Boolean(remoteStream) && !hideChrome;
+    /**
+     * Android: one FloatingPipTile for remote (expanded↔float) — never remount
+     * the video renderer on swap. iOS keeps the dual full-slot + float path for
+     * inline Metal; AVKit PiP is the in-Modal remote RTCView, not a second source.
+     */
+    const mountAndroidRemoteTile =
+      Platform.OS === 'android' && remoteIsShown && Boolean(remoteStream) && !hideChrome;
+    const mountRemoteFullSlot = mountIosPipSource;
+
+    /** One local surface for float↔fullscreen — remounting on swap blacks Metal / glitches Android. */
+    const mountLocalTile =
+      !suppressChrome && localIsShown && (localFull || floatShowsLocal);
+
+    const localInitials = getLocalInitials(call);
+    const localAvatarUri = getLocalAvatarUrl(call);
+    const peerInitialsVideo = getPeerInitials(call);
+    const peerAvatarUri = getPeerAvatarUrl(call);
+    const compactLocal = !localFull;
+    const compactRemote = !remoteFull;
+    const remoteMutedOnly = isRemoteMuted(call);
 
     const showLocalCamTopRight =
-      call.videoEnabled && (fullLocalPhase || (showFloat && primaryIsLocal));
+      showLocalVideo && (fullLocalPhase || (showFloat && primaryIsLocal));
 
     const topRightStack = showLocalCamTopRight ? (
       <View style={styles.topRightStack}>
@@ -645,49 +863,68 @@ export function ActiveCallScreen({
       </View>
     ) : null;
 
-    const remoteFull = remoteIsShown && !(showFloat && primaryIsLocal);
-    const localFull = fullLocalPhase || (showFloat && primaryIsLocal && Boolean(localStream));
-    const floatShowsLocal = showFloat && !primaryIsLocal;
-    const floatShowsRemote = showFloat && primaryIsLocal;
+    const remoteVideoTrackId =
+      remoteStream && typeof remoteStream.getVideoTracks === 'function'
+        ? remoteStream.getVideoTracks()[0]?.id
+        : undefined;
+
+    // Golden reference (Android): unmount video when OFF, mount avatar in the
+    // SAME participantSurface. iOS local + iOS float remote use this identical
+    // tree. iOS full-bleed remote (PiP source) keeps RTCView mounted but parks
+    // it out of flex flow when OFF so the avatar gets the same flex geometry.
+    const localSurface = (
+      <View collapsable={false} style={styles.participantSurface}>
+        {showLocalVideo && localStreamHandle ? (
+          <LocalVideoView
+            stream={localStreamHandle as MediaStreamLike}
+            mirror={call.facingMode !== 'environment'}
+            objectFit="cover"
+            style={styles.fillVideo}
+            zOrder={localFull ? 0 : 1}
+          />
+        ) : null}
+        {showLocalAvatar ? (
+          <CallVideoAvatar
+            initials={localInitials}
+            imageUri={localAvatarUri}
+            theme={theme}
+            compact={compactLocal}
+          />
+        ) : null}
+      </View>
+    );
+
+    const remoteParticipantSurface = (
+      <View collapsable={false} style={styles.participantSurface}>
+        {showRemoteVideo && remoteStream ? (
+          <RemoteVideoView
+            stream={remoteStream as MediaStreamLike}
+            objectFit={remoteFit}
+            style={styles.fillVideo}
+            zOrder={remoteFull ? 0 : 1}
+          />
+        ) : null}
+        {!showRemoteVideo ? (
+          <CallVideoAvatar
+            initials={peerInitialsVideo}
+            imageUri={peerAvatarUri}
+            theme={theme}
+            compact={compactRemote}
+          />
+        ) : null}
+      </View>
+    );
 
     return (
-      <View style={androidSystemPipActive ? styles.fillPip : styles.fill}>
+      <View style={styles.fill}>
         <View style={styles.videoLayer} pointerEvents="box-none">
-          {!remoteIsShown && !localIsShown ? (
+          {!remoteIsShown && !localIsShown && !suppressChrome ? (
             <View style={[styles.placeholder, { backgroundColor: theme.colors.overlay }]}>
               <Text style={{ color: theme.colors.text }}>{statusLabel(call)}</Text>
             </View>
           ) : null}
 
-          {/*
-            Android PiP only: remounted remote with objectFit=contain.
-            Remount on layout size (after real PiP bounds) — early mode events still
-            have fullscreen metrics and crop as top-left if surface is created then.
-          */}
-          {hideChrome && remoteStream ? (
-            <View
-              collapsable={false}
-              style={styles.androidPipFitRoot}
-              onLayout={(e) => {
-                const { width, height } = e.nativeEvent.layout;
-                if (width < 2 || height < 2) return;
-                const key = `${Math.round(width)}x${Math.round(height)}`;
-                if (key === androidPipLayoutKeyRef.current) return;
-                androidPipLayoutKeyRef.current = key;
-                setAndroidPipSurfaceEpoch((n) => n + 1);
-              }}
-            >
-              <RemoteVideoView
-                key={`pip-remote-${androidPipSurfaceEpoch}`}
-                stream={remoteStream as MediaStreamLike}
-                objectFit="contain"
-                style={styles.fillVideo}
-                zOrder={0}
-              />
-            </View>
-          ) : null}
-
-          {!hideChrome && remoteFull && remoteStream ? (
+          {mountRemoteFullSlot && remoteStream ? (
             <View
               ref={androidRemoteLayoutRef}
               key={`remote-slot-${androidVideoEpoch}-${
@@ -695,41 +932,42 @@ export function ActiveCallScreen({
               }`}
               pointerEvents="none"
               collapsable={false}
-              style={styles.fullVideo}
+              style={[styles.fullVideo, !remoteFull ? styles.iosPipSourceHidden : null]}
               onLayout={() => {
                 if (!pip.isInPictureInPicture) pip.refreshAndroidSourceHint();
               }}
             >
               <RemoteVideoView
+                key={`ios-remote-track-${remoteVideoTrackId ?? 'pending'}`}
                 ref={remoteVideoRef}
                 stream={remoteStream as MediaStreamLike}
                 objectFit={remoteFit}
-                style={styles.fillVideo}
+                style={showRemoteVideo ? styles.fillVideo : styles.iosPipSourceParked}
                 zOrder={0}
-                iosPIP={Platform.OS === 'ios' ? iosPipOptions : undefined}
+                iosPIP={Platform.OS === 'ios' ? IOS_PIP : undefined}
               />
+              {!showRemoteVideo ? (
+                <View
+                  style={[
+                    styles.iosRemoteAvatarLayer,
+                    { backgroundColor: theme.colors.surface },
+                  ]}
+                  pointerEvents="none"
+                >
+                  {((slots?.renderAvatar?.(call) as React.JSX.Element | null | undefined) ?? (
+                    <CallVideoAvatar
+                      initials={peerInitialsVideo}
+                      imageUri={peerAvatarUri}
+                      theme={theme}
+                      compact={compactRemote}
+                    />
+                  ))}
+                </View>
+              ) : null}
             </View>
           ) : null}
 
-          {!hideChrome && localFull && localStream ? (
-            <View
-              key={`local-slot-${androidVideoEpoch}-${
-                typeof localStream.toURL === 'function' ? localStream.toURL() : 'x'
-              }`}
-              pointerEvents="none"
-              style={styles.fullVideo}
-            >
-              <LocalVideoView
-                stream={localStream as MediaStreamLike}
-                mirror={call.facingMode !== 'environment'}
-                objectFit="cover"
-                style={styles.fillVideo}
-                zOrder={0}
-              />
-            </View>
-          ) : null}
-
-          {!hideChrome && !remoteIsShown && !fullLocalPhase ? (
+          {!suppressChrome && !remoteIsShown && !fullLocalPhase ? (
             <View style={[styles.placeholder, { backgroundColor: theme.colors.overlay }]}>
               <Text style={{ color: theme.colors.text }}>{statusLabel(call)}</Text>
             </View>
@@ -739,7 +977,7 @@ export function ActiveCallScreen({
         {/*
           Hide on tap only after remote joins. Outgoing preview keeps controls locked.
         */}
-        {chromeVisible && !hideChrome && !chromeLocked ? (
+        {chromeVisible && !suppressChrome && !chromeLocked ? (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Hide call controls"
@@ -748,52 +986,84 @@ export function ActiveCallScreen({
           />
         ) : null}
 
-        {floatShowsLocal && localStream ? (
+        {mountAndroidRemoteTile ? (
           <FloatingPipTile
             insets={insets}
-            mutedBadge={call.muted}
-            chromeVisible={chromeVisible && !hideChrome}
-            onTap={swapPrimaryVideo}
+            expanded={remoteFull}
+            hostRef={androidRemoteLayoutRef}
+            mutedBadge={remoteMutedOnly && !remoteFull}
+            chromeVisible={chromeVisible && !suppressChrome}
+            onTap={showFloat ? swapPrimaryVideo : () => undefined}
+          >
+            <View
+              collapsable={false}
+              style={styles.fillVideo}
+              onLayout={() => {
+                if (remoteFull && !pip.isInPictureInPicture) pip.refreshAndroidSourceHint();
+              }}
+            >
+              {remoteParticipantSurface}
+            </View>
+          </FloatingPipTile>
+        ) : null}
+
+        {mountLocalTile ? (
+          <FloatingPipTile
+            insets={insets}
+            expanded={localFull}
+            mutedBadge={false}
+            chromeVisible={chromeVisible && !suppressChrome}
+            onTap={showFloat ? swapPrimaryVideo : () => undefined}
             overlay={
               <LocalCameraOverlayButtons
                 call={call}
                 client={client}
                 onError={onError}
-                visible={chromeVisible && !hideChrome}
+                visible={chromeVisible && !suppressChrome && floatShowsLocal && showLocalVideo}
               />
             }
           >
-            <LocalVideoView
-              stream={localStream as MediaStreamLike}
-              mirror={call.facingMode !== 'environment'}
-              objectFit="cover"
-              style={styles.fillVideo}
-              zOrder={1}
-            />
+            {localSurface}
           </FloatingPipTile>
         ) : null}
 
-        {floatShowsRemote && remoteStream ? (
+        {Platform.OS === 'ios' && floatShowsRemote && remoteStream ? (
           <FloatingPipTile
             insets={insets}
-            mutedBadge={false}
-            chromeVisible={chromeVisible && !hideChrome}
+            mutedBadge={remoteMutedOnly}
+            chromeVisible={chromeVisible && !suppressChrome}
             onTap={swapPrimaryVideo}
           >
-            <View collapsable={false} style={styles.fillVideo}>
-              <RemoteVideoView
-                ref={remoteVideoRef}
-                stream={remoteStream as MediaStreamLike}
-                objectFit={remoteFit}
-                style={styles.fillVideo}
-                zOrder={1}
-                iosPIP={Platform.OS === 'ios' ? iosPipOptions : undefined}
-              />
+            {/*
+              Visual float only — no iosPIP here (full-bleed slot owns PiP).
+              Same Android video↔avatar unmount swap.
+            */}
+            <View
+              collapsable={false}
+              style={styles.participantSurface}
+            >
+              {showRemoteVideo ? (
+                <RemoteVideoView
+                  key={`ios-float-remote-${remoteVideoTrackId ?? 'pending'}`}
+                  stream={remoteStream as MediaStreamLike}
+                  objectFit={remoteFit}
+                  style={styles.fillVideo}
+                  zOrder={1}
+                />
+              ) : null}
+              {!showRemoteVideo ? (
+                <CallVideoAvatar
+                  initials={peerInitialsVideo}
+                  imageUri={peerAvatarUri}
+                  theme={theme}
+                  compact
+                />
+              ) : null}
             </View>
           </FloatingPipTile>
         ) : null}
 
-        {!hideChrome ? (
+        {!suppressChrome ? (
           <>
             <Animated.View
               pointerEvents={chromeVisible || chromeLocked ? 'box-none' : 'none'}
@@ -829,15 +1099,11 @@ export function ActiveCallScreen({
               {topRightStack ?? <View style={styles.topRightSpacer} />}
             </Animated.View>
 
-            {call.muted || isRemoteMuted(call) ? (
+            {remoteMutedOnly ? (
               <View pointerEvents="none" style={[styles.muteBanner, { top: insets.top + 78 }]}>
                 <MicOffIcon size={14} color="#fff" />
                 <Text style={styles.muteToastText}>
-                  {call.muted && isRemoteMuted(call)
-                    ? `You are muted · ${getPeerDisplayName(call)} muted`
-                    : call.muted
-                      ? 'You are muted'
-                      : `${getPeerDisplayName(call)} muted`}
+                  {`${getPeerDisplayName(call)} muted`}
                 </Text>
               </View>
             ) : null}
@@ -878,7 +1144,7 @@ export function ActiveCallScreen({
         ) : null}
 
         {/* Show on tap after auto-hide / hide — Modal sits above RTCView surface. */}
-        {!hideChrome && !chromeLocked && !chromeVisible ? (
+        {!suppressChrome && !chromeLocked && !chromeVisible ? (
           <Modal
             transparent
             visible
@@ -932,15 +1198,11 @@ export function ActiveCallScreen({
             </Text>
           )) as React.JSX.Element
         }
-        {call.muted || remoteMuted ? (
+        {remoteMuted ? (
           <View style={styles.audioMuteRow}>
             <MicOffIcon size={14} color={theme.colors.textMuted} />
             <Text style={[styles.audioMuteText, { color: theme.colors.textMuted }]}>
-              {call.muted && remoteMuted
-                ? `You are muted · ${peerName} muted`
-                : call.muted
-                  ? 'You are muted'
-                  : `${peerName} muted`}
+              {`${peerName} muted`}
             </Text>
           </View>
         ) : null}
@@ -980,7 +1242,7 @@ export function ActiveCallScreen({
 
 const styles = StyleSheet.create({
   // Modal (Incoming→Active): flex:1 keeps full height before remote video mounts.
-  // absoluteFill alone collapses until the remote SurfaceView lays out → controls jump up.
+  // absoluteFill alone can collapse before the remote renderer lays out.
   fill: { flex: 1, backgroundColor: '#000' },
   // Android system PiP Activity host is itself absoluteFill — match that box.
   fillPip: { ...StyleSheet.absoluteFillObject, backgroundColor: '#000' },
@@ -991,14 +1253,40 @@ const styles = StyleSheet.create({
   fullVideo: {
     ...StyleSheet.absoluteFillObject,
   },
+  /** Keep full-screen layout for AVKit sourceView; hide when local is primary. */
+  iosPipSourceHidden: {
+    opacity: 0,
+  },
+  /**
+   * iOS PiP source when remote camera OFF — stay mounted for AVKit, leave flex
+   * flow so the avatar layer owns the visible participant surface.
+   */
+  iosPipSourceParked: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0,
+  },
+  /**
+   * Opaque avatar cover above parked Metal when remoteVideoEnabled is false.
+   * Fill the same fullVideo bounds as the remote renderer; flex-center the
+   * avatar (do not leave a content-sized host pinned to the top / status bar).
+   */
+  iosRemoteAvatarLayer: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   fillVideo: {
+    // No flex — iOS RTCMTLVideoView + flex collapses to a black surface.
     width: '100%',
     height: '100%',
   },
-  /** Android PiP-only: fill Activity window; RTCView objectFit=contain does the letterbox. */
-  androidPipFitRoot: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#000',
+  /** Same bounds as the video tile — avatar/video swap inside this box only. */
+  participantSurface: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    alignSelf: 'stretch',
   },
   roundedClip: {
     borderRadius: 16,
@@ -1014,13 +1302,47 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     borderRadius: 16,
-    // Android SurfaceView blanks under overflow:hidden — keep visible.
     overflow: 'hidden',
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'rgba(255,255,255,0.22)',
     zIndex: 18,
     elevation: 18,
     backgroundColor: '#111',
+  },
+  floatTileExpanded: {
+    borderRadius: 0,
+    borderWidth: 0,
+    zIndex: 0,
+    elevation: 0,
+    backgroundColor: '#000',
+    overflow: 'hidden',
+  },
+  videoHidden: {
+    opacity: 0,
+  },
+  /** Fills participantSurface and centers the circular avatar (Android golden path). */
+  videoAvatarHost: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  /** iOS — fill parent bounds without flex (avoids top-pinned avatar in absolute layers). */
+  videoAvatarHostIos: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  videoAvatarCircleBase: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  videoAvatarText: {
+    fontWeight: '700',
   },
   chromeToggleHit: {
     ...StyleSheet.absoluteFillObject,

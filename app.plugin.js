@@ -1,6 +1,7 @@
 /**
  * Expo config plugin for development builds.
- * Adds camera/mic permissions and documents native call UI and media requirements.
+ * Adds camera/mic permissions, iOS background modes (audio/voip for PiP + push),
+ * and Android permissions for calling.
  */
 module.exports = function withAlaznahCalling(config) {
   if (!config.ios) config.ios = {};

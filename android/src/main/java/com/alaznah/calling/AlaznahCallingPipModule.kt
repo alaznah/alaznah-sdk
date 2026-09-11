@@ -2,9 +2,8 @@ package com.alaznah.calling
 
 import android.app.Activity
 import android.app.PictureInPictureParams
-import android.content.Intent
-import android.graphics.Rect
 import android.os.Build
+import android.util.Log
 import android.util.Rational
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
@@ -16,13 +15,14 @@ import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.DeviceEventManagerModule
 
 /**
- * Android Activity Picture-in-Picture for active video calls.
+ * Android system Picture-in-Picture.
  *
- * Host contract (example MainActivity):
- * - [onUserLeaveHint] → [enterIfEnabled]
- * - [onPictureInPictureModeChanged] → [notifyPipModeChanged]
+ * Enter (do not change these; they work):
+ * 1. Minimize → [AlaznahPipActivity]
+ * 2. Home / leave-app → [enterIfEnabled] on MainActivity via onUserLeaveHint
  *
- * Owns window/PiP state only — CallManager owns the call.
+ * Both use [AlaznahPipVideoController]. Restore always: disarm overlay (GONE +
+ * remove), never re-enter PiP from onResume / onPictureInPictureModeChanged.
  */
 @ReactModule(name = AlaznahCallingPipModule.NAME)
 class AlaznahCallingPipModule(
@@ -31,75 +31,22 @@ class AlaznahCallingPipModule(
 
   companion object {
     const val NAME = "AlaznahCallingPip"
-    private const val MAX_ASPECT = 2.39
-    private const val ENTER_DEBOUNCE_MS = 400L
+    private const val TAG = "AlaznahCallingPip"
+    /** Cap extreme portrait/landscape so the PiP window is not a tall strip. */
+    private const val MAX_ASPECT = 16.0 / 9.0
 
     @Volatile private var enabled: Boolean = false
     @Volatile private var emitterContext: ReactApplicationContext? = null
-
-    @Volatile private var aspectW: Int = 9
-    @Volatile private var aspectH: Int = 16
-    @Volatile private var hintLeft: Int = 0
-    @Volatile private var hintTop: Int = 0
-    @Volatile private var hintRight: Int = 0
-    @Volatile private var hintBottom: Int = 0
-    @Volatile private var hasSourceHint: Boolean = false
-
-    @Volatile private var lastEnterAtMs: Long = 0L
-    @Volatile private var enterGeneration: Int = 0
+    @Volatile private var aspectW: Int = 16
+    @Volatile private var aspectH: Int = 9
+    @Volatile private var ignoreHostEnterUntilMs: Long = 0L
 
     @JvmStatic
     fun isPipEnabled(): Boolean = enabled
 
-    /**
-     * Called from Activity.onUserLeaveHint when the user leaves the app
-     * (Home / recents). No-ops unless JS has armed PiP for an eligible call.
-     */
     @JvmStatic
-    fun enterIfEnabled(activity: Activity): Boolean {
-      if (!enabled) return false
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
-      if (activity.isDestroyed) return false
-      if (activity.isInPictureInPictureMode) return true
-
-      val now = System.currentTimeMillis()
-      if (now - lastEnterAtMs < ENTER_DEBOUNCE_MS) return false
-      lastEnterAtMs = now
-
-      // Tell JS first so ActiveCallScreen can switch remote objectFit→contain
-      // and move off the Modal Dialog before the Activity window shrinks.
-      val gen = ++enterGeneration
-      notifyPipModeChanged(true)
-      activity.window.decorView.postDelayed(
-        {
-          if (gen != enterGeneration) return@postDelayed
-          if (!enabled || activity.isDestroyed) {
-            notifyPipModeChanged(false)
-            return@postDelayed
-          }
-          if (activity.isInPictureInPictureMode) return@postDelayed
-          val ok = enterPictureInPicture(activity)
-          if (!ok) notifyPipModeChanged(false)
-        },
-        320L,
-      )
-      return true
-    }
-
-    @JvmStatic
-    fun enterPictureInPicture(activity: Activity): Boolean {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
-      if (activity.isDestroyed) return false
-      if (activity.isInPictureInPictureMode) return true
-      if (!enabled) return false
-
-      return try {
-        ActiveCallKeepAliveService.start(activity.applicationContext)
-        activity.enterPictureInPictureMode(buildPipParameters(autoEnter = true))
-        true
-      } catch (_: Exception) {
-        false
-      }
+    fun noteIgnoreHostEnter(durationMs: Long) {
+      ignoreHostEnterUntilMs = System.currentTimeMillis() + durationMs
     }
 
     @JvmStatic
@@ -114,26 +61,88 @@ class AlaznahCallingPipModule(
             Arguments.createMap().apply { putBoolean("active", active) },
           )
       } catch (_: Exception) {
-        // Bridge may be paused mid-transition.
       }
     }
 
+    @JvmStatic
+    fun pipParams(): PictureInPictureParams = buildPipParameters()
+
     /**
-     * Expand out of PiP (no public exitPiP API). Used when the call ends
-     * while the Activity is still in picture-in-picture mode.
+     * Minimize: dedicated PiP Activity. MainActivity is not put into PiP.
      */
     @JvmStatic
-    fun closeIfActive(activity: Activity?) {
-      if (activity == null || activity.isDestroyed) return
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return
-      if (!activity.isInPictureInPictureMode) return
-      try {
-        val intent = Intent(activity, activity.javaClass)
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-        activity.startActivity(intent)
-      } catch (_: Exception) {
-        // Leave PiP window for the user to dismiss.
+    fun startPip(host: Activity): Boolean {
+      if (!enabled) return false
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
+      if (host.isDestroyed) return false
+      if (AlaznahPipActivity.isInPip()) {
+        notifyPipModeChanged(true)
+        return true
       }
+      noteIgnoreHostEnter(1_500L)
+      ActiveCallKeepAliveService.start(host.applicationContext)
+      return AlaznahPipActivity.launch(host)
+    }
+
+    /**
+     * Home / recents only. Must not run while companion PiP is active or
+     * while companion PiP is restoring (that pause looks like leave-hint).
+     */
+    @JvmStatic
+    fun enterIfEnabled(activity: Activity): Boolean {
+      if (!enabled) return false
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
+      if (activity.isDestroyed) return false
+      if (activity is AlaznahPipActivity) return false
+      if (AlaznahPipActivity.isInPip()) return false
+      if (System.currentTimeMillis() < ignoreHostEnterUntilMs) {
+        Log.i(TAG, "[PIP_RESTORE] skip enterIfEnabled ignoreHostEnter")
+        return false
+      }
+      if (activity.isInPictureInPictureMode) {
+        AlaznahPipVideoController.attach(activity)
+        AlaznahPipVideoController.relayout(activity)
+        return true
+      }
+      Log.i(TAG, "Home PiP enter")
+      AlaznahPipVideoController.attach(activity)
+      return try {
+        activity.enterPictureInPictureMode(buildPipParameters())
+        true
+      } catch (err: Exception) {
+        Log.w(TAG, "Home enterPictureInPictureMode: ${err.message}")
+        AlaznahPipVideoController.release()
+        false
+      }
+    }
+
+    @JvmStatic
+    fun onHostPipModeChanged(activity: Activity, inPip: Boolean) {
+      if (activity is AlaznahPipActivity) return
+      if (AlaznahPipActivity.isInPip()) return
+      Log.i(TAG, "[PIP_RESTORE] host onPictureInPictureModeChanged inPip=$inPip")
+      if (inPip) {
+        AlaznahPipVideoController.attach(activity)
+        AlaznahPipVideoController.relayout(activity)
+        notifyPipModeChanged(true)
+        return
+      }
+      // Maximize / close Home PiP. Overlay is a MATCH_PARENT sibling of
+      // ReactRootView — GONE + remove immediately. Never relayout-to-fullscreen.
+      noteIgnoreHostEnter(2_500L)
+      AlaznahPipVideoController.disarmAndRelease(activity)
+      notifyPipModeChanged(false)
+    }
+
+    @JvmStatic
+    fun dismiss() {
+      AlaznahPipActivity.dismiss()
+      AlaznahPipVideoController.release()
+    }
+
+    @JvmStatic
+    fun releaseRenderer() {
+      AlaznahPipVideoController.release()
     }
 
     @JvmStatic
@@ -150,28 +159,21 @@ class AlaznahCallingPipModule(
     }
 
     @JvmStatic
-    private fun buildPipParameters(autoEnter: Boolean): PictureInPictureParams {
-      // Fixed portrait PiP chrome. Video uses objectFit=contain inside the Activity;
-      // sourceRectHint is intentionally omitted (cover SurfaceView metrics crop top-left).
-      val builder =
-        PictureInPictureParams.Builder()
-          .setAspectRatio(Rational(9, 16))
-
+    private fun buildPipParameters(): PictureInPictureParams {
+      val vw = AlaznahPipVideoController.videoWidth()
+      val vh = AlaznahPipVideoController.videoHeight()
+      val aspect =
+        if (vw > 0 && vh > 0) {
+          pipRational(vw, vh)
+        } else {
+          pipRational(aspectW, aspectH)
+        }
+      val builder = PictureInPictureParams.Builder().setAspectRatio(aspect)
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        builder.setAutoEnterEnabled(autoEnter && enabled)
+        builder.setAutoEnterEnabled(false)
+        builder.setSeamlessResizeEnabled(true)
       }
       return builder.build()
-    }
-
-    @JvmStatic
-    private fun applyParamsToActivity(autoEnter: Boolean) {
-      val activity = emitterContext?.currentActivity ?: return
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
-      try {
-        activity.setPictureInPictureParams(buildPipParameters(autoEnter))
-      } catch (_: Exception) {
-        // Activity may not support PiP yet.
-      }
     }
   }
 
@@ -180,47 +182,55 @@ class AlaznahCallingPipModule(
   override fun initialize() {
     super.initialize()
     emitterContext = reactContext
+    AlaznahPipVideoController.bind(reactContext) { width, height ->
+      UiThreadUtil.runOnUiThread {
+        aspectW = width
+        aspectH = height
+        if (AlaznahPipActivity.isInPip()) {
+          AlaznahPipActivity.attachIfActive()
+        }
+      }
+    }
   }
 
   override fun invalidate() {
     if (emitterContext === reactContext) {
       emitterContext = null
     }
-    enterGeneration += 1
     enabled = false
+    dismiss()
     super.invalidate()
   }
 
-  /** Arm / disarm automatic home leave PiP for the current activity. */
   @ReactMethod
   fun setEnabled(enabledFlag: Boolean, promise: Promise) {
-    val gen = ++enterGeneration
     UiThreadUtil.runOnUiThread {
-      if (gen != enterGeneration) {
-        promise.resolve(false)
-        return@runOnUiThread
-      }
       enabled = enabledFlag
       val appContext = reactContext.applicationContext
       if (enabledFlag) {
         ActiveCallKeepAliveService.start(appContext)
-        applyParamsToActivity(autoEnter = true)
       } else {
-        hasSourceHint = false
-        applyParamsToActivity(autoEnter = false)
-        // Do NOT REORDER_TO_FRONT here — ACS remount races would abort PiP mid-enter.
-        // Call end removes the Activity host; the user/system dismisses the PiP window.
+        dismiss()
         ActiveCallKeepAliveService.stop(appContext)
+      }
+      Log.i(TAG, "PiP armed=$enabledFlag")
+      promise.resolve(true)
+    }
+  }
+
+  @ReactMethod
+  fun setRemoteStreamUrl(url: String, promise: Promise) {
+    UiThreadUtil.runOnUiThread {
+      AlaznahPipVideoController.setStreamUrl(url)
+      if (AlaznahPipActivity.isInPip()) {
+        AlaznahPipActivity.attachIfActive()
       }
       promise.resolve(true)
     }
   }
 
-  /**
-   * Update aspect ratio and optional sourceRectHint from the fullscreen video surface.
-   * Ignored while already in PiP (avoids aspect thrash from the shrunk window).
-   */
   @ReactMethod
+  @Suppress("UNUSED_PARAMETER")
   fun updatePictureInPicture(
     width: Double,
     height: Double,
@@ -228,44 +238,13 @@ class AlaznahCallingPipModule(
     y: Double,
     promise: Promise,
   ) {
-    UiThreadUtil.runOnUiThread {
-      val activity = reactContext.currentActivity
-      if (activity != null &&
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
-        activity.isInPictureInPictureMode
-      ) {
-        promise.resolve(false)
-        return@runOnUiThread
-      }
-
-      val w = width.toInt().coerceAtLeast(1)
-      val h = height.toInt().coerceAtLeast(1)
-      // Skip no-op updates.
-      if (hasSourceHint &&
-        aspectW == w &&
-        aspectH == h &&
-        hintLeft == x.toInt() &&
-        hintTop == y.toInt() &&
-        hintRight == x.toInt() + w &&
-        hintBottom == y.toInt() + h
-      ) {
-        promise.resolve(true)
-        return@runOnUiThread
-      }
-
+    val w = width.toInt().coerceAtLeast(1)
+    val h = height.toInt().coerceAtLeast(1)
+    if (AlaznahPipVideoController.videoWidth() <= 0) {
       aspectW = w
       aspectH = h
-      hintLeft = x.toInt()
-      hintTop = y.toInt()
-      hintRight = hintLeft + w
-      hintBottom = hintTop + h
-      hasSourceHint = true
-
-      if (enabled) {
-        applyParamsToActivity(autoEnter = true)
-      }
-      promise.resolve(true)
     }
+    promise.resolve(true)
   }
 
   @ReactMethod
@@ -281,18 +260,18 @@ class AlaznahCallingPipModule(
         promise.resolve(false)
         return@runOnUiThread
       }
-      promise.resolve(enterIfEnabled(activity))
+      promise.resolve(startPip(activity))
     }
   }
 
   @ReactMethod
   fun isActive(promise: Promise) {
     val activity = reactContext.currentActivity
-    if (activity == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-      promise.resolve(false)
-      return
-    }
-    promise.resolve(activity.isInPictureInPictureMode)
+    val hostPip =
+      activity != null &&
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+        activity.isInPictureInPictureMode
+    promise.resolve(AlaznahPipActivity.isInPip() || hostPip)
   }
 
   @ReactMethod

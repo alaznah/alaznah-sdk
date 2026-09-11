@@ -10,11 +10,15 @@ import {
 } from 'react-native';
 import { useCall, useCallingClient, useCallingReady, useIncomingCall } from '../hooks/CallingContext.js';
 import { CallingUI } from './CallingUI.js';
+import { getPeerDisplayName } from './peerDisplay.js';
 import { defaultCallingTheme } from './theme.js';
 
 export type CallingScreenProps = {
   userId: string;
+  /** Shown in dialer header; must match CallingProvider config.displayName. */
+  displayName: string;
   defaultPeerId?: string;
+  defaultPeerDisplayName?: string;
   onLogout?: () => void;
   onError?: (error: Error) => void;
   /** When set, registers with signaling once the client is ready. */
@@ -28,7 +32,9 @@ export type CallingScreenProps = {
  */
 export function CallingScreen({
   userId,
+  displayName,
   defaultPeerId,
+  defaultPeerDisplayName,
   onLogout,
   onError,
   pushToken,
@@ -40,6 +46,9 @@ export function CallingScreen({
   const call = useCall();
   const incoming = useIncomingCall();
   const [peerId, setPeerId] = useState(defaultPeerId ?? (userId === 'alice' ? 'bob' : 'alice'));
+  const [peerDisplayName, setPeerDisplayName] = useState(
+    defaultPeerDisplayName ?? (userId === 'alice' ? 'Bob' : 'Alice'),
+  );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -64,9 +73,9 @@ export function CallingScreen({
   const status = useMemo(() => {
     if (!ready) return 'Connecting to signaling…';
     if (incoming?.state === 'ringing') {
-      return `Incoming ${incoming.mediaType} call from ${incoming.peerId}`;
+      return `Incoming ${incoming.mediaType} call from ${getPeerDisplayName(incoming)}`;
     }
-    if (call) return `${call.peerId}: ${call.state}`;
+    if (call) return `${getPeerDisplayName(call)}: ${call.state}`;
     return 'Ready to call';
   }, [call, incoming, ready]);
 
@@ -75,6 +84,7 @@ export function CallingScreen({
     !['ended', 'failed', 'rejected', 'missed', 'busy'].includes(call.state);
   const showIncoming = incoming?.state === 'ringing';
   const showDialer = ready && !callActive && !showIncoming;
+  const canCall = Boolean(peerId.trim() && peerDisplayName.trim());
 
   return (
     <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
@@ -84,7 +94,7 @@ export function CallingScreen({
         <View style={styles.dialer}>
           <Text style={[styles.title, { color: theme.colors.text }]}>Calls</Text>
           <Text style={[styles.subtitle, { color: theme.colors.textMuted }]}>
-            Signed in as {userId}
+            Signed in as {displayName}
           </Text>
           <View style={styles.statusRow}>
             <View style={[styles.dot, { backgroundColor: theme.colors.success }]} />
@@ -101,7 +111,7 @@ export function CallingScreen({
             <Text style={[styles.error, { color: theme.colors.danger }]}>{error}</Text>
           ) : null}
 
-          <Text style={[styles.label, { color: theme.colors.text }]}>Call user</Text>
+          <Text style={[styles.label, { color: theme.colors.text }]}>Call user ID</Text>
           <TextInput
             accessibilityLabel="Peer user ID"
             autoCapitalize="none"
@@ -120,35 +130,62 @@ export function CallingScreen({
             value={peerId}
           />
 
+          <Text style={[styles.label, { color: theme.colors.text }]}>Their display name</Text>
+          <TextInput
+            accessibilityLabel="Peer display name"
+            autoCapitalize="words"
+            autoCorrect={false}
+            onChangeText={setPeerDisplayName}
+            placeholder="Bob"
+            placeholderTextColor={theme.colors.textMuted}
+            style={[
+              styles.input,
+              {
+                backgroundColor: theme.colors.background,
+                borderColor: theme.colors.control,
+                color: theme.colors.text,
+              },
+            ]}
+            value={peerDisplayName}
+          />
+
           <View style={styles.row}>
             <Pressable
               accessibilityRole="button"
-              disabled={!peerId.trim()}
+              disabled={!canCall}
               onPress={() =>
                 run(() =>
-                  client.startCall({ calleeId: peerId.trim(), mediaType: 'audio' }),
+                  client.startCall({
+                    calleeId: peerId.trim(),
+                    calleeDisplayName: peerDisplayName.trim(),
+                    mediaType: 'audio',
+                  }),
                 )
               }
               style={({ pressed }) => [
                 styles.button,
                 { backgroundColor: theme.colors.accent, opacity: pressed ? 0.85 : 1 },
-                !peerId.trim() && styles.disabled,
+                !canCall && styles.disabled,
               ]}
             >
               <Text style={styles.buttonText}>Audio call</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
-              disabled={!peerId.trim()}
+              disabled={!canCall}
               onPress={() =>
                 run(() =>
-                  client.startCall({ calleeId: peerId.trim(), mediaType: 'video' }),
+                  client.startCall({
+                    calleeId: peerId.trim(),
+                    calleeDisplayName: peerDisplayName.trim(),
+                    mediaType: 'video',
+                  }),
                 )
               }
               style={({ pressed }) => [
                 styles.button,
                 { backgroundColor: theme.colors.accent, opacity: pressed ? 0.85 : 1 },
-                !peerId.trim() && styles.disabled,
+                !canCall && styles.disabled,
               ]}
             >
               <Text style={styles.buttonText}>Video call</Text>

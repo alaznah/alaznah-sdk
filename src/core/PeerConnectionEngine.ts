@@ -138,7 +138,7 @@ export class PeerConnectionEngine {
       });
       const stream =
         (ev.streams[0] as MediaStream | undefined) ?? this.ensureRemoteStream(ev.track);
-      // Keep a stable stream object — re-emitting the same id remounts RTCView and blinks.
+      // Keep a stable stream object — re-emitting a *new* stream id remounts RTCView.
       if (this.remoteStream && this.remoteStream.id === stream.id) {
         const hasTrack = this.remoteStream.getTracks().some((t) => t.id === ev.track.id);
         if (!hasTrack) {
@@ -147,6 +147,9 @@ export class PeerConnectionEngine {
           } catch {
             // ignore
           }
+          // Notify so mute/video listeners can attach to late video tracks
+          // (audio often arrives first on the same MediaStream).
+          this.options.events.onRemoteStream(this.remoteStream as unknown as MediaStreamLike);
         }
         return;
       }
@@ -366,15 +369,9 @@ export class PeerConnectionEngine {
       for (const track of this.localStream?.getVideoTracks() ?? []) {
         if (track.enabled) track.enabled = false;
       }
-      // Media pause: keep the sender track attached so flip/resume stays reliable.
-      // Only detach on explicit user camera-off.
-      if (fromUser && videoSender) {
-        try {
-          await videoSender.replaceTrack(null);
-        } catch {
-          // ignore unstable sender state
-        }
-      }
+      // Keep the sender track attached. replaceTrack(null) freezes the remote
+      // decoder on the last frame and forces a visible blink on resume.
+      // Peer UI uses explicit `call.video` signaling for avatar fallback.
       if (fromUser || currentlyOn) {
         this.notifyLocalMedia();
       }

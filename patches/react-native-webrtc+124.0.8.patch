@@ -1,0 +1,1564 @@
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/99b58ddd9532509d4b444df2bc5b5732/results.bin b/node_modules/react-native-webrtc/android/build/.transforms/99b58ddd9532509d4b444df2bc5b5732/results.bin
+new file mode 100644
+index 0000000..0d259dd
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/.transforms/99b58ddd9532509d4b444df2bc5b5732/results.bin
+@@ -0,0 +1 @@
++o/classes
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/99b58ddd9532509d4b444df2bc5b5732/transformed/classes/classes_dex/classes.dex b/node_modules/react-native-webrtc/android/build/.transforms/99b58ddd9532509d4b444df2bc5b5732/transformed/classes/classes_dex/classes.dex
+new file mode 100644
+index 0000000..d13c562
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/99b58ddd9532509d4b444df2bc5b5732/transformed/classes/classes_dex/classes.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/results.bin b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/results.bin
+new file mode 100644
+index 0000000..7ed749e
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/results.bin
+@@ -0,0 +1 @@
++o/bundleLibRuntimeToDirDebug
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/AbstractVideoCaptureController$CapturerEventsListener.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/AbstractVideoCaptureController$CapturerEventsListener.dex
+new file mode 100644
+index 0000000..1a29674
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/AbstractVideoCaptureController$CapturerEventsListener.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/AbstractVideoCaptureController.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/AbstractVideoCaptureController.dex
+new file mode 100644
+index 0000000..318c2e5
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/AbstractVideoCaptureController.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/BuildConfig.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/BuildConfig.dex
+new file mode 100644
+index 0000000..46bb908
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/BuildConfig.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/CameraCaptureController$1.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/CameraCaptureController$1.dex
+new file mode 100644
+index 0000000..0df02dd
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/CameraCaptureController$1.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/CameraCaptureController$2.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/CameraCaptureController$2.dex
+new file mode 100644
+index 0000000..0ecdbf2
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/CameraCaptureController$2.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/CameraCaptureController$CreateCapturerResult.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/CameraCaptureController$CreateCapturerResult.dex
+new file mode 100644
+index 0000000..1ca8e03
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/CameraCaptureController$CreateCapturerResult.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/CameraCaptureController.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/CameraCaptureController.dex
+new file mode 100644
+index 0000000..5eaaa07
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/CameraCaptureController.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/CameraEventsHandler.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/CameraEventsHandler.dex
+new file mode 100644
+index 0000000..5e00356
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/CameraEventsHandler.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/DataChannelWrapper$1.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/DataChannelWrapper$1.dex
+new file mode 100644
+index 0000000..8531f60
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/DataChannelWrapper$1.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/DataChannelWrapper.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/DataChannelWrapper.dex
+new file mode 100644
+index 0000000..95e74fd
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/DataChannelWrapper.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/DisplayUtils.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/DisplayUtils.dex
+new file mode 100644
+index 0000000..76ad2dd
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/DisplayUtils.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/EglUtils.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/EglUtils.dex
+new file mode 100644
+index 0000000..c6acae2
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/EglUtils.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl$1.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl$1.dex
+new file mode 100644
+index 0000000..4d01258
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl$1.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl$2.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl$2.dex
+new file mode 100644
+index 0000000..73956c6
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl$2.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl$3.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl$3.dex
+new file mode 100644
+index 0000000..474a925
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl$3.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl$BiConsumer.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl$BiConsumer.dex
+new file mode 100644
+index 0000000..8560a3d
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl$BiConsumer.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl$TrackPrivate.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl$TrackPrivate.dex
+new file mode 100644
+index 0000000..7c00ab8
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl$TrackPrivate.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl.dex
+new file mode 100644
+index 0000000..dbec337
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/GetUserMediaImpl.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/LibraryLoader.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/LibraryLoader.dex
+new file mode 100644
+index 0000000..2eea1ad
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/LibraryLoader.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/MediaProjectionNotification.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/MediaProjectionNotification.dex
+new file mode 100644
+index 0000000..184bbca
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/MediaProjectionNotification.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/MediaProjectionService.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/MediaProjectionService.dex
+new file mode 100644
+index 0000000..0f44ff1
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/MediaProjectionService.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/PeerConnectionObserver$1.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/PeerConnectionObserver$1.dex
+new file mode 100644
+index 0000000..9d9a051
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/PeerConnectionObserver$1.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/PeerConnectionObserver.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/PeerConnectionObserver.dex
+new file mode 100644
+index 0000000..918b15b
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/PeerConnectionObserver.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/RTCVideoViewManager.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/RTCVideoViewManager.dex
+new file mode 100644
+index 0000000..62dfd93
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/RTCVideoViewManager.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ReactBridgeUtil$1.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ReactBridgeUtil$1.dex
+new file mode 100644
+index 0000000..2e8d681
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ReactBridgeUtil$1.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ReactBridgeUtil.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ReactBridgeUtil.dex
+new file mode 100644
+index 0000000..5e132ae
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ReactBridgeUtil.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ScreenCaptureController$1.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ScreenCaptureController$1.dex
+new file mode 100644
+index 0000000..0baa5ee
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ScreenCaptureController$1.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ScreenCaptureController$2.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ScreenCaptureController$2.dex
+new file mode 100644
+index 0000000..fd7ddad
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ScreenCaptureController$2.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ScreenCaptureController.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ScreenCaptureController.dex
+new file mode 100644
+index 0000000..a7db048
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ScreenCaptureController.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/SerializeUtils$1.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/SerializeUtils$1.dex
+new file mode 100644
+index 0000000..67a3d14
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/SerializeUtils$1.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/SerializeUtils.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/SerializeUtils.dex
+new file mode 100644
+index 0000000..759f61a
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/SerializeUtils.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/StringUtils.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/StringUtils.dex
+new file mode 100644
+index 0000000..7dc5060
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/StringUtils.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ThreadUtils.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ThreadUtils.dex
+new file mode 100644
+index 0000000..e872e1f
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/ThreadUtils.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/TrackCapturerEventsEmitter.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/TrackCapturerEventsEmitter.dex
+new file mode 100644
+index 0000000..15e6f29
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/TrackCapturerEventsEmitter.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl$1.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl$1.dex
+new file mode 100644
+index 0000000..3765310
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl$1.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl.dex
+new file mode 100644
+index 0000000..ed008ce
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/VideoTrackAdapter.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/VideoTrackAdapter.dex
+new file mode 100644
+index 0000000..4bbdd20
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/VideoTrackAdapter.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$1.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$1.dex
+new file mode 100644
+index 0000000..a413777
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$1.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$2.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$2.dex
+new file mode 100644
+index 0000000..dd6a8e0
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$2.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$3.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$3.dex
+new file mode 100644
+index 0000000..c31bc85
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$3.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$4.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$4.dex
+new file mode 100644
+index 0000000..07ff46e
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$4.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$5.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$5.dex
+new file mode 100644
+index 0000000..392a63c
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$5.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$6.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$6.dex
+new file mode 100644
+index 0000000..7fd85c4
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule$6.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule.dex
+new file mode 100644
+index 0000000..73b06b6
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModule.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModuleOptions.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModuleOptions.dex
+new file mode 100644
+index 0000000..8639ff5
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModuleOptions.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModulePackage.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModulePackage.dex
+new file mode 100644
+index 0000000..ea7c1a6
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCModulePackage.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCView$1.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCView$1.dex
+new file mode 100644
+index 0000000..53f751d
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCView$1.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCView$2.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCView$2.dex
+new file mode 100644
+index 0000000..589f930
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCView$2.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCView$3.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCView$3.dex
+new file mode 100644
+index 0000000..9829aee
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCView$3.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCView.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCView.dex
+new file mode 100644
+index 0000000..e176c34
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/WebRTCView.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/videoEffects/ProcessorProvider.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/videoEffects/ProcessorProvider.dex
+new file mode 100644
+index 0000000..ab03f92
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/videoEffects/ProcessorProvider.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/videoEffects/VideoEffectProcessor.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/videoEffects/VideoEffectProcessor.dex
+new file mode 100644
+index 0000000..ac9191e
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/videoEffects/VideoEffectProcessor.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/videoEffects/VideoFrameProcessor.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/videoEffects/VideoFrameProcessor.dex
+new file mode 100644
+index 0000000..18e1d4d
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/videoEffects/VideoFrameProcessor.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/videoEffects/VideoFrameProcessorFactoryInterface.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/videoEffects/VideoFrameProcessorFactoryInterface.dex
+new file mode 100644
+index 0000000..051ea9e
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/videoEffects/VideoFrameProcessorFactoryInterface.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoDecoderFactory.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoDecoderFactory.dex
+new file mode 100644
+index 0000000..305c13a
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoDecoderFactory.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoEncoderFactory.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoEncoderFactory.dex
+new file mode 100644
+index 0000000..48e4915
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoEncoderFactory.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/webrtcutils/SoftwareVideoDecoderFactoryProxy.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/webrtcutils/SoftwareVideoDecoderFactoryProxy.dex
+new file mode 100644
+index 0000000..74e1a2f
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/webrtcutils/SoftwareVideoDecoderFactoryProxy.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/webrtcutils/SoftwareVideoEncoderFactoryProxy.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/webrtcutils/SoftwareVideoEncoderFactoryProxy.dex
+new file mode 100644
+index 0000000..402ba12
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/oney/WebRTCModule/webrtcutils/SoftwareVideoEncoderFactoryProxy.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/org/webrtc/Camera1Helper.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/org/webrtc/Camera1Helper.dex
+new file mode 100644
+index 0000000..0678d7d
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/org/webrtc/Camera1Helper.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/org/webrtc/Camera2Helper.dex b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/org/webrtc/Camera2Helper.dex
+new file mode 100644
+index 0000000..6ae56e8
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/org/webrtc/Camera2Helper.dex differ
+diff --git a/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin
+new file mode 100644
+index 0000000..2cd10b8
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/.transforms/9a76bf5d461643d3c90461f5cc7f57e0/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin differ
+diff --git a/node_modules/react-native-webrtc/android/build/generated/source/buildConfig/debug/com/oney/WebRTCModule/BuildConfig.java b/node_modules/react-native-webrtc/android/build/generated/source/buildConfig/debug/com/oney/WebRTCModule/BuildConfig.java
+new file mode 100644
+index 0000000..0f35612
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/generated/source/buildConfig/debug/com/oney/WebRTCModule/BuildConfig.java
+@@ -0,0 +1,10 @@
++/**
++ * Automatically generated file. DO NOT MODIFY
++ */
++package com.oney.WebRTCModule;
++
++public final class BuildConfig {
++  public static final boolean DEBUG = Boolean.parseBoolean("true");
++  public static final String LIBRARY_PACKAGE_NAME = "com.oney.WebRTCModule";
++  public static final String BUILD_TYPE = "debug";
++}
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml b/node_modules/react-native-webrtc/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+new file mode 100644
+index 0000000..dd02d0a
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+@@ -0,0 +1,15 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:tools="http://schemas.android.com/tools"
++    package="com.oney.WebRTCModule" >
++
++    <uses-sdk android:minSdkVersion="24" />
++
++    <application>
++        <service
++            android:name="com.oney.WebRTCModule.MediaProjectionService"
++            android:foregroundServiceType="mediaProjection" >
++        </service>
++    </application>
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json b/node_modules/react-native-webrtc/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+new file mode 100644
+index 0000000..5e59225
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+@@ -0,0 +1,18 @@
++{
++  "version": 3,
++  "artifactType": {
++    "type": "AAPT_FRIENDLY_MERGED_MANIFESTS",
++    "kind": "Directory"
++  },
++  "applicationId": "com.oney.WebRTCModule",
++  "variantName": "debug",
++  "elements": [
++    {
++      "type": "SINGLE",
++      "filters": [],
++      "attributes": [],
++      "outputFile": "AndroidManifest.xml"
++    }
++  ],
++  "elementType": "File"
++}
+\ No newline at end of file
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties b/node_modules/react-native-webrtc/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+new file mode 100644
+index 0000000..1211b1e
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+@@ -0,0 +1,6 @@
++aarFormatVersion=1.0
++aarMetadataVersion=1.0
++minCompileSdk=1
++minCompileSdkExtension=0
++minAndroidGradlePluginVersion=1.0.0
++coreLibraryDesugaringEnabled=false
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json b/node_modules/react-native-webrtc/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+new file mode 100644
+index 0000000..9e26dfe
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+@@ -0,0 +1 @@
++{}
+\ No newline at end of file
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar b/node_modules/react-native-webrtc/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar
+new file mode 100644
+index 0000000..74c2e78
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar b/node_modules/react-native-webrtc/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar
+new file mode 100644
+index 0000000..3c31630
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt b/node_modules/react-native-webrtc/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt
+new file mode 100644
+index 0000000..36951ef
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt
+@@ -0,0 +1,4 @@
++int string media_projection_notification_text 0x0
++int string media_projection_notification_title 0x0
++int string ongoing_notification_channel_name 0x0
++int style AppTheme 0x0
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties b/node_modules/react-native-webrtc/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+new file mode 100644
+index 0000000..fe67561
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+@@ -0,0 +1 @@
++#Sat Aug 29 19:08:24 PKT 2026
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/incremental/debug/packageDebugResources/merged.dir/values/values.xml b/node_modules/react-native-webrtc/android/build/intermediates/incremental/debug/packageDebugResources/merged.dir/values/values.xml
+new file mode 100644
+index 0000000..e1e31cd
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/incremental/debug/packageDebugResources/merged.dir/values/values.xml
+@@ -0,0 +1,9 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="media_projection_notification_text">You are currently sharing your screen.</string>
++    <string name="media_projection_notification_title">Screen sharing</string>
++    <string name="ongoing_notification_channel_name">Screen Sharing Notifications</string>
++    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
++        
++    </style>
++</resources>
+\ No newline at end of file
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml b/node_modules/react-native-webrtc/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+new file mode 100644
+index 0000000..9048844
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/res"><file path="/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/res/values/styles.xml" qualifiers=""><style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
++        
++    </style></file><file path="/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/res/values/strings.xml" qualifiers=""><string name="media_projection_notification_title">Screen sharing</string><string name="media_projection_notification_text">You are currently sharing your screen.</string><string name="ongoing_notification_channel_name">Screen Sharing Notifications</string></file></source></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/build/generated/res/resValues/debug"/></dataSet><mergedItems/></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/incremental/mergeDebugAssets/merger.xml b/node_modules/react-native-webrtc/android/build/intermediates/incremental/mergeDebugAssets/merger.xml
+new file mode 100644
+index 0000000..238afc5
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/incremental/mergeDebugAssets/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/assets"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/debug/assets"/></dataSet><dataSet config="generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/build/intermediates/shader_assets/debug/compileDebugShaders/out"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/react-native-webrtc/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+new file mode 100644
+index 0000000..905be44
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/debug/jniLibs"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/react-native-webrtc/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+new file mode 100644
+index 0000000..ed34bb3
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/debug/shaders"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/AbstractVideoCaptureController$CapturerEventsListener.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/AbstractVideoCaptureController$CapturerEventsListener.class
+new file mode 100644
+index 0000000..a90c7e3
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/AbstractVideoCaptureController$CapturerEventsListener.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/AbstractVideoCaptureController.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/AbstractVideoCaptureController.class
+new file mode 100644
+index 0000000..3f4d5a0
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/AbstractVideoCaptureController.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/BuildConfig.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/BuildConfig.class
+new file mode 100644
+index 0000000..0afd87e
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/BuildConfig.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/CameraCaptureController$1.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/CameraCaptureController$1.class
+new file mode 100644
+index 0000000..b97879e
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/CameraCaptureController$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/CameraCaptureController$2.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/CameraCaptureController$2.class
+new file mode 100644
+index 0000000..24844f5
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/CameraCaptureController$2.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/CameraCaptureController$CreateCapturerResult.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/CameraCaptureController$CreateCapturerResult.class
+new file mode 100644
+index 0000000..06bb239
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/CameraCaptureController$CreateCapturerResult.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/CameraCaptureController.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/CameraCaptureController.class
+new file mode 100644
+index 0000000..4918969
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/CameraCaptureController.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/CameraEventsHandler.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/CameraEventsHandler.class
+new file mode 100644
+index 0000000..0dae770
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/CameraEventsHandler.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/DataChannelWrapper$1.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/DataChannelWrapper$1.class
+new file mode 100644
+index 0000000..e5c8bba
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/DataChannelWrapper$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/DataChannelWrapper.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/DataChannelWrapper.class
+new file mode 100644
+index 0000000..d9e26a0
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/DataChannelWrapper.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/DisplayUtils.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/DisplayUtils.class
+new file mode 100644
+index 0000000..56f06b6
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/DisplayUtils.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/EglUtils.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/EglUtils.class
+new file mode 100644
+index 0000000..7e7bb2c
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/EglUtils.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl$1.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl$1.class
+new file mode 100644
+index 0000000..660a722
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl$2.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl$2.class
+new file mode 100644
+index 0000000..f00c4fc
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl$2.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl$3.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl$3.class
+new file mode 100644
+index 0000000..0fd773d
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl$3.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl$BiConsumer.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl$BiConsumer.class
+new file mode 100644
+index 0000000..78dbf6f
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl$BiConsumer.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl$TrackPrivate.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl$TrackPrivate.class
+new file mode 100644
+index 0000000..da6f081
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl$TrackPrivate.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl.class
+new file mode 100644
+index 0000000..283d53b
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/GetUserMediaImpl.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/LibraryLoader.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/LibraryLoader.class
+new file mode 100644
+index 0000000..eb92071
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/LibraryLoader.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/MediaProjectionNotification.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/MediaProjectionNotification.class
+new file mode 100644
+index 0000000..90d11a6
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/MediaProjectionNotification.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/MediaProjectionService.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/MediaProjectionService.class
+new file mode 100644
+index 0000000..e7458e7
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/MediaProjectionService.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/PeerConnectionObserver$1.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/PeerConnectionObserver$1.class
+new file mode 100644
+index 0000000..0df0062
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/PeerConnectionObserver$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/PeerConnectionObserver.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/PeerConnectionObserver.class
+new file mode 100644
+index 0000000..131456c
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/PeerConnectionObserver.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/RTCVideoViewManager.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/RTCVideoViewManager.class
+new file mode 100644
+index 0000000..096b7dd
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/RTCVideoViewManager.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ReactBridgeUtil$1.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ReactBridgeUtil$1.class
+new file mode 100644
+index 0000000..6227fae
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ReactBridgeUtil$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ReactBridgeUtil.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ReactBridgeUtil.class
+new file mode 100644
+index 0000000..7f70b24
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ReactBridgeUtil.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ScreenCaptureController$1.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ScreenCaptureController$1.class
+new file mode 100644
+index 0000000..e8c70a8
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ScreenCaptureController$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ScreenCaptureController$2.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ScreenCaptureController$2.class
+new file mode 100644
+index 0000000..83e2187
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ScreenCaptureController$2.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ScreenCaptureController.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ScreenCaptureController.class
+new file mode 100644
+index 0000000..51ecf93
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ScreenCaptureController.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/SerializeUtils$1.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/SerializeUtils$1.class
+new file mode 100644
+index 0000000..09afe89
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/SerializeUtils$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/SerializeUtils.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/SerializeUtils.class
+new file mode 100644
+index 0000000..d0f45ee
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/SerializeUtils.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/StringUtils.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/StringUtils.class
+new file mode 100644
+index 0000000..9029e9a
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/StringUtils.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ThreadUtils.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ThreadUtils.class
+new file mode 100644
+index 0000000..2d79604
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/ThreadUtils.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/TrackCapturerEventsEmitter.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/TrackCapturerEventsEmitter.class
+new file mode 100644
+index 0000000..6e65fab
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/TrackCapturerEventsEmitter.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl$1.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl$1.class
+new file mode 100644
+index 0000000..c8f9b27
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl.class
+new file mode 100644
+index 0000000..2853fb9
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/VideoTrackAdapter.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/VideoTrackAdapter.class
+new file mode 100644
+index 0000000..85f519e
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/VideoTrackAdapter.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$1.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$1.class
+new file mode 100644
+index 0000000..a686e30
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$2.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$2.class
+new file mode 100644
+index 0000000..7744bca
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$2.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$3.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$3.class
+new file mode 100644
+index 0000000..cd798d2
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$3.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$4.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$4.class
+new file mode 100644
+index 0000000..4b5a960
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$4.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$5.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$5.class
+new file mode 100644
+index 0000000..3aa6f2e
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$5.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$6.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$6.class
+new file mode 100644
+index 0000000..62a22c3
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule$6.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule.class
+new file mode 100644
+index 0000000..b26c081
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModule.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModuleOptions.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModuleOptions.class
+new file mode 100644
+index 0000000..f635b17
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModuleOptions.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModulePackage.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModulePackage.class
+new file mode 100644
+index 0000000..6123b1a
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCModulePackage.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCView$1.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCView$1.class
+new file mode 100644
+index 0000000..01e5b02
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCView$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCView$2.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCView$2.class
+new file mode 100644
+index 0000000..852bfdd
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCView$2.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCView$3.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCView$3.class
+new file mode 100644
+index 0000000..7655720
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCView$3.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCView.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCView.class
+new file mode 100644
+index 0000000..3092c6b
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/WebRTCView.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/videoEffects/ProcessorProvider.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/videoEffects/ProcessorProvider.class
+new file mode 100644
+index 0000000..f7fbf28
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/videoEffects/ProcessorProvider.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/videoEffects/VideoEffectProcessor.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/videoEffects/VideoEffectProcessor.class
+new file mode 100644
+index 0000000..c4e4368
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/videoEffects/VideoEffectProcessor.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/videoEffects/VideoFrameProcessor.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/videoEffects/VideoFrameProcessor.class
+new file mode 100644
+index 0000000..dfdcdca
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/videoEffects/VideoFrameProcessor.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/videoEffects/VideoFrameProcessorFactoryInterface.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/videoEffects/VideoFrameProcessorFactoryInterface.class
+new file mode 100644
+index 0000000..142567e
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/videoEffects/VideoFrameProcessorFactoryInterface.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoDecoderFactory.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoDecoderFactory.class
+new file mode 100644
+index 0000000..888ac5b
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoDecoderFactory.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoEncoderFactory.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoEncoderFactory.class
+new file mode 100644
+index 0000000..fbb700d
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoEncoderFactory.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/webrtcutils/SoftwareVideoDecoderFactoryProxy.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/webrtcutils/SoftwareVideoDecoderFactoryProxy.class
+new file mode 100644
+index 0000000..ff2692e
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/webrtcutils/SoftwareVideoDecoderFactoryProxy.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/webrtcutils/SoftwareVideoEncoderFactoryProxy.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/webrtcutils/SoftwareVideoEncoderFactoryProxy.class
+new file mode 100644
+index 0000000..8f05184
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/oney/WebRTCModule/webrtcutils/SoftwareVideoEncoderFactoryProxy.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/org/webrtc/Camera1Helper.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/org/webrtc/Camera1Helper.class
+new file mode 100644
+index 0000000..82161fc
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/org/webrtc/Camera1Helper.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/org/webrtc/Camera2Helper.class b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/org/webrtc/Camera2Helper.class
+new file mode 100644
+index 0000000..e9c3b87
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/org/webrtc/Camera2Helper.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt b/node_modules/react-native-webrtc/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+new file mode 100644
+index 0000000..15ff096
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+@@ -0,0 +1,6 @@
++R_DEF: Internal format may change without notice
++local
++string media_projection_notification_text
++string media_projection_notification_title
++string ongoing_notification_channel_name
++style AppTheme
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt b/node_modules/react-native-webrtc/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+new file mode 100644
+index 0000000..8d2d3f8
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+@@ -0,0 +1,19 @@
++1<?xml version="1.0" encoding="utf-8"?>
++2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++3    xmlns:tools="http://schemas.android.com/tools"
++4    package="com.oney.WebRTCModule" >
++5
++6    <uses-sdk android:minSdkVersion="24" />
++7
++8    <application>
++8-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml:5:5-10:19
++9        <service
++9-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml:6:9-9:19
++10            android:name="com.oney.WebRTCModule.MediaProjectionService"
++10-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml:7:17-55
++11            android:foregroundServiceType="mediaProjection" >
++11-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml:8:17-64
++12        </service>
++13    </application>
++14
++15</manifest>
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml b/node_modules/react-native-webrtc/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+new file mode 100644
+index 0000000..dd02d0a
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+@@ -0,0 +1,15 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:tools="http://schemas.android.com/tools"
++    package="com.oney.WebRTCModule" >
++
++    <uses-sdk android:minSdkVersion="24" />
++
++    <application>
++        <service
++            android:name="com.oney.WebRTCModule.MediaProjectionService"
++            android:foregroundServiceType="mediaProjection" >
++        </service>
++    </application>
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json b/node_modules/react-native-webrtc/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+new file mode 100644
+index 0000000..0637a08
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+@@ -0,0 +1 @@
++[]
+\ No newline at end of file
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt b/node_modules/react-native-webrtc/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+new file mode 100644
+index 0000000..08f4ebe
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+@@ -0,0 +1 @@
++0 Warning/Error
+\ No newline at end of file
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/packaged_res/debug/packageDebugResources/values/values.xml b/node_modules/react-native-webrtc/android/build/intermediates/packaged_res/debug/packageDebugResources/values/values.xml
+new file mode 100644
+index 0000000..e1e31cd
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/packaged_res/debug/packageDebugResources/values/values.xml
+@@ -0,0 +1,9 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <string name="media_projection_notification_text">You are currently sharing your screen.</string>
++    <string name="media_projection_notification_title">Screen sharing</string>
++    <string name="ongoing_notification_channel_name">Screen Sharing Notifications</string>
++    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
++        
++    </style>
++</resources>
+\ No newline at end of file
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/AbstractVideoCaptureController$CapturerEventsListener.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/AbstractVideoCaptureController$CapturerEventsListener.class
+new file mode 100644
+index 0000000..a90c7e3
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/AbstractVideoCaptureController$CapturerEventsListener.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/AbstractVideoCaptureController.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/AbstractVideoCaptureController.class
+new file mode 100644
+index 0000000..3f4d5a0
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/AbstractVideoCaptureController.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/BuildConfig.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/BuildConfig.class
+new file mode 100644
+index 0000000..0afd87e
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/BuildConfig.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/CameraCaptureController$1.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/CameraCaptureController$1.class
+new file mode 100644
+index 0000000..b97879e
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/CameraCaptureController$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/CameraCaptureController$2.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/CameraCaptureController$2.class
+new file mode 100644
+index 0000000..24844f5
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/CameraCaptureController$2.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/CameraCaptureController$CreateCapturerResult.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/CameraCaptureController$CreateCapturerResult.class
+new file mode 100644
+index 0000000..06bb239
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/CameraCaptureController$CreateCapturerResult.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/CameraCaptureController.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/CameraCaptureController.class
+new file mode 100644
+index 0000000..4918969
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/CameraCaptureController.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/CameraEventsHandler.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/CameraEventsHandler.class
+new file mode 100644
+index 0000000..0dae770
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/CameraEventsHandler.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/DataChannelWrapper$1.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/DataChannelWrapper$1.class
+new file mode 100644
+index 0000000..e5c8bba
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/DataChannelWrapper$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/DataChannelWrapper.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/DataChannelWrapper.class
+new file mode 100644
+index 0000000..d9e26a0
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/DataChannelWrapper.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/DisplayUtils.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/DisplayUtils.class
+new file mode 100644
+index 0000000..56f06b6
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/DisplayUtils.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/EglUtils.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/EglUtils.class
+new file mode 100644
+index 0000000..7e7bb2c
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/EglUtils.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl$1.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl$1.class
+new file mode 100644
+index 0000000..660a722
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl$2.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl$2.class
+new file mode 100644
+index 0000000..f00c4fc
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl$2.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl$3.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl$3.class
+new file mode 100644
+index 0000000..0fd773d
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl$3.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl$BiConsumer.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl$BiConsumer.class
+new file mode 100644
+index 0000000..78dbf6f
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl$BiConsumer.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl$TrackPrivate.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl$TrackPrivate.class
+new file mode 100644
+index 0000000..da6f081
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl$TrackPrivate.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl.class
+new file mode 100644
+index 0000000..283d53b
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/GetUserMediaImpl.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/LibraryLoader.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/LibraryLoader.class
+new file mode 100644
+index 0000000..eb92071
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/LibraryLoader.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/MediaProjectionNotification.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/MediaProjectionNotification.class
+new file mode 100644
+index 0000000..90d11a6
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/MediaProjectionNotification.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/MediaProjectionService.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/MediaProjectionService.class
+new file mode 100644
+index 0000000..e7458e7
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/MediaProjectionService.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/PeerConnectionObserver$1.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/PeerConnectionObserver$1.class
+new file mode 100644
+index 0000000..0df0062
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/PeerConnectionObserver$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/PeerConnectionObserver.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/PeerConnectionObserver.class
+new file mode 100644
+index 0000000..131456c
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/PeerConnectionObserver.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/RTCVideoViewManager.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/RTCVideoViewManager.class
+new file mode 100644
+index 0000000..096b7dd
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/RTCVideoViewManager.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ReactBridgeUtil$1.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ReactBridgeUtil$1.class
+new file mode 100644
+index 0000000..6227fae
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ReactBridgeUtil$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ReactBridgeUtil.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ReactBridgeUtil.class
+new file mode 100644
+index 0000000..7f70b24
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ReactBridgeUtil.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ScreenCaptureController$1.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ScreenCaptureController$1.class
+new file mode 100644
+index 0000000..e8c70a8
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ScreenCaptureController$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ScreenCaptureController$2.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ScreenCaptureController$2.class
+new file mode 100644
+index 0000000..83e2187
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ScreenCaptureController$2.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ScreenCaptureController.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ScreenCaptureController.class
+new file mode 100644
+index 0000000..51ecf93
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ScreenCaptureController.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/SerializeUtils$1.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/SerializeUtils$1.class
+new file mode 100644
+index 0000000..09afe89
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/SerializeUtils$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/SerializeUtils.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/SerializeUtils.class
+new file mode 100644
+index 0000000..d0f45ee
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/SerializeUtils.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/StringUtils.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/StringUtils.class
+new file mode 100644
+index 0000000..9029e9a
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/StringUtils.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ThreadUtils.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ThreadUtils.class
+new file mode 100644
+index 0000000..2d79604
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/ThreadUtils.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/TrackCapturerEventsEmitter.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/TrackCapturerEventsEmitter.class
+new file mode 100644
+index 0000000..6e65fab
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/TrackCapturerEventsEmitter.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl$1.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl$1.class
+new file mode 100644
+index 0000000..c8f9b27
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl.class
+new file mode 100644
+index 0000000..2853fb9
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/VideoTrackAdapter$TrackMuteUnmuteImpl.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/VideoTrackAdapter.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/VideoTrackAdapter.class
+new file mode 100644
+index 0000000..85f519e
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/VideoTrackAdapter.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$1.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$1.class
+new file mode 100644
+index 0000000..a686e30
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$2.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$2.class
+new file mode 100644
+index 0000000..7744bca
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$2.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$3.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$3.class
+new file mode 100644
+index 0000000..cd798d2
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$3.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$4.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$4.class
+new file mode 100644
+index 0000000..4b5a960
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$4.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$5.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$5.class
+new file mode 100644
+index 0000000..3aa6f2e
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$5.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$6.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$6.class
+new file mode 100644
+index 0000000..62a22c3
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule$6.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule.class
+new file mode 100644
+index 0000000..b26c081
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModule.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModuleOptions.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModuleOptions.class
+new file mode 100644
+index 0000000..f635b17
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModuleOptions.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModulePackage.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModulePackage.class
+new file mode 100644
+index 0000000..6123b1a
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCModulePackage.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCView$1.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCView$1.class
+new file mode 100644
+index 0000000..01e5b02
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCView$1.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCView$2.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCView$2.class
+new file mode 100644
+index 0000000..852bfdd
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCView$2.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCView$3.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCView$3.class
+new file mode 100644
+index 0000000..7655720
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCView$3.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCView.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCView.class
+new file mode 100644
+index 0000000..3092c6b
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/WebRTCView.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/videoEffects/ProcessorProvider.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/videoEffects/ProcessorProvider.class
+new file mode 100644
+index 0000000..f7fbf28
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/videoEffects/ProcessorProvider.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/videoEffects/VideoEffectProcessor.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/videoEffects/VideoEffectProcessor.class
+new file mode 100644
+index 0000000..c4e4368
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/videoEffects/VideoEffectProcessor.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/videoEffects/VideoFrameProcessor.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/videoEffects/VideoFrameProcessor.class
+new file mode 100644
+index 0000000..dfdcdca
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/videoEffects/VideoFrameProcessor.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/videoEffects/VideoFrameProcessorFactoryInterface.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/videoEffects/VideoFrameProcessorFactoryInterface.class
+new file mode 100644
+index 0000000..142567e
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/videoEffects/VideoFrameProcessorFactoryInterface.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoDecoderFactory.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoDecoderFactory.class
+new file mode 100644
+index 0000000..888ac5b
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoDecoderFactory.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoEncoderFactory.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoEncoderFactory.class
+new file mode 100644
+index 0000000..fbb700d
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/webrtcutils/H264AndSoftwareVideoEncoderFactory.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/webrtcutils/SoftwareVideoDecoderFactoryProxy.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/webrtcutils/SoftwareVideoDecoderFactoryProxy.class
+new file mode 100644
+index 0000000..ff2692e
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/webrtcutils/SoftwareVideoDecoderFactoryProxy.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/webrtcutils/SoftwareVideoEncoderFactoryProxy.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/webrtcutils/SoftwareVideoEncoderFactoryProxy.class
+new file mode 100644
+index 0000000..8f05184
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/oney/WebRTCModule/webrtcutils/SoftwareVideoEncoderFactoryProxy.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/org/webrtc/Camera1Helper.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/org/webrtc/Camera1Helper.class
+new file mode 100644
+index 0000000..82161fc
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/org/webrtc/Camera1Helper.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/org/webrtc/Camera2Helper.class b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/org/webrtc/Camera2Helper.class
+new file mode 100644
+index 0000000..e9c3b87
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/org/webrtc/Camera2Helper.class differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar
+new file mode 100644
+index 0000000..ee1df89
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar differ
+diff --git a/node_modules/react-native-webrtc/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt b/node_modules/react-native-webrtc/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+new file mode 100644
+index 0000000..5edbdd8
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+@@ -0,0 +1,5 @@
++com.oney.WebRTCModule
++string media_projection_notification_text
++string media_projection_notification_title
++string ongoing_notification_channel_name
++style AppTheme
+diff --git a/node_modules/react-native-webrtc/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/react-native-webrtc/android/build/outputs/logs/manifest-merger-debug-report.txt
+new file mode 100644
+index 0000000..11b3a58
+--- /dev/null
++++ b/node_modules/react-native-webrtc/android/build/outputs/logs/manifest-merger-debug-report.txt
+@@ -0,0 +1,27 @@
++-- Merging decision tree log ---
++manifest
++ADDED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml:1:1-11:12
++INJECTED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml:1:1-11:12
++	package
++		ADDED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml:2:11-42
++		INJECTED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml
++	xmlns:tools
++		ADDED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml:3:11-57
++	xmlns:android
++		ADDED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml:1:11-69
++application
++ADDED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml:5:5-10:19
++service#com.oney.WebRTCModule.MediaProjectionService
++ADDED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml:6:9-9:19
++	android:foregroundServiceType
++		ADDED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml:8:17-64
++	android:name
++		ADDED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml:7:17-55
++uses-sdk
++INJECTED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml
++INJECTED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml
++	android:targetSdkVersion
++		INJECTED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml
++	android:minSdkVersion
++		INJECTED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/react-native-webrtc/android/src/main/AndroidManifest.xml
+diff --git a/node_modules/react-native-webrtc/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/react-native-webrtc/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
+new file mode 100644
+index 0000000..5303cec
+Binary files /dev/null and b/node_modules/react-native-webrtc/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
+diff --git a/node_modules/react-native-webrtc/ios/RCTWebRTC/PIPController.h b/node_modules/react-native-webrtc/ios/RCTWebRTC/PIPController.h
+index 6e81776..4e6044d 100644
+--- a/node_modules/react-native-webrtc/ios/RCTWebRTC/PIPController.h
++++ b/node_modules/react-native-webrtc/ios/RCTWebRTC/PIPController.h
+@@ -9,6 +9,8 @@ API_AVAILABLE(ios(15.0))
+ 
+ @property(nonatomic, weak) UIView *sourceView;
+ @property(nonatomic, strong) RTCVideoTrack *videoTrack;
++/** Optional local/self track rendered as a corner inset (WhatsApp-style PiP). */
++@property(nonatomic, strong) RTCVideoTrack *localVideoTrack;
+ 
+ @property(nonatomic, assign) BOOL startAutomatically;
+ @property(nonatomic, assign) BOOL stopAutomatically;
+diff --git a/node_modules/react-native-webrtc/ios/RCTWebRTC/PIPController.m b/node_modules/react-native-webrtc/ios/RCTWebRTC/PIPController.m
+index 5137c71..8e962e0 100644
+--- a/node_modules/react-native-webrtc/ios/RCTWebRTC/PIPController.m
++++ b/node_modules/react-native-webrtc/ios/RCTWebRTC/PIPController.m
+@@ -8,6 +8,8 @@ @interface PIPController ()
+ @property(nonatomic, strong) AVPictureInPictureControllerContentSource *contentSource;
+ @property(nonatomic, strong) AVPictureInPictureController *pipController;
+ @property(nonnull, nonatomic, strong) SampleBufferVideoCallView *sampleView;
++@property(nonatomic, strong) SampleBufferVideoCallView *localSampleView;
++@property(nonatomic, strong) UIView *localInsetContainer;
+ 
+ @property(nonnull, nonatomic, strong) UIView *fallbackView;
+ 
+@@ -21,11 +23,17 @@ - (instancetype)initWithSourceView:(UIView *)sourceView {
+ 
+         _fallbackView = [[UIView alloc] initWithFrame:CGRectZero];
+         _fallbackView.translatesAutoresizingMaskIntoConstraints = false;
++        _fallbackView.backgroundColor = [UIColor blackColor];
+ 
+         SampleBufferVideoCallView *subview = [[SampleBufferVideoCallView alloc] initWithFrame:CGRectZero];
+         _sampleView = subview;
+         _sampleView.translatesAutoresizingMaskIntoConstraints = false;
++        // Fit inside layer; rotation scale then fills portrait PiP (avoids zoomed AspectFill).
++        _sampleView.sampleBufferLayer.videoGravity = AVLayerVideoGravityResizeAspect;
++        _sampleView.clipsToBounds = YES;
+         _pipCallViewController = [[AVPictureInPictureVideoCallViewController alloc] init];
++        _pipCallViewController.view.backgroundColor = [UIColor blackColor];
++        _pipCallViewController.view.clipsToBounds = YES;
+ 
+         [self addToCallViewController:_fallbackView];
+ 
+@@ -36,6 +44,10 @@ - (instancetype)initWithSourceView:(UIView *)sourceView {
+         _pipController = [[AVPictureInPictureController alloc] initWithContentSource:_contentSource];
+         _pipController.canStartPictureInPictureAutomaticallyFromInline = YES;
+         _pipController.delegate = self;
++        NSLog(@"[AlaznahPIP] controller created retained=%p source=%p supported=%d",
++              _pipController,
++              sourceView,
++              [AVPictureInPictureController isPictureInPictureSupported]);
+ 
+         [_pipController addObserver:self
+                          forKeyPath:@"pictureInPictureActive"
+@@ -46,6 +58,14 @@ - (instancetype)initWithSourceView:(UIView *)sourceView {
+                                                  selector:@selector(applicationWillEnterForeground:)
+                                                      name:UIApplicationWillEnterForegroundNotification
+                                                    object:nil];
++        [[NSNotificationCenter defaultCenter] addObserver:self
++                                                 selector:@selector(applicationDidEnterBackground:)
++                                                     name:UIApplicationDidEnterBackgroundNotification
++                                                   object:nil];
++        [[NSNotificationCenter defaultCenter] addObserver:self
++                                                 selector:@selector(onAlaznahRequestStart:)
++                                                     name:@"AlaznahWebRTCPipRequestStart"
++                                                   object:nil];
+     }
+ 
+     return self;
+@@ -56,18 +76,30 @@ - (void)observeValueForKeyPath:(NSString *)keyPath
+                         change:(NSDictionary *)change
+                        context:(void *)context {
+     if ([keyPath isEqualToString:@"pictureInPictureActive"]) {
+-        _sampleView.shouldRender = [change[NSKeyValueChangeNewKey] boolValue];
++        BOOL active = [change[NSKeyValueChangeNewKey] boolValue];
++        _sampleView.shouldRender = active;
++        // Remote-only: never render local inset in the PiP composition.
++        _localSampleView.shouldRender = NO;
++        _localInsetContainer.hidden = YES;
++        if (active) {
++            [_sampleView requestScaleRecalculation];
++        }
+     }
+ }
+ 
+ - (void)applicationWillEnterForeground:(NSNotification *)notification {
+-    if (_stopAutomatically) {
+-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+-            [self.pipController stopPictureInPicture];
+-        });
++    // Stop immediately so AVKit restore morphs into the live sourceView.
++    // A delayed stop left the RN call UI visible beside PiP for ~0.5s
++    // ("old screen restored" feeling).
++    if (_stopAutomatically && _pipController.isPictureInPictureActive) {
++        [_pipController stopPictureInPicture];
+     }
+ }
+ 
++- (void)applicationDidEnterBackground:(NSNotification *)notification {
++    [self logPipState:@"applicationDidEnterBackground"];
++}
++
+ - (void)addToCallViewController:(UIView *)view {
+     [_pipCallViewController.view addSubview:view];
+     NSArray *constraints = @[
+@@ -94,6 +126,10 @@ - (void)setVideoTrack:(RTCVideoTrack *)videoTrack {
+         if (_fallbackView.superview) {
+             [_fallbackView removeFromSuperview];
+         }
++        // Local inset must stay above remote.
++        if (_localInsetContainer) {
++            [_pipCallViewController.view bringSubviewToFront:_localInsetContainer];
++        }
+     } else {
+         if (!_fallbackView.superview) {
+             [self addToCallViewController:_fallbackView];
+@@ -104,15 +140,74 @@ - (void)setVideoTrack:(RTCVideoTrack *)videoTrack {
+     }
+ }
+ 
++- (void)layoutLocalInset {
++    if (!_localInsetContainer || !_pipCallViewController.view) {
++        return;
++    }
++    UIView *host = _pipCallViewController.view;
++    CGFloat hostW = host.bounds.size.width;
++    CGFloat hostH = host.bounds.size.height;
++    if (hostW < 1 || hostH < 1) {
++        return;
++    }
++    // WhatsApp-style self-view: larger portrait tile over remote (top-leading).
++    CGFloat insetW = hostW * 0.42;
++    CGFloat insetH = insetW * (16.0 / 9.0);
++    if (insetH > hostH * 0.38) {
++        insetH = hostH * 0.38;
++        insetW = insetH * (9.0 / 16.0);
++    }
++    CGFloat margin = MAX(8.0, hostW * 0.05);
++    _localInsetContainer.frame = CGRectMake(margin, margin, insetW, insetH);
++    _localSampleView.frame = _localInsetContainer.bounds;
++    [_localSampleView requestScaleRecalculation];
++}
++
++- (void)ensureLocalInsetViews {
++    if (_localInsetContainer) {
++        return;
++    }
++    _localInsetContainer = [[UIView alloc] initWithFrame:CGRectZero];
++    _localInsetContainer.clipsToBounds = YES;
++    _localInsetContainer.layer.cornerRadius = 10;
++    _localInsetContainer.layer.borderWidth = 1.5;
++    _localInsetContainer.layer.borderColor = [UIColor colorWithWhite:1 alpha:0.45].CGColor;
++    _localInsetContainer.backgroundColor = [UIColor clearColor];
++    _localInsetContainer.hidden = YES;
++
++    _localSampleView = [[SampleBufferVideoCallView alloc] initWithFrame:CGRectZero];
++    _localSampleView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
++    // Same fill path as remote PiP (Aspect + upright scale) — no letterbox, no AspectFill zoom.
++    _localSampleView.fitForInset = NO;
++    _localSampleView.sampleBufferLayer.videoGravity = AVLayerVideoGravityResizeAspect;
++    _localSampleView.clipsToBounds = YES;
++    [_localInsetContainer addSubview:_localSampleView];
++    [_pipCallViewController.view addSubview:_localInsetContainer];
++    [self layoutLocalInset];
++}
++
++- (void)setLocalVideoTrack:(RTCVideoTrack *)localVideoTrack {
++    // Alaznah calling: system PiP is remote-only. Ignore local inset binding.
++    (void)localVideoTrack;
++    if (_localVideoTrack) {
++        [_localVideoTrack removeRenderer:_localSampleView];
++        _localVideoTrack = nil;
++    }
++    _localInsetContainer.hidden = YES;
++    _localSampleView.shouldRender = NO;
++}
++
+ - (void)insertFallbackView:(UIView *)view {
+     [self.fallbackView addSubview:view];
+ }
+ 
+ - (void)setObjectFit:(RTCVideoViewObjectFit)fit {
+-    if (fit == RTCVideoViewObjectFitCover) {
+-        self.sampleView.sampleBufferLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+-    } else {
+-        self.sampleView.sampleBufferLayer.videoGravity = AVLayerVideoGravityResizeAspect;
++    (void)fit;
++    // Both remote + local: Aspect + upright rotation-scale (fills tile, no black bars / no AspectFill zoom).
++    self.sampleView.sampleBufferLayer.videoGravity = AVLayerVideoGravityResizeAspect;
++    if (self.localSampleView) {
++        self.localSampleView.fitForInset = NO;
++        self.localSampleView.sampleBufferLayer.videoGravity = AVLayerVideoGravityResizeAspect;
+     }
+ }
+ 
+@@ -121,9 +216,20 @@ - (CGSize)preferredSize {
+ }
+ 
+ - (void)setPreferredSize:(CGSize)size {
+-    if (!CGSizeEqualToSize(size, _pipCallViewController.preferredContentSize)) {
+-        _pipCallViewController.preferredContentSize = size;
++    // Force portrait preferred size (width < height) for vertical call PiP.
++    CGSize portrait = size;
++    if (portrait.width > portrait.height && portrait.height > 0) {
++        portrait = CGSizeMake(size.height, size.width);
++    }
++    if (portrait.width < 1 || portrait.height < 1) {
++        portrait = CGSizeMake(9, 16);
++    }
++    if (!CGSizeEqualToSize(portrait, _pipCallViewController.preferredContentSize)) {
++        _pipCallViewController.preferredContentSize = portrait;
+         [_sampleView requestScaleRecalculation];
++        dispatch_async(dispatch_get_main_queue(), ^{
++            [self layoutLocalInset];
++        });
+     }
+ }
+ 
+@@ -143,10 +249,88 @@ - (void)togglePIP {
+     }
+ }
+ 
+-- (void)startPIP {
++- (void)logPipState:(NSString *)phase {
++    UIView *src = self.sourceView;
++    BOOL suspended = NO;
++    if (@available(iOS 14.0, *)) {
++        suspended = _pipController.isPictureInPictureSuspended;
++    }
++    NSLog(@"[PIP_START] %@", phase);
++    NSLog(@"[PIP_POSSIBLE] %d", _pipController.isPictureInPicturePossible);
++    NSLog(@"[PIP_ACTIVE] %d", _pipController.isPictureInPictureActive);
++    NSLog(@"[PIP_SUSPENDED] %d", suspended);
++    NSLog(@"[PIP_SOURCE] exists=%d attached=%d hidden=%d alpha=%.2f bounds=%@ frame=%@ superview=%@",
++          src != nil,
++          src.superview != nil,
++          src.isHidden,
++          src.alpha,
++          NSStringFromCGRect(src.bounds),
++          NSStringFromCGRect(src.frame),
++          NSStringFromClass([src.superview class]));
++    NSLog(@"[PIP_WINDOW] window=%p key=%d hidden=%d",
++          src.window,
++          src.window.isKeyWindow,
++          src.window.hidden);
++    NSLog(@"[AlaznahPIP] %@ ctrl=%p retained active=%d possible=%d suspended=%d window=%p key=%d hidden=%d alpha=%.2f bounds=%@ frame=%@ track=%@ sample=%@",
++          phase,
++          _pipController,
++          _pipController.isPictureInPictureActive,
++          _pipController.isPictureInPicturePossible,
++          suspended,
++          src.window,
++          src.window.isKeyWindow,
++          src.isHidden,
++          src.alpha,
++          NSStringFromCGRect(src.bounds),
++          NSStringFromCGRect(src.frame),
++          _videoTrack,
++          _sampleView);
++}
++
++- (void)tryStartPIPAttempt:(NSInteger)attempt {
++    if (!_pipController) {
++        NSLog(@"[AlaznahPIP] tryStart abort — controller nil");
++        return;
++    }
++    if (_pipController.isPictureInPictureActive) {
++        NSLog(@"[AlaznahPIP] tryStart already active");
++        return;
++    }
++    [self logPipState:[NSString stringWithFormat:@"tryStart attempt=%ld", (long)attempt]];
+     if (_pipController.isPictureInPicturePossible) {
++        NSLog(@"[AlaznahPIP] startPictureInPicture");
+         [_pipController startPictureInPicture];
++        return;
++    }
++    if (attempt >= 15) {
++        UIView *src = self.sourceView;
++    NSLog(@"[PIP_FAILED] giving up isPictureInPicturePossible=NO source.window=%p key=%d",
++          src.window,
++          src.window.isKeyWindow);
++        [[NSNotificationCenter defaultCenter] postNotificationName:@"AlaznahWebRTCPipFailed"
++                                                            object:nil
++                                                          userInfo:@{ @"error" : @"isPictureInPicturePossible=NO" }];
++        [[NSNotificationCenter defaultCenter] postNotificationName:@"AlaznahWebRTCPipDidStop" object:nil];
++        return;
++    }
++    __weak PIPController *weakSelf = self;
++    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.08 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
++        [weakSelf tryStartPIPAttempt:attempt + 1];
++    });
++}
++
++- (void)startPIP {
++    [self logPipState:@"startPIP"];
++    if (_pipController.isPictureInPictureActive) {
++        return;
+     }
++    [self tryStartPIPAttempt:0];
++}
++
++- (void)onAlaznahRequestStart:(NSNotification *)notification {
++    (void)notification;
++    NSLog(@"[AlaznahPIP] AlaznahWebRTCPipRequestStart → startPIP");
++    [self startPIP];
+ }
+ 
+ - (void)stopPIP {
+@@ -157,78 +341,73 @@ - (void)stopPIP {
+ 
+ - (void)dealloc {
+     [_videoTrack removeRenderer:_sampleView];
++    [_localVideoTrack removeRenderer:_localSampleView];
+     [_pipController removeObserver:self forKeyPath:@"pictureInPictureActive"];
+-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
++    [[NSNotificationCenter defaultCenter] removeObserver:self];
+ }
+ 
+ @end
+ 
+ @implementation PIPController (AVPictureInPictureControllerDelegate)
+ 
+-/*!
+-    @method        pictureInPictureControllerWillStartPictureInPicture:
+-    @param        pictureInPictureController
+-                The Picture in Picture controller.
+-    @abstract    Delegate can implement this method to be notified when Picture in Picture will start.
+- */
+ - (void)pictureInPictureControllerWillStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
+-    NSLog(@"%@", NSStringFromSelector(_cmd));  // Objective-C
++    NSLog(@"[AlaznahPIP] willStartPictureInPicture");
++    [self logPipState:@"willStartPictureInPicture"];
++    [_sampleView requestScaleRecalculation];
++    // Remote-only PiP: never show local inset even if a local track was bound.
++    _localInsetContainer.hidden = YES;
++    _localSampleView.shouldRender = NO;
++    [[NSNotificationCenter defaultCenter] postNotificationName:@"AlaznahWebRTCPipWillStart" object:nil];
+ }
+ 
+-/*!
+-    @method        pictureInPictureControllerDidStartPictureInPicture:
+-    @param        pictureInPictureController
+-                The Picture in Picture controller.
+-    @abstract    Delegate can implement this method to be notified when Picture in Picture did start.
+- */
+ - (void)pictureInPictureControllerDidStartPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
+-    NSLog(@"%@", NSStringFromSelector(_cmd));  // Objective-C
++    NSLog(@"[PIP_DID_START] active=%d possible=%d",
++          pictureInPictureController.isPictureInPictureActive,
++          pictureInPictureController.isPictureInPicturePossible);
++    [self logPipState:@"didStartPictureInPicture"];
++    [_sampleView requestScaleRecalculation];
++    _localInsetContainer.hidden = YES;
++    _localSampleView.shouldRender = NO;
++    [[NSNotificationCenter defaultCenter] postNotificationName:@"AlaznahWebRTCPipDidStart" object:nil];
+ }
+ 
+-/*!
+-    @method        pictureInPictureController:failedToStartPictureInPictureWithError:
+-    @param        pictureInPictureController
+-                The Picture in Picture controller.
+-    @param        error
+-                An error describing why it failed.
+-    @abstract    Delegate can implement this method to be notified when Picture in Picture failed to start.
+- */
+ - (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController
+     failedToStartPictureInPictureWithError:(NSError *)error {
+-    NSLog(@"%@: %@", NSStringFromSelector(_cmd), [error localizedDescription]);  // Objective-C
++    NSLog(@"[PIP_FAILED] error=%@ domain=%@ code=%ld",
++          [error localizedDescription],
++          error.domain,
++          (long)error.code);
++    [self logPipState:@"failedToStartPictureInPicture"];
++    NSString *message = [error localizedDescription] ?: @"failedToStartPictureInPicture";
++    [[NSNotificationCenter defaultCenter] postNotificationName:@"AlaznahWebRTCPipFailed"
++                                                        object:nil
++                                                      userInfo:@{ @"error" : message }];
++    [[NSNotificationCenter defaultCenter] postNotificationName:@"AlaznahWebRTCPipDidStop" object:nil];
+ }
+ 
+-/*!
+-    @method        pictureInPictureControllerWillStopPictureInPicture:
+-    @param        pictureInPictureController
+-                The Picture in Picture controller.
+-    @abstract    Delegate can implement this method to be notified when Picture in Picture will stop.
+- */
+ - (void)pictureInPictureControllerWillStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
+-    NSLog(@"%@", NSStringFromSelector(_cmd));  // Objective-C
++    NSLog(@"%@", NSStringFromSelector(_cmd));
++    // Keep JS chrome suppressed through the restore morph (didStop clears it).
++    [[NSNotificationCenter defaultCenter] postNotificationName:@"AlaznahWebRTCPipWillStop" object:nil];
+ }
+ 
+-/*!
+-    @method        pictureInPictureControllerDidStopPictureInPicture:
+-    @param        pictureInPictureController
+-                The Picture in Picture controller.
+-    @abstract    Delegate can implement this method to be notified when Picture in Picture did stop.
+- */
+ - (void)pictureInPictureControllerDidStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
+-    NSLog(@"%@", NSStringFromSelector(_cmd));  // Objective-C
++    NSLog(@"[PIP_DID_STOP]");
++    [[NSNotificationCenter defaultCenter] postNotificationName:@"AlaznahWebRTCPipDidStop" object:nil];
+ }
+ 
+-/*!
+-    @method        pictureInPictureController:restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:
+-    @param        pictureInPictureController
+-                The Picture in Picture controller.
+-    @param        completionHandler
+-                The completion handler the delegate needs to call after restore.
+-    @abstract    Delegate can implement this method to restore the user interface before Picture in Picture stops.
+- */
+ - (void)pictureInPictureController:(AVPictureInPictureController *)pictureInPictureController
+     restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL restored))completionHandler {
+-    NSLog(@"%@", NSStringFromSelector(_cmd));  // Objective-C
++    NSLog(@"%@", NSStringFromSelector(_cmd));
++    // Sync sourceView layout to current bounds before AVKit finishes the morph
++    // into the inline Metal renderer (same RTCView / same track).
++    UIView *source = self.sourceView;
++    [source setNeedsLayout];
++    [source layoutIfNeeded];
++    [_sampleView requestScaleRecalculation];
++    if (completionHandler) {
++        completionHandler(YES);
++    }
+ }
+ 
+ @end
+diff --git a/node_modules/react-native-webrtc/ios/RCTWebRTC/RTCVideoViewManager.m b/node_modules/react-native-webrtc/ios/RCTWebRTC/RTCVideoViewManager.m
+index e64005d..3627798 100644
+--- a/node_modules/react-native-webrtc/ios/RCTWebRTC/RTCVideoViewManager.m
++++ b/node_modules/react-native-webrtc/ios/RCTWebRTC/RTCVideoViewManager.m
+@@ -201,6 +201,46 @@ - (void)API_AVAILABLE(ios(15.0))setPIPOptions:(NSDictionary *)pipOptions {
+     _pipController.stopAutomatically = stopAutomatically;
+     _pipController.objectFit = _objectFit;
+     _pipController.preferredSize = preferredSize;
++
++    // WhatsApp-style PiP: optional local/self stream as corner inset.
++    NSString *localStreamURL = nil;
++    if ([pipOptions objectForKey:@"localStreamURL"]) {
++        id raw = pipOptions[@"localStreamURL"];
++        if ([raw isKindOfClass:[NSString class]] && [(NSString *)raw length] > 0) {
++            localStreamURL = (NSString *)raw;
++        }
++    }
++    if (localStreamURL) {
++        WebRTCModule *module = self.module;
++        __weak RTCVideoView *weakView = self;
++        void (^bindLocal)(NSInteger) = ^(NSInteger attempt) {
++            dispatch_async(module.workerQueue, ^{
++                RTCMediaStream *stream = [module streamForReactTag:localStreamURL];
++                RTCVideoTrack *localTrack = stream.videoTracks.firstObject;
++                dispatch_async(dispatch_get_main_queue(), ^{
++                    RTCVideoView *strongView = weakView;
++                    if (!strongView) {
++                        return;
++                    }
++                    if (localTrack) {
++                        strongView.pipController.localVideoTrack = localTrack;
++                        return;
++                    }
++                    // Local stream can register slightly after first iosPIP prop update.
++                    if (attempt < 6) {
++                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)),
++                                       dispatch_get_main_queue(),
++                                       ^{ bindLocal(attempt + 1); });
++                    } else {
++                        NSLog(@"[PIP] localStreamURL bind failed after retries: %@", localStreamURL);
++                    }
++                });
++            });
++        };
++        bindLocal(0);
++    } else {
++        _pipController.localVideoTrack = nil;
++    }
+ }
+ 
+ - (void)API_AVAILABLE(ios(15.0))startPIP {
+diff --git a/node_modules/react-native-webrtc/ios/RCTWebRTC/SampleBufferVideoCallView.h b/node_modules/react-native-webrtc/ios/RCTWebRTC/SampleBufferVideoCallView.h
+index 6f7e5a2..be0c6ba 100644
+--- a/node_modules/react-native-webrtc/ios/RCTWebRTC/SampleBufferVideoCallView.h
++++ b/node_modules/react-native-webrtc/ios/RCTWebRTC/SampleBufferVideoCallView.h
+@@ -7,6 +7,8 @@
+ 
+ @property(nonnull, nonatomic, readonly) AVSampleBufferDisplayLayer *sampleBufferLayer;
+ @property(nonatomic, assign) BOOL shouldRender;
++/** YES for PiP corner self-view — rotation scale must not enlarge (avoids zoom). */
++@property(nonatomic, assign) BOOL fitForInset;
+ 
+ - (void)requestScaleRecalculation;
+ @end
+diff --git a/node_modules/react-native-webrtc/ios/RCTWebRTC/SampleBufferVideoCallView.m b/node_modules/react-native-webrtc/ios/RCTWebRTC/SampleBufferVideoCallView.m
+index b1a0b96..f2a0251 100644
+--- a/node_modules/react-native-webrtc/ios/RCTWebRTC/SampleBufferVideoCallView.m
++++ b/node_modules/react-native-webrtc/ios/RCTWebRTC/SampleBufferVideoCallView.m
+@@ -64,11 +64,16 @@ - (void)recalculateScale:(RTCVideoRotation)rotation {
+         CGFloat scale = 1;
+         if (rotation == 90 || rotation == 270) {
+             CGSize size = self.bounds.size;
+-            scale = size.height / size.width;
++            if (size.width > 1 && size.height > 1) {
++                // Upright fill after 90° rotation (remote + local inset).
++                // Shrink-only path left black bars; AspectFill caused zoom — this fills cleanly.
++                scale = size.height / size.width;
++            }
+         }
+ 
+         self.sampleBufferLayer.transform = CATransform3DConcat(
+-            CATransform3DMakeRotation(rotation / 180.0 * M_PI, 0.0, 0.0, 1.0), CATransform3DMakeScale(scale, scale, 1));
++            CATransform3DMakeRotation(rotation / 180.0 * M_PI, 0.0, 0.0, 1.0),
++            CATransform3DMakeScale(scale, scale, 1));
+     }
+ }
+ 

@@ -7,5 +7,6 @@ export { CallControls } from './CallControls.js';
 export { AudioWave } from './AudioWave.js';
 export { VideoView, LocalVideoView, RemoteVideoView } from './VideoView.js';
 export { defaultCallingTheme, mergeTheme, type CallingTheme } from './theme.js';
+export { getPeerDisplayName, getPeerInitials, isRemoteMuted, isRemoteVideoEnabled } from './peerDisplay.js';
 export type { CallingUIProps, CallingUISlots } from './ui-types.js';
 export * from './icons.js';

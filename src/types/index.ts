@@ -14,6 +14,8 @@ export type CallKind = 'direct' | 'group';
 export type CallParticipant = {
   participantId: string;
   displayName?: string;
+  /** Optional profile image URL for avatar fallback when video is off. */
+  avatarUrl?: string;
   state?: 'invited' | 'ringing' | 'joined' | 'left';
   muted?: boolean;
   videoEnabled?: boolean;
@@ -41,7 +43,7 @@ export type ActiveCall = {
   /** Participant collection; `peerId` remains the direct-call compatibility field. */
   participants?: CallParticipant[];
   peerId: string;
-  /** Best-effort peer display name for UI (falls back to `peerId`). */
+  /** Best-effort peer display name for UI (never raw user id in default UI). */
   peerDisplayName?: string;
   mediaType: CallMediaType;
   direction: CallDirection;
@@ -52,6 +54,11 @@ export type ActiveCall = {
   /** True when the remote peer reported muted via `call.mute`. */
   remoteMuted?: boolean;
   videoEnabled: boolean;
+  /**
+   * Remote peer camera intent from `call.video` signaling.
+   * When false, show remote avatar instead of the last decoded frame.
+   */
+  remoteVideoEnabled?: boolean;
   speakerOn: boolean;
   /** Front (`user`) or back (`environment`) camera for local preview mirror. */
   facingMode?: 'user' | 'environment';
@@ -121,10 +128,10 @@ export type CallingClientConfig = {
   getAuthToken: () => Promise<string> | string;
   userId: string;
   /**
-   * Optional human-readable name for this user. Sent on invite as
+   * Human-readable name for this user. Required — sent on invite as
    * `callerDisplayName` and used by default UI labels.
    */
-  displayName?: string;
+  displayName: string;
   deviceId?: string;
   /** Optional static ICE servers; otherwise fetched via signaling */
   iceServers?: IceServerConfig[];
@@ -163,8 +170,8 @@ export type CallingClientConfig = {
 
 export type StartCallOptions = {
   calleeId: string;
-  /** Optional display name for the callee shown in local UI. */
-  calleeDisplayName?: string;
+  /** Display name of the person you are calling (required — shown in your UI). */
+  calleeDisplayName: string;
   mediaType?: CallMediaType;
   conversationId?: string;
   kind?: CallKind;

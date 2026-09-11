@@ -1,5 +1,6 @@
 import { AppState, PermissionsAndroid, Platform } from 'react-native';
 import type { ActiveCall } from '../types/index.js';
+import { getPeerDisplayName } from '../components/peerDisplay.js';
 import { isIosSimulator } from './CallKeepBridge.js';
 import { NativeAlaznahCalling } from './NativeAlaznahCalling.js';
 
@@ -45,9 +46,10 @@ export class IncomingCallNotifier {
     }
     try {
       const media = call.mediaType === 'video' ? 'Video' : 'Audio';
+      const peerName = getPeerDisplayName(call);
       const title = `Incoming ${media} call`;
-      const body = `${call.peerId} is calling…`;
-      await this.native.showIncoming(title, body, call.callId, call.peerId, call.mediaType);
+      const body = `${peerName} is calling…`;
+      await this.native.showIncoming(title, body, call.callId, peerName, call.mediaType);
     } catch (err) {
       console.warn('[IncomingCallNotifier] show failed', err);
     }

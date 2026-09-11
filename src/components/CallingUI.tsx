@@ -10,11 +10,7 @@ import {
   View,
 } from 'react-native';
 import type { ActiveCall, CallingClient } from '../types/index.js';
-import {
-  ActiveCallScreen,
-  MinimizedCallBubble,
-  resetCallFloatPositions,
-} from './ActiveCallScreen.js';
+import { ActiveCallScreen, resetCallFloatPositions } from './ActiveCallScreen.js';
 import { IncomingCallScreen } from './IncomingCallScreen.js';
 import { mergeTheme } from './theme.js';
 import type { CallingUIProps } from './ui-types.js';
@@ -22,6 +18,26 @@ import { useAndroidPipArming } from '../native/PictureInPicture.js';
 
 const TERMINAL = new Set(['ended', 'failed', 'rejected', 'missed', 'busy']);
 const IN_CALL = new Set(['accepted', 'connecting', 'connected', 'reconnecting']);
+
+/**
+ * RN Modal on iOS is a separate window — it does not inherit the app's
+ * SafeAreaProvider, so useSafeAreaInsets() returns 0 and chrome sits under
+ * the notch/Dynamic Island. Nest a provider only on iOS (Android layout is fine).
+ */
+function IosModalSafeArea({ children }: { children: React.ReactNode }) {
+  if (Platform.OS !== 'ios') {
+    return children as React.JSX.Element;
+  }
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { SafeAreaProvider } = require('react-native-safe-area-context') as {
+      SafeAreaProvider: React.ComponentType<{ children?: React.ReactNode }>;
+    };
+    return <SafeAreaProvider>{children}</SafeAreaProvider>;
+  } catch {
+    return children as React.JSX.Element;
+  }
+}
 
 function shouldShowIncomingCall(
   call: ActiveCall | null,
@@ -36,13 +52,8 @@ function shouldShowIncomingCall(
 }
 
 /**
- * STATE A — normal call: RN Modal (proven layout; controls bottom, remote video).
- * STATE B — Android system PiP: same ActiveCallScreen in an Activity-sized host
- *            (explicit window width/height so flex:1 cannot collapse).
- *
- * PiP never rewrites ActiveCallScreen styles. Native enterIfEnabled notifies JS
- * first, then enters after a short frame so STATE B is mounted before the window
- * shrinks.
+ * Normal call: RN Modal (proven layout).
+ * Native PiP: hide the Modal so the app is usable; call state stays in CallManager.
  */
 export function CallingUI({
   client,
@@ -58,9 +69,11 @@ export function CallingUI({
   const theme = mergeTheme(themePartial);
   const [call, setCall] = useState<ActiveCall | null>(client.getActiveCall());
   const [incoming, setIncoming] = useState<ActiveCall | null>(null);
-  const [minimized, setMinimized] = useState(false);
-  /** Android STATE B — Activity presentation for system PiP only. */
-  const [androidPipPresentation, setAndroidPipPresentation] = useState(false);
+  /**
+   * Native system PiP is showing. Call state is unchanged.
+   * The calling Modal is hidden so the React Native app stays usable.
+   */
+  const [pipActive, setPipActive] = useState(false);
   const [suppressedIncomingId, setSuppressedIncomingId] = useState<string | null>(null);
   const suppressedRef = useRef<string | null>(null);
   suppressedRef.current = suppressedIncomingId;
@@ -79,7 +92,7 @@ export function CallingUI({
         setIncoming(null);
         setSuppressedIncomingId(null);
         suppressedRef.current = null;
-        setAndroidPipPresentation(false);
+        setPipActive(false);
         resetCallFloatPositions();
         return;
       }
@@ -87,9 +100,7 @@ export function CallingUI({
         suppressIncoming(active.callId);
       }
       setCall(active);
-      setIncoming(
-        shouldShowIncomingCall(active, client, suppressedRef.current) ? active : null,
-      );
+      setIncoming(shouldShowIncomingCall(active, client, suppressedRef.current) ? active : null);
     };
     syncFromClient();
 
@@ -119,8 +130,7 @@ export function CallingUI({
             setSuppressedIncomingId(null);
             suppressedRef.current = null;
           }
-          setMinimized(false);
-          setAndroidPipPresentation(false);
+          setPipActive(false);
           resetCallFloatPositions();
         }
       }),
@@ -131,8 +141,7 @@ export function CallingUI({
           setSuppressedIncomingId(null);
           suppressedRef.current = null;
         }
-        setMinimized(false);
-        setAndroidPipPresentation(false);
+        setPipActive(false);
         resetCallFloatPositions();
       }),
       client.on('error', (error) => onError?.(error)),
@@ -159,18 +168,35 @@ export function CallingUI({
   }, [client, onError, suppressIncoming]);
 
   useEffect(() => {
-    if (Platform.OS !== 'android') return undefined;
     const pipMod = NativeModules.AlaznahCallingPip;
     if (!pipMod) return undefined;
     const emitter = new NativeEventEmitter(pipMod);
     const sub = emitter.addListener(
       'AlaznahCallingPipModeChanged',
-      (payload: { active?: boolean }) => {
-        setAndroidPipPresentation(Boolean(payload?.active));
+      (payload: { active?: boolean; error?: string }) => {
+        if (payload?.error) {
+          setPipActive(false);
+          return;
+        }
+        setPipActive(Boolean(payload?.active));
       },
     );
     return () => sub.remove();
   }, []);
+
+  // iOS: Modal stays mounted (AVKit sourceView) but native makes its window
+  // pass-through after didStart so the app underneath is usable.
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return undefined;
+    const native = NativeModules.AlaznahCallingPip as
+      | { setPipUiPassThrough?: (enabled: boolean) => Promise<boolean> }
+      | undefined;
+    if (!native?.setPipUiPassThrough) return undefined;
+    void native.setPipUiPassThrough(pipActive).catch(() => undefined);
+    return () => {
+      void native.setPipUiPassThrough?.(false).catch(() => undefined);
+    };
+  }, [pipActive]);
 
   const showIncoming =
     !!incoming &&
@@ -188,15 +214,11 @@ export function CallingUI({
 
   const showActiveLocked =
     showActive ||
-    (!!call &&
-      !TERMINAL.has(call.state) &&
-      suppressedIncomingId === call.callId &&
-      !showIncoming);
+    (!!call && !TERMINAL.has(call.state) && suppressedIncomingId === call.callId && !showIncoming);
 
   useEffect(() => {
     if (!showActiveLocked) {
-      setMinimized(false);
-      setAndroidPipPresentation(false);
+      setPipActive(false);
     }
   }, [showActiveLocked]);
 
@@ -208,7 +230,31 @@ export function CallingUI({
     Boolean(call.remoteStream || (call.videoEnabled && call.localStream)) &&
     showActiveLocked &&
     !showIncoming;
-  useAndroidPipArming(androidPipEligible);
+  const androidPipStreamUrl =
+    (call?.remoteStream && typeof call.remoteStream.toURL === 'function'
+      ? call.remoteStream.toURL()
+      : undefined) ??
+    (call?.videoEnabled && call.localStream && typeof call.localStream.toURL === 'function'
+      ? call.localStream.toURL()
+      : undefined);
+  useAndroidPipArming(androidPipEligible, androidPipStreamUrl);
+
+  const enterSystemPip = useCallback(() => {
+    const native = NativeModules.AlaznahCallingPip as
+      | { enter?: () => Promise<boolean> }
+      | undefined;
+    if (Platform.OS === 'ios') {
+      if (!native?.enter) return;
+      void native.enter().then(() => undefined);
+      return;
+    }
+    if (!native?.enter) return;
+    // Launch companion in the same task; hide Modal once PiP is confirmed
+    // (or immediately on successful startActivity so the app is usable).
+    void native.enter().then((ok) => {
+      if (ok) setPipActive(true);
+    });
+  }, []);
 
   if (!showIncoming && !showActiveLocked) {
     return null;
@@ -241,72 +287,67 @@ export function CallingUI({
           slots={slots}
           onEnd={endCall}
           onError={onError}
-          onMinimize={() => setMinimized(true)}
-          androidSystemPipActive={androidPipPresentation}
+          onMinimize={enterSystemPip}
+          androidSystemPipActive={Platform.OS === 'android' && pipActive}
         />
       )
     ) : null;
 
   const incomingBody =
-    showIncoming && incoming
-      ? renderIncomingScreen
-        ? renderIncomingScreen({
-            call: incoming,
-            onAccept: () =>
-              beginAccept(incoming.callId, () => {
-                void client.accept(incoming.callId).catch((e) => onError?.(e));
-              }),
-            onReject: () =>
-              void client.reject(incoming.callId, 'declined').catch((e) => onError?.(e)),
-          })
-        : (
-            <IncomingCallScreen
-              call={incoming}
-              theme={theme}
-              backgroundColor={backgroundColor}
-              backgroundImage={backgroundImage}
-              slots={slots}
-              onAccept={(options) => {
-                beginAccept(incoming.callId, () => {
-                  void client
-                    .accept(incoming.callId)
-                    .then(() => {
-                      if (options?.videoEnabled === false) {
-                        return client.setVideoEnabled(false, incoming.callId);
-                      }
-                      return undefined;
-                    })
-                    .catch((e) => onError?.(e));
-                });
-              }}
-              onReject={() =>
-                void client.reject(incoming.callId, 'declined').catch((e) => onError?.(e))
-              }
-            />
-          )
-      : null;
+    showIncoming && incoming ? (
+      renderIncomingScreen ? (
+        renderIncomingScreen({
+          call: incoming,
+          onAccept: () =>
+            beginAccept(incoming.callId, () => {
+              void client.accept(incoming.callId).catch((e) => onError?.(e));
+            }),
+          onReject: () =>
+            void client.reject(incoming.callId, 'declined').catch((e) => onError?.(e)),
+        })
+      ) : (
+        <IncomingCallScreen
+          call={incoming}
+          theme={theme}
+          backgroundColor={backgroundColor}
+          backgroundImage={backgroundImage}
+          slots={slots}
+          onAccept={(options) => {
+            beginAccept(incoming.callId, () => {
+              void client
+                .accept(incoming.callId)
+                .then(() => {
+                  if (options?.videoEnabled === false) {
+                    return client.setVideoEnabled(false, incoming.callId);
+                  }
+                  return undefined;
+                })
+                .catch((e) => onError?.(e));
+            });
+          }}
+          onReject={() =>
+            void client.reject(incoming.callId, 'declined').catch((e) => onError?.(e))
+          }
+        />
+      )
+    ) : null;
 
-  const usePipActivityHost =
-    Platform.OS === 'android' && androidPipPresentation && Boolean(activeBody) && !showIncoming;
-
-  // STATE A Modal — never mount ACS while minimized (bubble needs the video sink)
-  // or while Android system PiP host is active.
   const modalBody = showIncoming
     ? incomingBody
-    : usePipActivityHost || minimized
+    : Platform.OS === 'android' && pipActive
       ? null
       : activeBody;
   const showCallModal = Boolean(modalBody);
 
   return (
-    <View style={[styles.host, style]} pointerEvents="box-none">
-      {usePipActivityHost ? (
-        <View collapsable={false} style={styles.pipActivityHost}>
-          <StatusBar barStyle="light-content" backgroundColor="#000000" translucent />
-          {activeBody as React.JSX.Element}
-        </View>
-      ) : null}
-
+    <View
+      style={[
+        styles.host,
+        pipActive && Platform.OS === 'android' ? styles.hostPassThrough : null,
+        style,
+      ]}
+      pointerEvents="box-none"
+    >
       {modalBody ? (
         <Modal
           animationType="none"
@@ -316,34 +357,12 @@ export function CallingUI({
           presentationStyle="overFullScreen"
           statusBarTranslucent
         >
-          {/*
-            Single flex root required — Modal with bare StatusBar+screen siblings
-            collapses absoluteFill children (black outgoing video).
-            StatusBar lives here so Incoming→Active does not remount it (Accept jump).
-          */}
-          <View style={styles.modalRoot}>
-            <StatusBar barStyle="light-content" backgroundColor="#000000" translucent />
-            <View style={styles.modalBody}>{modalBody as React.JSX.Element}</View>
-          </View>
-        </Modal>
-      ) : null}
-
-      {showActiveLocked && call && !showIncoming && minimized && !usePipActivityHost ? (
-        <Modal
-          transparent
-          visible
-          animationType="none"
-          statusBarTranslucent
-          hardwareAccelerated
-          presentationStyle="overFullScreen"
-        >
-          <View style={styles.bubbleOverlay} pointerEvents="box-none">
-            <MinimizedCallBubble
-              call={call}
-              onExpand={() => setMinimized(false)}
-              onEnd={endCall}
-            />
-          </View>
+          <IosModalSafeArea>
+            <View style={styles.modalRoot}>
+              <StatusBar barStyle="light-content" backgroundColor="#000000" translucent />
+              <View style={styles.modalBody}>{modalBody as React.JSX.Element}</View>
+            </View>
+          </IosModalSafeArea>
         </Modal>
       ) : null}
     </View>
@@ -356,8 +375,12 @@ const styles = StyleSheet.create({
     zIndex: 9999,
     elevation: 9999,
   },
-  bubbleOverlay: {
-    ...StyleSheet.absoluteFillObject,
+  hostPassThrough: {
+    width: 0,
+    height: 0,
+    overflow: 'hidden',
+    zIndex: 0,
+    elevation: 0,
   },
   modalRoot: {
     flex: 1,
@@ -365,15 +388,5 @@ const styles = StyleSheet.create({
   },
   modalBody: {
     flex: 1,
-  },
-  /**
-   * STATE B — fill the Activity content view. Must NOT use fixed screen WxH:
-   * a full-screen sized SurfaceView inside a PiP window crops to the top-left.
-   */
-  pipActivityHost: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#000',
-    zIndex: 10000,
-    elevation: 10000,
   },
 });

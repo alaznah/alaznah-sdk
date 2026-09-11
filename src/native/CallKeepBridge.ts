@@ -1,5 +1,6 @@
 import { PermissionsAndroid, Platform } from 'react-native';
 import type { ActiveCall } from '../types/index.js';
+import { getPeerDisplayName } from '../components/peerDisplay.js';
 
 export type CallKeepBridgeOptions = {
   appName: string;
@@ -202,11 +203,12 @@ export class CallKeepBridge {
     if (!this.enabled || !this.module) return;
     const uuid = this.ensureUuid(call.callId);
     this.map(call.callId, uuid);
+    const peerName = getPeerDisplayName(call);
     try {
       this.module.displayIncomingCall(
         uuid,
         call.peerId,
-        call.peerId,
+        peerName,
         'generic',
         call.mediaType === 'video',
       );
@@ -219,8 +221,9 @@ export class CallKeepBridge {
     if (!this.enabled || !this.module) return;
     const uuid = this.ensureUuid(call.callId);
     this.map(call.callId, uuid);
+    const peerName = getPeerDisplayName(call);
     try {
-      this.module.startCall(uuid, call.peerId, call.peerId, 'generic', call.mediaType === 'video');
+      this.module.startCall(uuid, call.peerId, peerName, 'generic', call.mediaType === 'video');
     } catch (err) {
       this.disable(err, 'startCall');
     }

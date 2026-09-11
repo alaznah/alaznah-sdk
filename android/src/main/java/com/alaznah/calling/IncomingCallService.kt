@@ -23,11 +23,32 @@ class IncomingCallService : Service() {
     val body = intent?.getStringExtra(EXTRA_BODY) ?: "$callerId is calling…"
 
     if (callId.isBlank()) {
+      // Satisfy startForegroundService contract before exiting.
+      val stub =
+        AlaznahCallingModule.buildIncomingNotification(
+          this,
+          "Incoming call",
+          "Connecting…",
+          "invalid",
+          callerId,
+          mediaType,
+        )
+      startForegroundBestEffort(71_091, stub)
       stopSelf()
       return START_NOT_STICKY
     }
 
     if (AlaznahCallingModule.isCallCanceled(this, callId)) {
+      val stub =
+        AlaznahCallingModule.buildIncomingNotification(
+          this,
+          title,
+          body,
+          callId,
+          callerId,
+          mediaType,
+        )
+      startForegroundBestEffort(AlaznahCallingModule.notificationIdPublic(callId), stub)
       stopSelf()
       return START_NOT_STICKY
     }
@@ -41,19 +62,9 @@ class IncomingCallService : Service() {
       mediaType,
     )
 
-    try {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        startForeground(
-          AlaznahCallingModule.notificationIdPublic(callId),
-          notification,
-          ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL,
-        )
-      } else {
-        @Suppress("DEPRECATION")
-        startForeground(AlaznahCallingModule.notificationIdPublic(callId), notification)
-      }
-    } catch (err: Exception) {
-      android.util.Log.w("AlaznahCalling", "startForeground failed", err)
+    val notifId = AlaznahCallingModule.notificationIdPublic(callId)
+    if (!startForegroundBestEffort(notifId, notification)) {
+      android.util.Log.w("AlaznahCalling", "IncomingCallService startForeground failed")
       // Still try to post the notification + activity.
       AlaznahCallingModule.postIncomingNotification(this, notification, callId)
     }
@@ -85,6 +96,48 @@ class IncomingCallService : Service() {
     }, 2_500L)
 
     return START_NOT_STICKY
+  }
+
+  private fun startForegroundBestEffort(notifId: Int, notification: Notification): Boolean {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      return try {
+        @Suppress("DEPRECATION")
+        startForeground(notifId, notification)
+        true
+      } catch (err: Exception) {
+        android.util.Log.w("AlaznahCalling", "IncomingCallService legacy startForeground failed", err)
+        false
+      }
+    }
+
+    // phoneCall needs dialer / MANAGE_OWN_CALLS on targetSdk 34+ — try softer types first.
+    val candidates =
+      mutableListOf(
+        ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE,
+        ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK,
+        ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL,
+      )
+
+    for (type in candidates) {
+      try {
+        startForeground(notifId, notification, type)
+        return true
+      } catch (err: Exception) {
+        android.util.Log.w(
+          "AlaznahCalling",
+          "IncomingCallService startForeground type=$type failed: ${err.message}",
+        )
+      }
+    }
+
+    return try {
+      @Suppress("DEPRECATION")
+      startForeground(notifId, notification)
+      true
+    } catch (err: Exception) {
+      android.util.Log.w("AlaznahCalling", "IncomingCallService untyped startForeground failed", err)
+      false
+    }
   }
 
   companion object {

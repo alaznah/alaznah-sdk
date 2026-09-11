@@ -101,6 +101,10 @@ Your React Native app already includes `react` and `react-native`.
 
 Without `react-native-webrtc`, `startCall` fails with **WebRTC adapters not found**.
 
+**iOS Picture-in-Picture:** apply the `react-native-webrtc` patch shipped under
+`node_modules/@alaznah/calling/patches/` (see that folder’s README). The
+`basic-call` example already runs it via `patch-package` on `postinstall`.
+
 More: [Installation](https://docs.alaznah.com/docs/installation).
 
 ### Usage

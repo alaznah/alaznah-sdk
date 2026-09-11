@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.alaznah.calling" >
 
     <uses-sdk android:minSdkVersion="24" />
@@ -20,6 +21,11 @@
 
     <application>
         <activity
+            android:name="${applicationId}.MainActivity"
+            android:supportsPictureInPicture="true"
+            tools:node="merge"
+            tools:replace="android:supportsPictureInPicture" />
+        <activity
             android:name="com.alaznah.calling.IncomingCallActivity"
             android:excludeFromRecents="true"
             android:exported="true"
@@ -27,6 +33,16 @@
             android:showWhenLocked="true"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar"
             android:turnScreenOn="true" />
+        <activity
+            android:name="com.alaznah.calling.AlaznahPipActivity"
+            android:autoRemoveFromRecents="true"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="standard"
+            android:resizeableActivity="true"
+            android:supportsPictureInPicture="true"
+            android:theme="@android:style/Theme.DeviceDefault.NoActionBar" />
 
         <service
             android:name="com.alaznah.calling.IncomingCallService"
@@ -43,6 +59,19 @@
             <intent-filter>
                 <action android:name="com.alaznah.calling.INCOMING_CALL_ACCEPT" />
                 <action android:name="com.alaznah.calling.INCOMING_CALL_DECLINE" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Call invite/cancel before RN Firebase headless JS (avoids duplicate / stale UI). -->
+        <receiver
+            android:name="io.invertase.firebase.messaging.ReactNativeFirebaseMessagingReceiver"
+            tools:node="remove" />
+        <receiver
+            android:name="com.alaznah.calling.CallMessagingReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </receiver>
     </application>
