@@ -153,7 +153,7 @@ class AlaznahPipActivity : Activity() {
       if (exitHandled) return
       AlaznahPipVideoController.attach(this)
       AlaznahPipVideoController.relayout(this)
-      AlaznahCallingPipModule.notifyPipModeChanged(true)
+      AlaznahCallingPipModule.notifyPipModeChanged(true, "companion")
       return
     }
     restoreCallingScreen()
@@ -166,9 +166,9 @@ class AlaznahPipActivity : Activity() {
   private fun restoreCallingScreen() {
     if (exitHandled) return
     exitHandled = true
-    AlaznahCallingPipModule.noteIgnoreHostEnter(2_500L)
+    AlaznahCallingPipModule.noteIgnoreHostEnter(400L)
     AlaznahPipVideoController.disarmAndRelease(this)
-    AlaznahCallingPipModule.notifyPipModeChanged(false)
+    AlaznahCallingPipModule.notifyPipModeChanged(false, "companion")
     Log.i(TAG, "[PIP_WINDOW] finish → reveal MainActivity")
     if (!isFinishing && !isDestroyed) {
       overridePendingTransition(0, 0)
@@ -182,7 +182,7 @@ class AlaznahPipActivity : Activity() {
     if (isFinishing || isDestroyed) return
     if (!exitHandled) {
       exitHandled = true
-      if (notifyJs) AlaznahCallingPipModule.notifyPipModeChanged(false)
+      if (notifyJs) AlaznahCallingPipModule.notifyPipModeChanged(false, "companion")
     }
     overridePendingTransition(0, 0)
     finish()

@@ -1,6 +1,7 @@
 #import "AlaznahCallingPip.h"
 
 #import <AVKit/AVKit.h>
+#import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIKit.h>
 
 static NSString *const kAlaznahWebRTCPipWillStart = @"AlaznahWebRTCPipWillStart";
@@ -15,7 +16,10 @@ static void AlaznahApplyPassThroughToView(UIView *view, BOOL passThrough)
     return;
   }
   view.userInteractionEnabled = !passThrough;
-  view.alpha = passThrough ? 0.0 : 1.0;
+  [CATransaction begin];
+  [CATransaction setDisableActions:YES];
+  view.alpha = passThrough ? 0.02 : 1.0;
+  [CATransaction commit];
 }
 
 static BOOL AlaznahViewLooksLikeModalHost(UIView *view)
@@ -39,6 +43,9 @@ static void AlaznahApplyPassThroughInViewTree(UIView *root, BOOL passThrough)
   }
 }
 
+static void AlaznahApplyPassThroughInViewController(UIViewController *controller, BOOL passThrough);
+static UIView *AlaznahFindPipRtcVideoViewInView(UIView *root);
+
 static void AlaznahApplyPassThroughInViewController(UIViewController *controller, BOOL passThrough)
 {
   if (controller == nil) {
@@ -46,8 +53,8 @@ static void AlaznahApplyPassThroughInViewController(UIViewController *controller
   }
   UIViewController *presented = controller.presentedViewController;
   if (presented != nil) {
-    // RN <Modal> is a presented view controller. Make it invisible + non-interactive
-    // so touches reach the app underneath while AVKit PiP keeps its sourceView.
+    // Only the presented Modal view — never the shared key window alpha
+    // (that made the whole app look black under PiP).
     AlaznahApplyPassThroughToView(presented.view, passThrough);
     AlaznahApplyPassThroughInViewController(presented, passThrough);
   }
@@ -79,6 +86,12 @@ static void AlaznahApplyModalPassThrough(BOOL passThrough)
   for (UIWindow *window in windows) {
     AlaznahApplyPassThroughInViewTree(window, passThrough);
     AlaznahApplyPassThroughInViewController(window.rootViewController, passThrough);
+    if (!window.isKeyWindow && AlaznahFindPipRtcVideoViewInView(window) != nil) {
+      UIView *target = window.rootViewController.view;
+      if (target != nil) {
+        AlaznahApplyPassThroughToView(target, passThrough);
+      }
+    }
   }
 }
 
@@ -88,7 +101,6 @@ static UIView *AlaznahFindPipRtcVideoViewInView(UIView *root)
     return nil;
   }
   NSString *name = NSStringFromClass(root.class);
-  // react-native-webrtc RTCVideoView exposes startPIP when iosPIP is enabled.
   if ([name containsString:@"RTCVideoView"]) {
     if ([root respondsToSelector:NSSelectorFromString(@"startPIP")]) {
       return root;
@@ -103,46 +115,11 @@ static UIView *AlaznahFindPipRtcVideoViewInView(UIView *root)
   return nil;
 }
 
-static UIView *AlaznahFindPipRtcVideoView(void)
-{
-  NSArray<UIWindow *> *windows = nil;
-  if (@available(iOS 13.0, *)) {
-    NSMutableArray<UIWindow *> *collected = [NSMutableArray array];
-    for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
-      if (![scene isKindOfClass:[UIWindowScene class]]) {
-        continue;
-      }
-      [collected addObjectsFromArray:((UIWindowScene *)scene).windows];
-    }
-    windows = collected;
-  } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    windows = UIApplication.sharedApplication.windows;
-#pragma clang diagnostic pop
-  }
-  // Prefer key window / presented modal (call UI) so we hit the live PiP source.
-  for (UIWindow *window in windows) {
-    if (!window.isKeyWindow) {
-      continue;
-    }
-    UIView *found = AlaznahFindPipRtcVideoViewInView(window);
-    if (found != nil) {
-      return found;
-    }
-  }
-  for (UIWindow *window in windows) {
-    UIView *found = AlaznahFindPipRtcVideoViewInView(window);
-    if (found != nil) {
-      return found;
-    }
-  }
-  return nil;
-}
-
 @implementation AlaznahCallingPip {
   BOOL _observingPipLifecycle;
   BOOL _modalPassThrough;
+  /** YES from didStart until willStop/didStop — blocks JS passThrough=NO races. */
+  BOOL _pipSessionActive;
 }
 
 RCT_EXPORT_MODULE(AlaznahCallingPip)
@@ -200,6 +177,7 @@ RCT_EXPORT_MODULE(AlaznahCallingPip)
   NSString *name = notification.name;
   if ([name isEqualToString:kAlaznahWebRTCPipDidStart]) {
     NSLog(@"[PIP_DID_START]");
+    _pipSessionActive = YES;
     _modalPassThrough = YES;
     AlaznahApplyModalPassThrough(YES);
     [self sendEventWithName:@"AlaznahCallingPipModeChanged" body:@{ @"active" : @YES }];
@@ -210,9 +188,8 @@ RCT_EXPORT_MODULE(AlaznahCallingPip)
     return;
   }
   if ([name isEqualToString:kAlaznahWebRTCPipWillStop]) {
-    NSLog(@"[PIP_START] willStop — restoring CallingUI for morph");
-    _modalPassThrough = NO;
-    AlaznahApplyModalPassThrough(NO);
+    NSLog(@"[PIP_START] willStop — keep Modal pass-through until didStop (no slide)");
+    _pipSessionActive = NO;
     return;
   }
 }
@@ -221,8 +198,12 @@ RCT_EXPORT_MODULE(AlaznahCallingPip)
 {
   (void)notification;
   NSLog(@"[PIP_DID_STOP]");
+  _pipSessionActive = NO;
   _modalPassThrough = NO;
+  [CATransaction begin];
+  [CATransaction setDisableActions:YES];
   AlaznahApplyModalPassThrough(NO);
+  [CATransaction commit];
   [self sendEventWithName:@"AlaznahCallingPipModeChanged" body:@{ @"active" : @NO }];
 }
 
@@ -233,18 +214,13 @@ RCT_EXPORT_MODULE(AlaznahCallingPip)
     error = @"failedToStartPictureInPicture";
   }
   NSLog(@"[PIP_FAILED] %@", error);
+  _pipSessionActive = NO;
   _modalPassThrough = NO;
   AlaznahApplyModalPassThrough(NO);
   [self sendEventWithName:@"AlaznahCallingPipModeChanged"
                      body:@{ @"active" : @NO, @"error" : error }];
 }
 
-/**
- * Visual PiP on iOS is driven by one react-native-webrtc `iosPIP` RTCView
- * (CallingUI keep-alive). Home uses canStartPictureInPictureAutomaticallyFromInline;
- * Minimize calls startIOSPIP on the same view. This module forwards AVKit
- * lifecycle to JS so the calling Modal can hide only after didStart.
- */
 RCT_EXPORT_METHOD(setEnabled:(BOOL)enabled
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
@@ -276,8 +252,7 @@ RCT_EXPORT_METHOD(isSupported:(RCTPromiseResolveBlock)resolve
 RCT_EXPORT_METHOD(enter:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  // Broadcast to every live PIPController (react-native-webrtc). More reliable
-  // than Fabric findNodeHandle / view-tree walk for Minimize.
+  // Same PiP controller Home uses — one startPIP request, then shared lifecycle.
   dispatch_async(dispatch_get_main_queue(), ^{
 #if TARGET_OS_SIMULATOR
     NSLog(@"[PIP_ENTER] simulator — Picture in Picture unsupported");
@@ -290,24 +265,10 @@ RCT_EXPORT_METHOD(enter:(RCTPromiseResolveBlock)resolve
         resolve(@NO);
         return;
       }
-      NSLog(@"[PIP_ENTER] posting AlaznahWebRTCPipRequestStart");
+      NSLog(@"[PIP_ENTER] posting AlaznahWebRTCPipRequestStart (same path as Home PiP)");
       [[NSNotificationCenter defaultCenter]
         postNotificationName:@"AlaznahWebRTCPipRequestStart"
                       object:nil];
-      // Also try direct RTCVideoView startPIP as a second path.
-      UIView *rtcView = AlaznahFindPipRtcVideoView();
-      if (rtcView != nil) {
-        SEL startSel = NSSelectorFromString(@"startPIP");
-        if ([rtcView respondsToSelector:startSel]) {
-          NSLog(@"[PIP_ENTER] direct startPIP on %@", NSStringFromClass(rtcView.class));
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-          [rtcView performSelector:startSel];
-#pragma clang diagnostic pop
-        }
-      } else {
-        NSLog(@"[PIP_ENTER] no RTCVideoView in hierarchy (notification still posted)");
-      }
       resolve(@YES);
       return;
     }
@@ -321,17 +282,22 @@ RCT_EXPORT_METHOD(isActive:(RCTPromiseResolveBlock)resolve
   resolve(@(_modalPassThrough));
 }
 
-/**
- * After AVKit didStart: hide the RN Modal window without destroying the
- * in-Modal RTCView (PiP source). Touches reach the app underneath.
- */
 RCT_EXPORT_METHOD(setPipUiPassThrough:(BOOL)enabled
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
+    // Ignore JS false while PiP is live (effect cleanup race → black Modal / no app).
+    if (!enabled && self->_pipSessionActive) {
+      NSLog(@"[PIP_UI] ignore passThrough=NO while PiP session active");
+      resolve(@YES);
+      return;
+    }
     self->_modalPassThrough = enabled;
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
     AlaznahApplyModalPassThrough(enabled);
+    [CATransaction commit];
     NSLog(@"[PIP_UI] modalPassThrough=%@", enabled ? @"YES" : @"NO");
     resolve(@YES);
   });

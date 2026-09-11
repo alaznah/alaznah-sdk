@@ -724,8 +724,31 @@ export function ActiveCallScreen({
   const androidPipUiActive =
     Platform.OS === 'android' &&
     (androidSystemPipActive || pip.isInPictureInPicture);
-  /** iOS: hide chrome/local float while PiP is active through didStop — never remount remote. */
-  const iosPipChromeSuppressed = Platform.OS === 'ios' && pip.isInPictureInPicture;
+  /**
+   * iOS: after PiP stops, keep chrome/float suppressed briefly so the local
+   * float doesn't animate in during the system dismiss. Call UI itself snaps
+   * on at native didStop (no L→R slide).
+   */
+  const [iosPipExitHold, setIosPipExitHold] = useState(false);
+  const iosWasInPipRef = useRef(false);
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return undefined;
+    if (pip.isInPictureInPicture) {
+      iosWasInPipRef.current = true;
+      setLocalIsPrimary(false);
+      setIosPipExitHold(false);
+      return undefined;
+    }
+    if (!iosWasInPipRef.current) return undefined;
+    iosWasInPipRef.current = false;
+    setLocalIsPrimary(false);
+    setIosPipExitHold(true);
+    const timer = setTimeout(() => setIosPipExitHold(false), 300);
+    return () => clearTimeout(timer);
+  }, [pip.isInPictureInPicture]);
+
+  const iosPipChromeSuppressed =
+    Platform.OS === 'ios' && (pip.isInPictureInPicture || iosPipExitHold);
   const suppressCallChrome = androidPipUiActive || iosPipChromeSuppressed;
 
   const toggleChrome = useCallback(() => {
@@ -742,19 +765,13 @@ export function ActiveCallScreen({
   }, [scheduleChromeHide]);
 
   const handleMinimize = useCallback(() => {
-    // System PiP (same as Home). Android: companion Activity. iOS: AVKit startPIP.
+    // iOS: same AVKit PiP as Home — only request startPIP once; lifecycle
+    // (pass-through / chrome / exit) is identical to auto Home PiP.
     if (Platform.OS === 'ios') {
-      void (async () => {
-        // Native enter posts AlaznahWebRTCPipRequestStart to PIPController —
-        // works under Fabric where findNodeHandle often fails.
-        const native = NativeModules.AlaznahCallingPip as
-          | { enter?: () => Promise<boolean> }
-          | undefined;
-        const ok = await native?.enter?.();
-        if (!ok) {
-          await pip.enter();
-        }
-      })();
+      const native = NativeModules.AlaznahCallingPip as
+        | { enter?: () => Promise<boolean> }
+        | undefined;
+      void native?.enter?.();
       return;
     }
     if (onMinimize) {

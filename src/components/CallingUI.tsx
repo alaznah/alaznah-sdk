@@ -71,7 +71,8 @@ export function CallingUI({
   const [incoming, setIncoming] = useState<ActiveCall | null>(null);
   /**
    * Native system PiP is showing. Call state is unchanged.
-   * The calling Modal is hidden so the React Native app stays usable.
+   * Android: hide the calling Modal so Home PiP shows the native overlay
+   * (Modal-on-top caused a black Home PiP) and Minimize leaves the app usable.
    */
   const [pipActive, setPipActive] = useState(false);
   const [suppressedIncomingId, setSuppressedIncomingId] = useState<string | null>(null);
@@ -184,20 +185,6 @@ export function CallingUI({
     return () => sub.remove();
   }, []);
 
-  // iOS: Modal stays mounted (AVKit sourceView) but native makes its window
-  // pass-through after didStart so the app underneath is usable.
-  useEffect(() => {
-    if (Platform.OS !== 'ios') return undefined;
-    const native = NativeModules.AlaznahCallingPip as
-      | { setPipUiPassThrough?: (enabled: boolean) => Promise<boolean> }
-      | undefined;
-    if (!native?.setPipUiPassThrough) return undefined;
-    void native.setPipUiPassThrough(pipActive).catch(() => undefined);
-    return () => {
-      void native.setPipUiPassThrough?.(false).catch(() => undefined);
-    };
-  }, [pipActive]);
-
   const showIncoming =
     !!incoming &&
     incoming.state === 'ringing' &&
@@ -249,8 +236,6 @@ export function CallingUI({
       return;
     }
     if (!native?.enter) return;
-    // Launch companion in the same task; hide Modal once PiP is confirmed
-    // (or immediately on successful startActivity so the app is usable).
     void native.enter().then((ok) => {
       if (ok) setPipActive(true);
     });

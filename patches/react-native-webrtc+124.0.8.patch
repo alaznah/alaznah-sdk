@@ -1059,7 +1059,7 @@ index 6e81776..4e6044d 100644
  @property(nonatomic, assign) BOOL startAutomatically;
  @property(nonatomic, assign) BOOL stopAutomatically;
 diff --git a/node_modules/react-native-webrtc/ios/RCTWebRTC/PIPController.m b/node_modules/react-native-webrtc/ios/RCTWebRTC/PIPController.m
-index 5137c71..8e962e0 100644
+index 5137c71..f4c06af 100644
 --- a/node_modules/react-native-webrtc/ios/RCTWebRTC/PIPController.m
 +++ b/node_modules/react-native-webrtc/ios/RCTWebRTC/PIPController.m
 @@ -8,6 +8,8 @@ @interface PIPController ()
@@ -1115,19 +1115,23 @@ index 5137c71..8e962e0 100644
      }
  
      return self;
-@@ -56,18 +76,30 @@ - (void)observeValueForKeyPath:(NSString *)keyPath
+@@ -56,18 +76,34 @@ - (void)observeValueForKeyPath:(NSString *)keyPath
                          change:(NSDictionary *)change
                         context:(void *)context {
      if ([keyPath isEqualToString:@"pictureInPictureActive"]) {
 -        _sampleView.shouldRender = [change[NSKeyValueChangeNewKey] boolValue];
 +        BOOL active = [change[NSKeyValueChangeNewKey] boolValue];
-+        _sampleView.shouldRender = active;
++        // Do NOT gate shouldRender on `active` alone. AVKit shows the PiP
++        // window during enter/exit morphs while pictureInPictureActive is
++        // still false — gating caused the solid black PiP rectangle over the
++        // live call UI. Enable on willStart/startPIP; clear on didStop.
++        if (active) {
++            _sampleView.shouldRender = YES;
++            [_sampleView requestScaleRecalculation];
++        }
 +        // Remote-only: never render local inset in the PiP composition.
 +        _localSampleView.shouldRender = NO;
 +        _localInsetContainer.hidden = YES;
-+        if (active) {
-+            [_sampleView requestScaleRecalculation];
-+        }
      }
  }
  
@@ -1151,7 +1155,7 @@ index 5137c71..8e962e0 100644
  - (void)addToCallViewController:(UIView *)view {
      [_pipCallViewController.view addSubview:view];
      NSArray *constraints = @[
-@@ -94,6 +126,10 @@ - (void)setVideoTrack:(RTCVideoTrack *)videoTrack {
+@@ -94,6 +130,10 @@ - (void)setVideoTrack:(RTCVideoTrack *)videoTrack {
          if (_fallbackView.superview) {
              [_fallbackView removeFromSuperview];
          }
@@ -1162,7 +1166,7 @@ index 5137c71..8e962e0 100644
      } else {
          if (!_fallbackView.superview) {
              [self addToCallViewController:_fallbackView];
-@@ -104,15 +140,74 @@ - (void)setVideoTrack:(RTCVideoTrack *)videoTrack {
+@@ -104,15 +144,74 @@ - (void)setVideoTrack:(RTCVideoTrack *)videoTrack {
      }
  }
  
@@ -1241,7 +1245,7 @@ index 5137c71..8e962e0 100644
      }
  }
  
-@@ -121,9 +216,20 @@ - (CGSize)preferredSize {
+@@ -121,9 +220,20 @@ - (CGSize)preferredSize {
  }
  
  - (void)setPreferredSize:(CGSize)size {
@@ -1264,7 +1268,7 @@ index 5137c71..8e962e0 100644
      }
  }
  
-@@ -143,10 +249,88 @@ - (void)togglePIP {
+@@ -143,10 +253,91 @@ - (void)togglePIP {
      }
  }
  
@@ -1332,7 +1336,7 @@ index 5137c71..8e962e0 100644
 +                                                          userInfo:@{ @"error" : @"isPictureInPicturePossible=NO" }];
 +        [[NSNotificationCenter defaultCenter] postNotificationName:@"AlaznahWebRTCPipDidStop" object:nil];
 +        return;
-+    }
+     }
 +    __weak PIPController *weakSelf = self;
 +    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.08 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 +        [weakSelf tryStartPIPAttempt:attempt + 1];
@@ -1343,7 +1347,10 @@ index 5137c71..8e962e0 100644
 +    [self logPipState:@"startPIP"];
 +    if (_pipController.isPictureInPictureActive) {
 +        return;
-     }
++    }
++    // Warm sample buffers before the system morph so the PiP window is not black.
++    _sampleView.shouldRender = YES;
++    [_sampleView requestScaleRecalculation];
 +    [self tryStartPIPAttempt:0];
 +}
 +
@@ -1354,7 +1361,7 @@ index 5137c71..8e962e0 100644
  }
  
  - (void)stopPIP {
-@@ -157,78 +341,73 @@ - (void)stopPIP {
+@@ -157,78 +348,90 @@ - (void)stopPIP {
  
  - (void)dealloc {
      [_videoTrack removeRenderer:_sampleView];
@@ -1378,6 +1385,7 @@ index 5137c71..8e962e0 100644
 -    NSLog(@"%@", NSStringFromSelector(_cmd));  // Objective-C
 +    NSLog(@"[AlaznahPIP] willStartPictureInPicture");
 +    [self logPipState:@"willStartPictureInPicture"];
++    _sampleView.shouldRender = YES;
 +    [_sampleView requestScaleRecalculation];
 +    // Remote-only PiP: never show local inset even if a local track was bound.
 +    _localInsetContainer.hidden = YES;
@@ -1419,6 +1427,7 @@ index 5137c71..8e962e0 100644
 +          error.domain,
 +          (long)error.code);
 +    [self logPipState:@"failedToStartPictureInPicture"];
++    _sampleView.shouldRender = NO;
 +    NSString *message = [error localizedDescription] ?: @"failedToStartPictureInPicture";
 +    [[NSNotificationCenter defaultCenter] postNotificationName:@"AlaznahWebRTCPipFailed"
 +                                                        object:nil
@@ -1435,6 +1444,8 @@ index 5137c71..8e962e0 100644
  - (void)pictureInPictureControllerWillStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
 -    NSLog(@"%@", NSStringFromSelector(_cmd));  // Objective-C
 +    NSLog(@"%@", NSStringFromSelector(_cmd));
++    // Keep feeding the PiP sample layer through the restore morph.
++    _sampleView.shouldRender = YES;
 +    // Keep JS chrome suppressed through the restore morph (didStop clears it).
 +    [[NSNotificationCenter defaultCenter] postNotificationName:@"AlaznahWebRTCPipWillStop" object:nil];
  }
@@ -1448,6 +1459,7 @@ index 5137c71..8e962e0 100644
  - (void)pictureInPictureControllerDidStopPictureInPicture:(AVPictureInPictureController *)pictureInPictureController {
 -    NSLog(@"%@", NSStringFromSelector(_cmd));  // Objective-C
 +    NSLog(@"[PIP_DID_STOP]");
++    _sampleView.shouldRender = NO;
 +    [[NSNotificationCenter defaultCenter] postNotificationName:@"AlaznahWebRTCPipDidStop" object:nil];
  }
  
@@ -1463,15 +1475,27 @@ index 5137c71..8e962e0 100644
      restoreUserInterfaceForPictureInPictureStopWithCompletionHandler:(void (^)(BOOL restored))completionHandler {
 -    NSLog(@"%@", NSStringFromSelector(_cmd));  // Objective-C
 +    NSLog(@"%@", NSStringFromSelector(_cmd));
-+    // Sync sourceView layout to current bounds before AVKit finishes the morph
-+    // into the inline Metal renderer (same RTCView / same track).
-+    UIView *source = self.sourceView;
-+    [source setNeedsLayout];
-+    [source layoutIfNeeded];
++    // Prepare source layout for AVKit, but do NOT raise Modal alpha here.
++    // Revealing the call UI before the system morph caused the visible
++    // left→right / expand slide into fullscreen. Modal snaps back on didStop.
++    _sampleView.shouldRender = YES;
 +    [_sampleView requestScaleRecalculation];
-+    if (completionHandler) {
-+        completionHandler(YES);
++    [[NSNotificationCenter defaultCenter] postNotificationName:@"AlaznahWebRTCPipWillStop" object:nil];
++
++    UIView *source = self.sourceView;
++    if (source != nil) {
++      source.hidden = NO;
++      [source.superview setNeedsLayout];
++      [source.superview layoutIfNeeded];
++      [source setNeedsLayout];
++      [source layoutIfNeeded];
 +    }
++
++    dispatch_async(dispatch_get_main_queue(), ^{
++        if (completionHandler) {
++            completionHandler(YES);
++        }
++    });
  }
  
  @end

@@ -21,7 +21,7 @@ object AlaznahCallingHostHooks {
     attachPictureInPictureListener(activity)
     if (activity !is AlaznahPipActivity) {
       if (AlaznahPipVideoController.releaseLeftoverOnHost(activity)) {
-        AlaznahCallingPipModule.notifyPipModeChanged(false)
+        AlaznahCallingPipModule.notifyPipModeChanged(false, "host")
       }
     }
   }

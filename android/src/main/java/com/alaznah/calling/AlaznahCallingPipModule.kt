@@ -50,7 +50,7 @@ class AlaznahCallingPipModule(
     }
 
     @JvmStatic
-    fun notifyPipModeChanged(active: Boolean) {
+    fun notifyPipModeChanged(active: Boolean, source: String = "host") {
       val ctx = emitterContext ?: return
       if (!ctx.hasActiveReactInstance()) return
       try {
@@ -58,7 +58,12 @@ class AlaznahCallingPipModule(
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
           .emit(
             "AlaznahCallingPipModeChanged",
-            Arguments.createMap().apply { putBoolean("active", active) },
+            Arguments.createMap().apply {
+              putBoolean("active", active)
+              // "host" = MainActivity Home PiP (keep Modal mounted).
+              // "companion" = AlaznahPipActivity Minimize PiP (hide Modal).
+              putString("source", source)
+            },
           )
       } catch (_: Exception) {
       }
@@ -76,10 +81,10 @@ class AlaznahCallingPipModule(
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false
       if (host.isDestroyed) return false
       if (AlaznahPipActivity.isInPip()) {
-        notifyPipModeChanged(true)
+        notifyPipModeChanged(true, "companion")
         return true
       }
-      noteIgnoreHostEnter(1_500L)
+      noteIgnoreHostEnter(800L)
       ActiveCallKeepAliveService.start(host.applicationContext)
       return AlaznahPipActivity.launch(host)
     }
@@ -95,6 +100,11 @@ class AlaznahCallingPipModule(
       if (activity.isDestroyed) return false
       if (activity is AlaznahPipActivity) return false
       if (AlaznahPipActivity.isInPip()) return false
+      // Stale companion (not in PiP) can sit on the back stack and break Home enter.
+      if (AlaznahPipActivity.isAlive()) {
+        Log.i(TAG, "Home PiP enter — dismissing stale companion first")
+        AlaznahPipActivity.dismiss()
+      }
       if (System.currentTimeMillis() < ignoreHostEnterUntilMs) {
         Log.i(TAG, "[PIP_RESTORE] skip enterIfEnabled ignoreHostEnter")
         return false
@@ -124,14 +134,14 @@ class AlaznahCallingPipModule(
       if (inPip) {
         AlaznahPipVideoController.attach(activity)
         AlaznahPipVideoController.relayout(activity)
-        notifyPipModeChanged(true)
+        notifyPipModeChanged(true, "host")
         return
       }
-      // Maximize / close Home PiP. Overlay is a MATCH_PARENT sibling of
-      // ReactRootView — GONE + remove immediately. Never relayout-to-fullscreen.
-      noteIgnoreHostEnter(2_500L)
+      // Maximize / close Home PiP → overlay off, Modal remounts, stay foreground.
+      // Do NOT moveTaskToBack here — that broke fullscreen restore from PiP controls.
+      noteIgnoreHostEnter(400L)
       AlaznahPipVideoController.disarmAndRelease(activity)
-      notifyPipModeChanged(false)
+      notifyPipModeChanged(false, "host")
     }
 
     @JvmStatic
