@@ -17,6 +17,7 @@ object AlaznahCallingHostHooks {
 
   fun onHostResume(activity: Activity) {
     persistLaunchIntent(activity, activity.intent)
+    emitAcceptIfPresent(activity, activity.intent)
     enableShowOverLockScreen(activity, activity.intent)
     attachPictureInPictureListener(activity)
     if (activity !is AlaznahPipActivity) {
@@ -35,11 +36,29 @@ object AlaznahCallingHostHooks {
       activity.intent = intent
     }
     persistLaunchIntent(activity, intent)
+    emitAcceptIfPresent(activity, intent)
     enableShowOverLockScreen(activity, intent)
   }
 
   private fun persistLaunchIntent(context: android.content.Context, intent: Intent?) {
     IncomingCallActionReceiver.persistFromLaunchIntent(context, intent)
+  }
+
+  /**
+   * Emit Accept only after the React host Activity is resumed — never from
+   * IncomingCallActivity. Emitting early started getUserMedia on the wrong
+   * window and left background Accept stuck on Connecting.
+   */
+  private fun emitAcceptIfPresent(activity: Activity, intent: Intent?) {
+    if (intent == null) return
+    val callId = intent.getStringExtra(AlaznahCallingModule.EXTRA_CALL_ID)?.trim().orEmpty()
+    val action = intent.getStringExtra(AlaznahCallingModule.EXTRA_ACTION)?.trim().orEmpty()
+    if (callId.isEmpty() || action != "accept") return
+    val callerId = intent.getStringExtra(AlaznahCallingModule.EXTRA_CALLER_ID).orEmpty()
+    val mediaType = intent.getStringExtra(AlaznahCallingModule.EXTRA_MEDIA_TYPE) ?: "audio"
+    AlaznahCallingModule.emitPendingAction(activity, callId, "accept", callerId, mediaType)
+    // Prevent duplicate emit on the next resume with the same Intent.
+    intent.removeExtra(AlaznahCallingModule.EXTRA_ACTION)
   }
 
   private fun attachPictureInPictureListener(activity: Activity) {

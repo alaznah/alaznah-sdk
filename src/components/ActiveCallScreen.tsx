@@ -949,7 +949,11 @@ export function ActiveCallScreen({
               }`}
               pointerEvents="none"
               collapsable={false}
-              style={[styles.fullVideo, !remoteFull ? styles.iosPipSourceHidden : null]}
+              style={[
+                styles.fullVideo,
+                !remoteFull ? styles.iosPipSourceHidden : null,
+                !showRemoteVideo ? { backgroundColor: theme.colors.surface } : null,
+              ]}
               onLayout={() => {
                 if (!pip.isInPictureInPicture) pip.refreshAndroidSourceHint();
               }}
@@ -1259,7 +1263,6 @@ export function ActiveCallScreen({
 
 const styles = StyleSheet.create({
   // Modal (Incoming→Active): flex:1 keeps full height before remote video mounts.
-  // absoluteFill alone can collapse before the remote renderer lays out.
   fill: { flex: 1, backgroundColor: '#000' },
   // Android system PiP Activity host is itself absoluteFill — match that box.
   fillPip: { ...StyleSheet.absoluteFillObject, backgroundColor: '#000' },
@@ -1275,12 +1278,18 @@ const styles = StyleSheet.create({
     opacity: 0,
   },
   /**
-   * iOS PiP source when remote camera OFF — stay mounted for AVKit, leave flex
-   * flow so the avatar layer owns the visible participant surface.
+   * iOS PiP source when remote camera OFF — keep RTCView mounted for AVKit,
+   * but collapse Metal so it cannot cover the fullscreen avatar sibling
+   * (opacity:0 alone leaves an opaque Metal layer → black screen).
    */
   iosPipSourceParked: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    width: 2,
+    height: 2,
+    left: 0,
+    top: 0,
     opacity: 0,
+    overflow: 'hidden',
   },
   /**
    * Opaque avatar cover above parked Metal when remoteVideoEnabled is false.

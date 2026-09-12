@@ -844,6 +844,15 @@ export class PeerConnectionEngine {
 
     if (sender) {
       await sender.replaceTrack(newTrack);
+      this.videoSender = sender;
+    } else if (this.localStream) {
+      // Late camera attach (e.g. after audio-only setup) — must hit the PC or the
+      // peer never receives video even though local preview has a track.
+      try {
+        this.videoSender = this.pc.addTrack(newTrack, this.localStream);
+      } catch {
+        // ignore — renegotiation may still be required by the stack
+      }
     }
     this.videoCaptureSuspended = false;
     newTrack.enabled = this.userCameraOn;

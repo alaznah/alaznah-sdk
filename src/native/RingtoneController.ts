@@ -1,4 +1,5 @@
 import { Platform, Vibration } from 'react-native';
+import { isIosSimulator } from './CallKeepBridge.js';
 
 type InCallManagerModule = {
   startRingtone: (ringtone: string, vibrate_pattern?: number[], ios_category?: string, seconds?: number) => void;
@@ -30,8 +31,8 @@ export type RingtoneOptions = {
 /**
  * Incoming/outgoing alerts while ringing (before Accept / before WebRTC media).
  * iOS: bundled `incallmanager_ringtone` + Playback category so ring continues
- * in background (UIBackgroundModes=audio). No Vibration on iOS (Simulator maps
- * it to UISound and can crash WebRTC later).
+ * after Home (UIBackgroundModes=audio). Vibration runs on device only —
+ * Simulator maps Vibration → UISound and can race VoiceProcessing.
  */
 export class RingtoneController {
   private inCall = loadInCallManager();
@@ -44,7 +45,7 @@ export class RingtoneController {
     this.startVibrateLoop(true);
     if (!this.shouldPlayAudio(options)) return;
     try {
-      // iOS Simulator has no /Library/Ringtones — use app-bundled sound.
+      // iOS has no reliable system ringtone URI from InCallManager — use bundle.
       const uri = Platform.OS === 'ios' ? '_BUNDLE_' : '_DEFAULT_';
       // `playback` keeps ringing after Home (requires UIBackgroundModes audio).
       this.inCall!.startRingtone(uri, [0, 1000, 1000], 'playback', 60);
@@ -92,8 +93,8 @@ export class RingtoneController {
   }
 
   private startVibrateLoop(strong = true): void {
-    // iOS Vibration → UISound on Simulator → can race VoiceProcessing later.
-    if (Platform.OS === 'ios') return;
+    // Simulator: Vibration → UISound can race VoiceProcessing later.
+    if (Platform.OS === 'ios' && isIosSimulator()) return;
     this.stopVibrate();
     this.vibrating = true;
     Vibration.vibrate(strong ? [0, 900, 600, 900] : [0, 400, 800, 400], true);

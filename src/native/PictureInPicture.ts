@@ -16,6 +16,13 @@ type PipNative = {
   isSupported: () => Promise<boolean>;
   isActive?: () => Promise<boolean>;
   setRemoteStreamUrl?: (url: string) => Promise<boolean>;
+  setRemoteVideoActive?: (
+    active: boolean,
+    initials: string,
+    avatarUrl: string,
+    surfaceColor: string,
+    accentColor: string,
+  ) => Promise<boolean>;
   updatePictureInPicture?: (
     width: number,
     height: number,
@@ -87,11 +94,20 @@ async function startIosPipViaNativeModule(): Promise<boolean> {
 }
 
 /**
- * Arm Android native PiP (stream URL + enable flag).
- * Home enter is onUserLeaveHint → MainActivity.enterPictureInPictureMode.
- * Minimize enter is CallingUI → AlaznahPipActivity. Same renderer either way.
+ * Arm native PiP (stream URL + enable flag) and mirror remote camera on/off
+ * into the PiP window (avatar when off, live video when on).
  */
-export function useAndroidPipArming(enabled: boolean, streamUrl?: string | null): void {
+export function useAndroidPipArming(
+  enabled: boolean,
+  streamUrl?: string | null,
+  presentation?: {
+    remoteVideoActive?: boolean;
+    initials?: string;
+    avatarUrl?: string | null;
+    surfaceColor?: string;
+    accentColor?: string;
+  },
+): void {
   useEffect(() => {
     if (Platform.OS !== 'android') return undefined;
     const native = getPipNative();
@@ -110,6 +126,33 @@ export function useAndroidPipArming(enabled: boolean, streamUrl?: string | null)
     void setUrl(enabled ? streamUrl ?? '' : '').catch(() => undefined);
     return undefined;
   }, [enabled, streamUrl]);
+
+  useEffect(() => {
+    const native = getPipNative();
+    const setActive = native?.setRemoteVideoActive;
+    if (!setActive) return undefined;
+    // Skip while disarmed — avoids placeholder posts during call-end teardown.
+    if (!enabled) {
+      void setActive(true, '?', '', '#1f2c34', '#00a884').catch(() => undefined);
+      return undefined;
+    }
+    const remoteVideoActive = presentation?.remoteVideoActive !== false;
+    void setActive(
+      remoteVideoActive,
+      presentation?.initials ?? '?',
+      presentation?.avatarUrl ?? '',
+      presentation?.surfaceColor ?? '#1f2c34',
+      presentation?.accentColor ?? '#00a884',
+    ).catch(() => undefined);
+    return undefined;
+  }, [
+    enabled,
+    presentation?.remoteVideoActive,
+    presentation?.initials,
+    presentation?.avatarUrl,
+    presentation?.surfaceColor,
+    presentation?.accentColor,
+  ]);
 }
 
 /**

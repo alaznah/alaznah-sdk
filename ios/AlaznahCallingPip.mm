@@ -118,7 +118,6 @@ static UIView *AlaznahFindPipRtcVideoViewInView(UIView *root)
 @implementation AlaznahCallingPip {
   BOOL _observingPipLifecycle;
   BOOL _modalPassThrough;
-  /** YES from didStart until willStop/didStop — blocks JS passThrough=NO races. */
   BOOL _pipSessionActive;
 }
 
@@ -233,6 +232,45 @@ RCT_EXPORT_METHOD(setRemoteStreamUrl:(NSString *)url
                   reject:(RCTPromiseRejectBlock)reject)
 {
   resolve(@YES);
+}
+
+RCT_EXPORT_METHOD(setRemoteVideoActive:(BOOL)active
+                  initials:(NSString *)initials
+                  avatarUrl:(NSString *)avatarUrl
+                  surfaceColor:(NSString *)surfaceColor
+                  accentColor:(NSString *)accentColor
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  (void)avatarUrl;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSMutableDictionary *info = [NSMutableDictionary dictionary];
+    info[@"active"] = @(!active); // placeholder when camera OFF
+    if ([surfaceColor isKindOfClass:[NSString class]] && surfaceColor.length > 0) {
+      info[@"surfaceColor"] = surfaceColor;
+    }
+    if ([accentColor isKindOfClass:[NSString class]] && accentColor.length > 0) {
+      info[@"accentColor"] = accentColor;
+    }
+    if ([initials isKindOfClass:[NSString class]] && initials.length > 0) {
+      info[@"initials"] = initials;
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"AlaznahWebRTCPipSetPlaceholder"
+                                                        object:nil
+                                                      userInfo:info];
+    resolve(@YES);
+  });
+}
+
+RCT_EXPORT_METHOD(prepareTeardown:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    // Stop AVKit PiP + detach sample renderers before JS nulls streams / unmounts RTCView.
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"AlaznahWebRTCPipPrepareTeardown"
+                                                      object:nil];
+    resolve(@YES);
+  });
 }
 
 RCT_EXPORT_METHOD(isSupported:(RCTPromiseResolveBlock)resolve

@@ -95,13 +95,13 @@
 45-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:42:7-69
 46
 47        <service
-47-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:44:5-47:51
+47-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:44:5-47:76
 48            android:name="com.alaznah.calling.IncomingCallService"
 48-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:45:7-61
 49            android:exported="false"
 49-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:46:7-31
-50            android:foregroundServiceType="phoneCall" />
-50-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:47:7-48
+50            android:foregroundServiceType="mediaPlayback|microphone|phoneCall" />
+50-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:47:7-73
 51        <service
 51-->/Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:49:5-52:83
 52            android:name="com.alaznah.calling.ActiveCallKeepAliveService"

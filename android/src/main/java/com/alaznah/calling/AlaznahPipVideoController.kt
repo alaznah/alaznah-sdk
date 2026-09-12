@@ -1,11 +1,15 @@
 package com.alaznah.calling
 
 import android.app.Activity
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.SurfaceTexture
+import android.graphics.Typeface
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.TextureView
@@ -13,6 +17,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.TextView
 import com.facebook.react.bridge.ReactApplicationContext
 import org.webrtc.EglBase
 import org.webrtc.EglRenderer
@@ -20,6 +26,9 @@ import org.webrtc.GlRectDrawer
 import org.webrtc.VideoFrame
 import org.webrtc.VideoSink
 import org.webrtc.VideoTrack
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -41,6 +50,12 @@ internal object AlaznahPipVideoController {
   @Volatile private var streamUrl: String = ""
   @Volatile private var videoWidth: Int = 0
   @Volatile private var videoHeight: Int = 0
+  /** When true, PiP shows avatar/initials instead of the last decoded frame. */
+  @Volatile private var remoteVideoActive: Boolean = true
+  @Volatile private var placeholderInitials: String = "?"
+  @Volatile private var placeholderAvatarUrl: String = ""
+  @Volatile private var placeholderSurfaceColor: Int = Color.parseColor("#1f2c34")
+  @Volatile private var placeholderAccentColor: Int = Color.parseColor("#00a884")
 
   private var overlay: PipOverlay? = null
   private var attachedTrack: VideoTrack? = null
@@ -64,6 +79,29 @@ internal object AlaznahPipVideoController {
     if (current != null && current.isAttachedToWindow) {
       val activity = current.context as? Activity ?: return
       attach(activity)
+    }
+  }
+
+  /**
+   * Camera-off while in PiP: show avatar. Camera-on again: reattach live track.
+   */
+  fun setRemoteVideoPresentation(
+    videoActive: Boolean,
+    initials: String?,
+    avatarUrl: String?,
+    surfaceColor: Int?,
+    accentColor: Int?,
+  ) {
+    remoteVideoActive = videoActive
+    placeholderInitials = initials?.trim()?.takeIf { it.isNotEmpty() } ?: "?"
+    placeholderAvatarUrl = avatarUrl.orEmpty()
+    if (surfaceColor != null) placeholderSurfaceColor = surfaceColor
+    if (accentColor != null) placeholderAccentColor = accentColor
+    Log.i(TAG, "remoteVideoActive=$videoActive initials=$placeholderInitials")
+    val current = overlay
+    if (current != null && current.isAttachedToWindow) {
+      val activity = current.context as? Activity ?: return
+      applyPresentation(activity, current)
     }
   }
 
@@ -112,18 +150,30 @@ internal object AlaznahPipVideoController {
     view.visibility = View.VISIBLE
     view.requestLayout()
     relayout(activity)
+    applyPresentation(activity, view)
+  }
 
+  private fun applyPresentation(activity: Activity, view: PipOverlay) {
+    view.setPlaceholderStyle(placeholderSurfaceColor, placeholderAccentColor)
+    view.setPlaceholderContent(placeholderInitials, placeholderAvatarUrl)
+    if (!remoteVideoActive) {
+      unbindTrack()
+      view.showPlaceholder(true)
+      Log.i(TAG, "PiP placeholder (remote camera off)")
+      return
+    }
+    view.showPlaceholder(false)
     val url = streamUrl
     val ctx = reactContext
     if (url.isBlank()) {
       Log.w(TAG, "attach: no remote stream URL yet")
       return
     }
-
     AlaznahWebRtcAccess.runOnWebRtcExecutor {
       val track = AlaznahWebRtcAccess.findVideoTrack(ctx, url)
       mainHandler.post {
         if (activity.isDestroyed) return@post
+        if (!remoteVideoActive) return@post
         val current = overlay ?: return@post
         bindTrack(track, current)
       }
@@ -157,6 +207,12 @@ internal object AlaznahPipVideoController {
     }
     overlayView.requestLayout()
     overlayView.updateAspectFromLayout()
+    // Enter-PiP often lays out at 0×0 first; re-assert avatar after real bounds exist.
+    if (!remoteVideoActive) {
+      overlayView.setPlaceholderStyle(placeholderSurfaceColor, placeholderAccentColor)
+      overlayView.setPlaceholderContent(placeholderInitials, placeholderAvatarUrl)
+      overlayView.showPlaceholder(true)
+    }
   }
 
   fun disarmAndRelease(activity: Activity? = null) {
@@ -256,6 +312,8 @@ internal object AlaznahPipVideoController {
     overlay = null
     videoWidth = 0
     videoHeight = 0
+    // Keep remoteVideoActive / avatar presentation across overlay recreate
+    // (Minimize enter releases then re-attaches — resetting caused black PiP).
     if (view != null) {
       view.disarm()
       (view.parent as? ViewGroup)?.removeView(view)
@@ -343,17 +401,47 @@ internal object AlaznahPipVideoController {
     onVideoSize?.invoke(width, height)
   }
 
+  private val avatarLoadExecutor = Executors.newSingleThreadExecutor()
+
+  private fun loadBitmap(url: String): Bitmap? {
+    return try {
+      val connection = URL(url).openConnection() as HttpURLConnection
+      connection.connectTimeout = 4_000
+      connection.readTimeout = 4_000
+      connection.instanceFollowRedirects = true
+      connection.connect()
+      if (connection.responseCode !in 200..299) {
+        connection.disconnect()
+        return null
+      }
+      connection.inputStream.use { stream ->
+        BitmapFactory.decodeStream(stream)
+      }
+    } catch (err: Throwable) {
+      Log.w(TAG, "avatar load failed: ${err.message}")
+      null
+    }
+  }
+
   private class PipOverlay(activity: Activity) : FrameLayout(activity), TextureView.SurfaceTextureListener {
     private val textureView = TextureView(activity)
     private val eglRenderer = EglRenderer("AlaznahPip")
+    private val placeholderHost = FrameLayout(activity)
+    private val avatarCircle = FrameLayout(activity)
+    private val initialsView = TextView(activity)
+    private val avatarImage = ImageView(activity)
     private var eglInitialized = false
     private var surfaceReady = false
     private var pendingSurface: SurfaceTexture? = null
+    private var avatarLoadToken = 0
+    private var surfaceColor = Color.parseColor("#1f2c34")
+    private var accentColor = Color.parseColor("#00a884")
     @Volatile private var releasing = false
     @Volatile var isSinkAttached: Boolean = false
 
     val videoSink =
       VideoSink { frame ->
+        if (placeholderHost.visibility == View.VISIBLE) return@VideoSink
         reportFrameSize(frame)
         eglRenderer.onFrame(frame)
       }
@@ -372,7 +460,119 @@ internal object AlaznahPipVideoController {
         textureView,
         LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, Gravity.CENTER),
       )
+
+      placeholderHost.visibility = View.GONE
+      placeholderHost.setBackgroundColor(surfaceColor)
+      initialsView.setTextColor(accentColor)
+      initialsView.typeface = Typeface.DEFAULT_BOLD
+      initialsView.gravity = Gravity.CENTER
+      avatarImage.scaleType = ImageView.ScaleType.CENTER_CROP
+      avatarImage.visibility = View.GONE
+      avatarImage.clipToOutline = true
+      avatarCircle.clipToOutline = true
+      avatarCircle.addView(
+        initialsView,
+        LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT),
+      )
+      avatarCircle.addView(
+        avatarImage,
+        LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT),
+      )
+      placeholderHost.addView(
+        avatarCircle,
+        LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER),
+      )
+      addView(
+        placeholderHost,
+        LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT),
+      )
       elevation = 10_000f
+    }
+
+    fun setPlaceholderStyle(surface: Int, accent: Int) {
+      surfaceColor = surface
+      accentColor = accent
+      placeholderHost.setBackgroundColor(surface)
+      initialsView.setTextColor(accent)
+      avatarCircle.setBackgroundColor(Color.argb(0x73, 0, 0, 0))
+    }
+
+    fun setPlaceholderContent(initials: String, avatarUrl: String) {
+      initialsView.text = initials.take(2).uppercase()
+      avatarLoadToken += 1
+      val token = avatarLoadToken
+      if (avatarUrl.isBlank()) {
+        avatarImage.setImageDrawable(null)
+        avatarImage.visibility = View.GONE
+        initialsView.visibility = View.VISIBLE
+        return
+      }
+      avatarLoadExecutor.execute {
+        val bmp = loadBitmap(avatarUrl)
+        mainHandler.post {
+          if (token != avatarLoadToken) return@post
+          if (bmp == null) {
+            avatarImage.setImageDrawable(null)
+            avatarImage.visibility = View.GONE
+            initialsView.visibility = View.VISIBLE
+            return@post
+          }
+          avatarImage.setImageBitmap(bmp)
+          avatarImage.visibility = View.VISIBLE
+          initialsView.visibility = View.GONE
+        }
+      }
+    }
+
+    fun showPlaceholder(show: Boolean) {
+      if (show) {
+        textureView.visibility = View.GONE
+        placeholderHost.visibility = View.VISIBLE
+        placeholderHost.bringToFront()
+        setBackgroundColor(surfaceColor)
+        layoutAvatarCircle()
+        // PiP window size often arrives one frame later.
+        post { layoutAvatarCircle() }
+        postDelayed({ layoutAvatarCircle() }, 50L)
+        postDelayed({ layoutAvatarCircle() }, 200L)
+      } else {
+        placeholderHost.visibility = View.GONE
+        textureView.visibility = View.VISIBLE
+        setBackgroundColor(Color.BLACK)
+      }
+    }
+
+    private fun layoutAvatarCircle() {
+      val w = if (width > 0) width else measuredWidth
+      val h = if (height > 0) height else measuredHeight
+      if (w <= 0 || h <= 0) return
+      val minSide = minOf(w, h)
+      val circle = (minSide * 0.42f).toInt().coerceIn(dp(40), dp(120))
+      val lp =
+        (avatarCircle.layoutParams as? LayoutParams)
+          ?: LayoutParams(circle, circle, Gravity.CENTER)
+      lp.width = circle
+      lp.height = circle
+      lp.gravity = Gravity.CENTER
+      avatarCircle.layoutParams = lp
+      val oval =
+        android.graphics.drawable.GradientDrawable().apply {
+          shape = android.graphics.drawable.GradientDrawable.OVAL
+          setColor(Color.argb(0x73, 0, 0, 0))
+        }
+      avatarCircle.background = oval
+      avatarCircle.outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
+      avatarImage.outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
+      avatarImage.background = oval
+      initialsView.setTextSize(TypedValue.COMPLEX_UNIT_PX, circle * 0.34f)
+    }
+
+    private fun dp(value: Int): Int {
+      return TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        value.toFloat(),
+        resources.displayMetrics,
+      ).toInt()
     }
 
     fun textureAttached(): Boolean = surfaceReady && isAttachedToWindow
@@ -458,6 +658,9 @@ internal object AlaznahPipVideoController {
       super.onLayout(changed, left, top, right, bottom)
       if (changed || right - left > 0) {
         updateAspectFromLayout()
+        if (placeholderHost.visibility == View.VISIBLE) {
+          layoutAvatarCircle()
+        }
       }
     }
 

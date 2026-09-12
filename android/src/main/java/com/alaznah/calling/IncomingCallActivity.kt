@@ -110,8 +110,10 @@ class IncomingCallActivity : Activity() {
     if (handled) return
     handled = true
     AlaznahCallingModule.cancelCall(this, callId)
+    // Persist + launch host FIRST. Do NOT emit to JS here — that started
+    // getUserMedia while this Activity still owned the window and left
+    // background Accept stuck on Connecting. JS drains prefs after MainActivity resume.
     IncomingCallActionReceiver.persist(this, callId, "accept", callerId, mediaType, commit = true)
-    AlaznahCallingModule.emitPendingAction(this, callId, "accept", callerId, mediaType)
     IncomingCallActionReceiver.launchHostApp(this, callId, "accept", callerId, mediaType)
     finish()
   }

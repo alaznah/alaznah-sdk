@@ -34,6 +34,8 @@ module.exports = function withAlaznahCalling(config) {
     'android.permission.FOREGROUND_SERVICE',
     'android.permission.FOREGROUND_SERVICE_MICROPHONE',
     'android.permission.FOREGROUND_SERVICE_CAMERA',
+    'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK',
+    'android.permission.FOREGROUND_SERVICE_PHONE_CALL',
     'android.permission.POST_NOTIFICATIONS',
     'android.permission.WAKE_LOCK',
     'android.permission.VIBRATE',

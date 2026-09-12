@@ -39,8 +39,10 @@ export class IncomingCallNotifier {
     if (Platform.OS === 'ios' && isIosSimulator()) return;
     // Foreground / in-app UI: never post native ringing (avoids duplicate Accept UI).
     if (this.suppressNative) return;
-    if (AppState.currentState === 'active') return;
-    if (AppState.currentState !== 'background') return;
+    // iOS: CallKit/native only when not active. Android: always ask native —
+    // showFromPush no-ops when unlocked+foreground, but rings on lock/screen-off
+    // even if AppState is still "active".
+    if (Platform.OS === 'ios' && AppState.currentState === 'active') return;
     if (!this.permissionReady) {
       await this.prepare();
     }
@@ -79,8 +81,8 @@ export class IncomingCallNotifier {
     }
   }
 
-  /** True when the in-app Modal would not be seen. */
+  /** True when the in-app Modal would not be seen (background or lock transition). */
   static isAppObscured(): boolean {
-    return AppState.currentState === 'background';
+    return AppState.currentState !== 'active';
   }
 }

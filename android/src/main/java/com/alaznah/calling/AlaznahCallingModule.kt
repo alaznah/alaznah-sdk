@@ -68,6 +68,22 @@ class AlaznahCallingModule(reactContext: ReactApplicationContext) :
 
   override fun requestPermission(promise: Promise) {
     // Runtime POST_NOTIFICATIONS permission must be requested by the host UI.
+    // Log full-screen intent status — without it, lock-screen calls stay silent.
+    if (Build.VERSION.SDK_INT >= 34) {
+      try {
+        val nm = reactApplicationContext.getSystemService(NotificationManager::class.java)
+        val ok = nm?.canUseFullScreenIntent() == true
+        android.util.Log.i("AlaznahCalling", "canUseFullScreenIntent=$ok")
+        if (!ok) {
+          android.util.Log.w(
+            "AlaznahCalling",
+            "USE_FULL_SCREEN_INTENT not granted — open Settings → App → Manage full screen intents",
+          )
+        }
+      } catch (_: Exception) {
+        // ignore
+      }
+    }
     promise.resolve(true)
   }
 
@@ -347,6 +363,19 @@ class AlaznahCallingModule(reactContext: ReactApplicationContext) :
       }
     }
 
+    /** Locked / screen-off — in-app Modal cannot be seen; always use native ring UI. */
+    fun isDeviceLockedOrScreenOff(context: Context): Boolean {
+      return try {
+        val keyguard = context.getSystemService(Context.KEYGUARD_SERVICE) as? KeyguardManager
+        val power = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
+        val locked = keyguard?.isKeyguardLocked == true
+        val interactive = power?.isInteractive != false
+        locked || !interactive
+      } catch (_: Exception) {
+        false
+      }
+    }
+
     fun showFromPush(
       context: Context,
       title: String,
@@ -355,8 +384,10 @@ class AlaznahCallingModule(reactContext: ReactApplicationContext) :
       callerId: String,
       mediaType: String,
     ) {
-      // Foreground host already owns the in-app ringing UI.
-      if (isHostInForeground(context)) {
+      // Foreground unlocked host already owns the in-app ringing UI.
+      // Locked / screen-off must still use FGS + full-screen intent.
+      if (isHostInForeground(context) && !isDeviceLockedOrScreenOff(context)) {
+        android.util.Log.i("AlaznahCalling", "showFromPush skip — host foreground unlocked")
         return
       }
       if (isCallCanceled(context, callId)) {
@@ -364,6 +395,10 @@ class AlaznahCallingModule(reactContext: ReactApplicationContext) :
         return
       }
 
+      android.util.Log.i(
+        "AlaznahCalling",
+        "showFromPush callId=$callId lockedOrOff=${isDeviceLockedOrScreenOff(context)} foreground=${isHostInForeground(context)}",
+      )
       ensureChannel(context)
       wakeScreen(context)
 

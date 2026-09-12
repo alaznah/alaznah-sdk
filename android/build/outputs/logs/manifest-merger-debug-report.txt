@@ -109,11 +109,11 @@ ADDED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/n
 	android:name
 		ADDED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:34:7-60
 service#com.alaznah.calling.IncomingCallService
-ADDED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:44:5-47:51
+ADDED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:44:5-47:76
 	android:exported
 		ADDED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:46:7-31
 	android:foregroundServiceType
-		ADDED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:47:7-48
+		ADDED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:47:7-73
 	android:name
 		ADDED from /Users/mac/Desktop/MuhammadHuzaifa/Test/alaznah-examples/basic-call/node_modules/@alaznah/calling/android/src/main/AndroidManifest.xml:45:7-61
 service#com.alaznah.calling.ActiveCallKeepAliveService

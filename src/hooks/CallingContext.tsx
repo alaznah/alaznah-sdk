@@ -84,11 +84,18 @@ export function CallingProvider({ config, children, autoConnect = true }: Callin
       // Foreground: JS IncomingCallScreen. Background/kill: native ringing UI.
       client.setNativeIncomingSuppressed(next === 'active');
       if (next === 'active') {
-        void client
-          .drainNativeIncomingAction()
-          .then(() => client.connect())
-          .then(() => client.syncPendingCalls())
-          .catch(() => undefined);
+        void (async () => {
+          try {
+            await client.drainNativeIncomingAction();
+            // Always connect+sync. Wake Accept often has hasLocalCall:false until
+            // sync delivers call.invite — skipping sync left stuck:ringing.
+            // connect() is a no-op when the socket is already live.
+            await client.connect();
+            await client.syncPendingCalls();
+          } catch {
+            // ignore
+          }
+        })();
       }
     };
 

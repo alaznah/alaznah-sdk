@@ -85,6 +85,26 @@ export class SignalingClient {
     return this.connectPromise;
   }
 
+  async reconnectFresh(): Promise<void> {
+    this.closedByUser = false;
+    this.reconnectAttempt = 0;
+    this.reconnectGaveUp = false;
+    this.reconnectGeneration += 1;
+    // Drop zombie sockets that still report OPEN after Android Doze.
+    if (this.ws) {
+      this.replacingSocket = true;
+      try {
+        this.ws.close(4000, 'force reconnect');
+      } catch {
+        // ignore
+      }
+      this.ws = null;
+    }
+    this.authenticated = false;
+    this.connectPromise = null;
+    await this.connect();
+  }
+
   /** Whether the client is authenticated on an open socket. */
   isConnected(): boolean {
     return Boolean(this.ws && this.ws.readyState === WebSocket.OPEN && this.authenticated);

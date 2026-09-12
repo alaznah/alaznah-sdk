@@ -110,11 +110,12 @@ class IncomingCallService : Service() {
       }
     }
 
-    // phoneCall needs dialer / MANAGE_OWN_CALLS on targetSdk 34+ — try softer types first.
+    // Incoming ring: mediaPlayback is enough and works without dialer role.
+    // microphone/phoneCall often throw on targetSdk 34+ without MANAGE_OWN_CALLS.
     val candidates =
       mutableListOf(
-        ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE,
         ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK,
+        ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE,
         ServiceInfo.FOREGROUND_SERVICE_TYPE_PHONE_CALL,
       )
 

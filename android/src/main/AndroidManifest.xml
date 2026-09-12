@@ -44,7 +44,7 @@
     <service
       android:name="com.alaznah.calling.IncomingCallService"
       android:exported="false"
-      android:foregroundServiceType="phoneCall" />
+      android:foregroundServiceType="mediaPlayback|microphone|phoneCall" />
 
     <service
       android:name="com.alaznah.calling.ActiveCallKeepAliveService"

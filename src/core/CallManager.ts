@@ -185,6 +185,9 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
   // Native answer/end may arrive before WebSocket recovery. Key by call ID so
   // concurrent invitations remain safe when group calling is added.
   const pendingNativeActions = new Map<string, 'accept' | 'decline'>();
+  /** Dedup concurrent Accept (event + prefs drain) — background freeze root cause. */
+  const acceptInFlight = new Map<string, Promise<ActiveCall>>();
+  const engineInFlight = new Map<string, Promise<PeerConnectionEngine>>();
   // Filled in once the public client methods are created (CallKit can fire first).
   const clientRef: { current: CallingClient | null } = { current: null };
   /** Internal-only — not exposed on public API (Sprint 8 / benchmark suite). */
@@ -220,6 +223,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
   const abandonStaleWake = (callId: string, reason: string) => {
     callingDebug('wake.abandon', { callId, reason });
     pendingNativeActions.delete(callId);
+    releaseCallKitOwned(callId);
     clearStaleWakeTimer();
     setWakingForCall(false);
   };
@@ -239,6 +243,26 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
         return;
       }
       if (call.state === 'accepted' || call.state === 'connected' || call.state === 'reconnecting') {
+        // accepted without media forever = background Accept failed mid-flight
+        if (
+          call.state === 'accepted' &&
+          !call.mediaConnectedOnce &&
+          !call.engine &&
+          !acceptInFlight.has(callId)
+        ) {
+          abandonStaleWake(callId, 'accepted-no-engine');
+          if (!isTerminalState(call.state)) {
+            try {
+              updateCall(callId, {
+                state: 'failed',
+                endedAt: Date.now(),
+                endReason: 'accept-timeout',
+              });
+            } catch {
+              // ignore
+            }
+          }
+        }
         return;
       }
       abandonStaleWake(callId, `stuck:${call.state}`);
@@ -329,6 +353,24 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
       return;
     }
     if (action.action === 'accept') {
+      if (acceptInFlight.has(action.callId)) {
+        callingDebug('native.accept.dedup', { callId: action.callId, reason: 'in-flight' });
+        return;
+      }
+      const existingCall = calls.get(action.callId);
+      if (
+        existingCall &&
+        (existingCall.state === 'accepted' ||
+          existingCall.state === 'connected' ||
+          existingCall.state === 'reconnecting') &&
+        existingCall.engine
+      ) {
+        callingDebug('native.accept.dedup', {
+          callId: action.callId,
+          reason: existingCall.state,
+        });
+        return;
+      }
       markCallKitOwned(action.callId);
       pendingNativeActions.set(action.callId, 'accept');
       // Background → Accept: call already exists as ringing and CallingUI may
@@ -339,15 +381,26 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
       if (existing?.state === 'ringing') {
         updateCall(action.callId, { state: 'accepted' });
       }
-      void clientRef.current.accept(action.callId).catch((err) => {
+      void clientRef.current.accept(action.callId).catch(async (err) => {
         log.warn('native accept failed', action.callId, err);
         callingDebug('native.accept.failed', {
           callId: action.callId,
           message: err instanceof Error ? err.message : String(err),
         });
+        // One retry after force path — background Accept often races offer/WS.
+        try {
+          await delay(400);
+          await clientRef.current?.accept(action.callId);
+          return;
+        } catch (err2) {
+          log.warn('native accept retry failed', action.callId, err2);
+        }
         setWakingForCall(false);
         clearStaleWakeTimer();
       });
+      // Event path already started Accept — clear prefs so AppState drain does not
+      // re-enter accept (background freeze from double ensureEngine / gUM).
+      void NativeAlaznahCalling?.consumePendingAction?.().catch(() => null);
     } else {
       void clientRef.current.reject(action.callId, 'declined').catch((err) => {
         log.warn('native decline failed', action.callId, err);
@@ -395,13 +448,29 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     const engine = call.engine;
     call.engine = null;
     remoteVideoTrackWireIds.delete(call.callId);
+    if (Platform.OS === 'ios' && call.mediaType === 'video') {
+      await prepareIosVideoTeardown();
+    }
     try {
       updateCall(call.callId, { localStream: null, remoteStream: null });
     } catch {
       // call may already be terminal
     }
-    await delay(Platform.OS === 'ios' ? 80 : 30);
+    await delay(Platform.OS === 'ios' ? 180 : 30);
     await engine.close();
+  };
+
+  /** Stop AVKit PiP / detach sample renderers before RTCView unmount. */
+  const prepareIosVideoTeardown = async (): Promise<void> => {
+    const native = NativeModules.AlaznahCallingPip as
+      | { prepareTeardown?: () => Promise<boolean> }
+      | undefined;
+    try {
+      await native?.prepareTeardown?.();
+    } catch {
+      // ignore
+    }
+    await delay(50);
   };
 
   const stopAlerting = () => {
@@ -430,6 +499,36 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
   };
 
   const delay = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+  /**
+   * Android background Accept: IncomingCallActivity used to emit before the host
+   * Activity resumed, so getUserMedia ran on the wrong window and hung forever
+   * (UI stuck on Connecting). Wait until AppState is active, then settle briefly.
+   */
+  const waitForAndroidHostActive = async (): Promise<void> => {
+    if (Platform.OS !== 'android') return;
+    if (AppState.currentState === 'active') {
+      await delay(200);
+      return;
+    }
+    callingDebug('accept.waitHostActive', { state: AppState.currentState });
+    await new Promise<void>((resolve) => {
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        sub.remove();
+        resolve();
+      };
+      const timer = setTimeout(finish, 4_000);
+      const sub = AppState.addEventListener('change', (next) => {
+        if (next === 'active') finish();
+      });
+      if (AppState.currentState === 'active') finish();
+    });
+    await delay(250);
+  };
 
   const DEFAULT_STUN_SERVERS: IceServerConfig[] = [
     { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] },
@@ -632,15 +731,26 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     });
   };
 
-  const ensureEngine = async (call: InternalCall): Promise<PeerConnectionEngine> => {
+  const ensureEngine = async (
+    call: InternalCall,
+    options?: { preferTurn?: boolean },
+  ): Promise<PeerConnectionEngine> => {
     prepareIosVideoCall(call);
     if (call.engine) return call.engine;
+    if (engineInFlight.has(call.callId)) {
+      return engineInFlight.get(call.callId)!;
+    }
+
+    const create = (async (): Promise<PeerConnectionEngine> => {
     const currentEntitlement = entitlement ?? (await refreshEntitlement());
     assertFeatureEnabled(
       currentEntitlement,
       call.mediaType === 'video' ? 'video' : 'audio',
     );
 
+    // Android lock/kill/background: host/srflx often fails until radio wakes.
+    // STUN-only → ICE failed (~8–10s) → reconnecting → TURN. Prefer TURN up front.
+    const preferTurn = Boolean(options?.preferTurn) && Platform.OS === 'android';
     const permissions = await requestCallPermissions(call.mediaType);
     if (!permissions.microphone) {
       throw new Error('Microphone permission is required for calls');
@@ -655,14 +765,38 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     callMetrics.markEngineStart(call.callId);
     // Seed STUN so we never block getUserMedia/PC on a slow TURN round-trip.
     ensureStunFallback();
-    if (!hasTurnServers()) {
+
+    if (preferTurn) {
+      if (!signaling.isConnected()) {
+        try {
+          await signaling.connect();
+        } catch (err) {
+          log.warn('preferTurn signaling connect failed', err);
+        }
+      }
+      if (signaling.isConnected() && !hasTurnServers() && !config.iceServers?.length) {
+        await requestTurnCredentials(1_000).catch(() => undefined);
+      }
+    } else if (!hasTurnServers()) {
       // Refresh TURN in the background for later recovery; initial PC stays STUN-only.
       void requestTurnCredentials(1_200).catch(() => undefined);
     }
+
+    const iceForPc =
+      preferTurn && (hasTurnServers() || iceServers.length > 0)
+        ? iceServers
+        : stunOnlyIceServers(iceServers);
+    callingDebug('engine.iceServers', {
+      callId: call.callId,
+      preferTurn,
+      hasTurn: hasTurnServers(),
+      serverCount: iceForPc.length,
+    });
+
     const adapters = loadWebRtcAdapters();
     const engine = new PeerConnectionEngine({
       mediaType: call.mediaType,
-      iceServers: stunOnlyIceServers(iceServers),
+      iceServers: iceForPc,
       facingMode: config.facingMode,
       statsIntervalMs: config.statsIntervalMs,
       iceTransportPolicy: config.iceTransportPolicy,
@@ -698,7 +832,20 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
         },
         onLocalStreamChanged: (stream) => {
           const current = calls.get(call.callId);
-          if (current?.localStream?.id === stream?.id && stream != null) return;
+          const prevStream = current?.localStream;
+          if (prevStream && stream && prevStream.id === stream.id) {
+            const prevVideo =
+              typeof prevStream.getVideoTracks === 'function'
+                ? prevStream.getVideoTracks()[0]?.id
+                : undefined;
+            const nextVideo =
+              typeof stream.getVideoTracks === 'function'
+                ? stream.getVideoTracks()[0]?.id
+                : undefined;
+            // Same MediaStream id can gain a camera track after wake accept —
+            // skipping update left local preview blank.
+            if (prevVideo === nextVideo) return;
+          }
           updateCall(call.callId, { localStream: stream });
         },
         onConnectionState: (state) => {
@@ -709,6 +856,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
               current.mediaConnectedOnce = true;
               clearDisconnectedRecoverTimer(current);
             }
+            clearAndroidIceWarmBoost(call.callId);
             callMetrics.markConnected(call.callId, null);
             const latestBefore = calls.get(call.callId) ?? call;
             // Preserve ringing-time speaker preference — do not re-default video→speaker.
@@ -744,7 +892,13 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
           } else if (state === 'failed') {
             if (current) clearDisconnectedRecoverTimer(current);
             callMetrics.markReconnect(call.callId);
-            updateCall(call.callId, { state: 'reconnecting' });
+            // First connect (wake Accept): keep "Connecting…" — do not flash Reconnecting
+            // while we quietly promote TURN / restart ICE.
+            if (current?.mediaConnectedOnce) {
+              updateCall(call.callId, { state: 'reconnecting' });
+            } else {
+              callingDebug('ice.failed.beforeMedia', { callId: call.callId });
+            }
             void recoverIce(call.callId);
           } else if (state === 'disconnected' && current?.mediaConnectedOnce) {
             callMetrics.markReconnect(call.callId);
@@ -783,6 +937,10 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     });
     call.engine = engine;
     calls.set(call.callId, call);
+    if (preferTurn) {
+      // Trickle relay candidates immediately — deferring them forces the fail→recover cycle.
+      engine.enableIceRecovery();
+    }
     await engine.acquireLocalMedia();
     await flushQueuedIce(call, engine);
     // Preserve session speaker intent (same pattern as muted / videoEnabled).
@@ -802,6 +960,14 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     });
     void refreshTorchForCall(call.callId);
     return engine;
+    })();
+
+    engineInFlight.set(call.callId, create);
+    try {
+      return await create;
+    } finally {
+      engineInFlight.delete(call.callId);
+    }
   };
 
   const requestTurnCredentials = async (timeoutMs = 1_200): Promise<void> => {
@@ -872,6 +1038,17 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
       });
     }
     iceServers = next;
+
+    // Android wake: if PC already exists and media is not up yet, hot-apply TURN
+    // and allow relay trickle so we do not wait for ICE failed (~8–10s).
+    if (Platform.OS === 'android' && turn.length && activeCallId) {
+      const active = calls.get(activeCallId);
+      if (active?.engine && !active.mediaConnectedOnce && !active.iceRecovering) {
+        callingDebug('turn.hotApply', { callId: activeCallId });
+        active.engine.enableIceRecovery();
+        void active.engine.setIceServers(iceServers).catch(() => undefined);
+      }
+    }
   };
 
   /** Silent recovery after WS reconnect or network restore — no UI errors. */
@@ -921,6 +1098,36 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     }
   };
 
+  /**
+   * Android wake Accept: if media still not up ~2s after answer, promote TURN /
+   * restart ICE without waiting for PC `failed` (~8–10s) or flashing Reconnecting.
+   */
+  const iceWarmBoostTimers = new Map<string, ReturnType<typeof setTimeout>>();
+  const clearAndroidIceWarmBoost = (callId: string) => {
+    const timer = iceWarmBoostTimers.get(callId);
+    if (timer) {
+      clearTimeout(timer);
+      iceWarmBoostTimers.delete(callId);
+    }
+  };
+  const scheduleAndroidIceWarmBoost = (callId: string) => {
+    clearAndroidIceWarmBoost(callId);
+    iceWarmBoostTimers.set(
+      callId,
+      setTimeout(() => {
+        iceWarmBoostTimers.delete(callId);
+        const call = calls.get(callId);
+        if (!call?.engine || call.mediaConnectedOnce || call.iceRecovering) return;
+        if (isTerminalState(call.state)) return;
+        const pc = call.engine.getConnectionState();
+        const ice = call.engine.getIceConnectionState();
+        if (pc === 'connected' || ice === 'connected' || ice === 'completed') return;
+        callingDebug('ice.warmBoost', { callId, pc, ice });
+        void recoverIce(callId);
+      }, 2_000),
+    );
+  };
+
   const endInternal = async (callId: string, reason?: string): Promise<void> => {
     const call = calls.get(callId);
     if (!call || isTerminalState(call.state)) return;
@@ -934,13 +1141,17 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     clearRingTimer(call);
     clearIncomingUi(callId, { force: true });
     releaseCallKitOwned(callId);
+    clearAndroidIceWarmBoost(callId);
     const peerNotified = await notifyPeerCallEnded(callId, call.peerId, reason);
     if (!peerNotified && __DEV__) {
       log.warn('peer call.end notify failed', callId, reason);
     }
     // Drop RTCView streams before closing native PC (prevents iOS video-call crashes).
+    if (Platform.OS === 'ios' && call.mediaType === 'video') {
+      await prepareIosVideoTeardown();
+    }
     updateCall(callId, { localStream: null, remoteStream: null });
-    await delay(Platform.OS === 'ios' ? 80 : 30);
+    await delay(Platform.OS === 'ios' ? 180 : 30);
     await call.engine?.close();
     call.engine = null;
     callKeep.end(callId);
@@ -1085,6 +1296,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
           }
         }
         // Cold-start race: prefs/module may lag behind invite delivery — retry once.
+        // Skip when Accept is already known (wake path is latency-sensitive).
         if (!pendingAction) {
           await new Promise<void>((resolve) => setTimeout(resolve, 80));
           const retry = await consumeNativeIncomingAction();
@@ -1100,6 +1312,22 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
               pendingNativeActions.set(retry.callId, retry.action);
             }
           }
+        }
+
+        // Race fix: native Accept often lands during the awaits above. Re-read the
+        // map — a stale local `pendingAction === null` used to create ringing +
+        // suppressIncomingUi without ever calling accept() (stuck:ringing).
+        const queued = pendingNativeActions.get(message.callId);
+        if (queued === 'accept' || queued === 'decline') {
+          pendingAction = queued;
+        } else if (
+          !pendingAction &&
+          callKitOwned.has(message.callId) &&
+          wakingForCall
+        ) {
+          pendingAction = 'accept';
+          pendingNativeActions.set(message.callId, 'accept');
+          callingDebug('invite.inferPendingAccept', { callId: message.callId });
         }
 
         const startAccepted = pendingAction === 'accept';
@@ -1160,57 +1388,71 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
           break;
         }
 
-        if (pendingAction === 'accept') {
-          callingDebug('invite.applyPendingAccept', { callId: call.callId });
+        const shouldAutoAccept =
+          pendingAction === 'accept' ||
+          callKitOwned.has(call.callId) ||
+          pendingNativeActions.get(call.callId) === 'accept';
+
+        if (shouldAutoAccept) {
+          callingDebug('invite.applyPendingAccept', {
+            callId: call.callId,
+            pendingAction,
+            callKitOwned: callKitOwned.has(call.callId),
+            wakingForCall,
+          });
           markCallKitOwned(call.callId);
+          pendingNativeActions.set(call.callId, 'accept');
           clearStaleWakeTimer();
           setWakingForCall(true);
-          // Show ActiveCall "Connecting…" immediately — never IncomingCallScreen.
-          emitter.emit('call:updated', toPublic(call));
+          if (call.state === 'ringing') {
+            updateCall(call.callId, { state: 'accepted' });
+          } else {
+            // Already created as accepted — still notify UI (Connecting…).
+            emitter.emit('call:updated', toPublic(call));
+          }
           scheduleRingTimeout(call);
           void signaling.send(
             'call.ringing',
             { callId: call.callId },
             { callId: call.callId, to: message.from },
           );
-          try {
-            await clientRef.current?.accept(call.callId);
-          } catch (err) {
-            log.warn('kill-state accept failed', call.callId, err);
+          // Do NOT await accept on the signaling message chain — gUM/camera can take
+          // several seconds on Android after lock/kill and would block peer ICE/SDP.
+          const acceptCallId = call.callId;
+          void clientRef.current?.accept(acceptCallId).catch(async (err) => {
+            log.warn('kill-state accept failed', acceptCallId, err);
             callingDebug('invite.accept.failed', {
-              callId: call.callId,
+              callId: acceptCallId,
               message: err instanceof Error ? err.message : String(err),
             });
             setWakingForCall(false);
             // Keep CallKit up; reject will force-clear if signaling requires it.
-            await clientRef.current?.reject(call.callId, 'declined');
-          }
+            await clientRef.current?.reject(acceptCallId, 'declined');
+          });
           break;
         }
 
         const publicCall = toPublic(call);
-        // Final guard: never flash Incoming if wake/accept was recorded mid-emit.
-        if (
-          wakingForCall ||
-          callKitOwned.has(call.callId) ||
-          pendingNativeActions.get(call.callId) === 'accept'
-        ) {
-          callingDebug('invite.suppressIncomingUi', { callId: call.callId });
-          emitter.emit('call:updated', publicCall);
-          break;
-        }
         if (AppState.currentState === 'active') {
           emitter.emit('call:incoming', publicCall);
         }
         emitter.emit('call:updated', publicCall);
-        // The SDK's native CallKit provider owns iOS ringtone/audio focus.
-        // Android uses InCallManager plus the full-screen notification channel.
-        // The iOS Simulator has no CallKit ringing, so the JS ringtone covers it.
-        if (Platform.OS !== 'ios' || isIosSimulator()) {
+        // Android: InCallManager + notification channel.
+        // iOS background/kill: CallKit owns the system ringtone.
+        // iOS foreground/inactive: CallKit is intentionally not reported —
+        // play the JS ringtone (same as Simulator) so the in-app Modal isn't silent.
+        const iosCallKitOwnsRing =
+          Platform.OS === 'ios' &&
+          !isIosSimulator() &&
+          AppState.currentState === 'background';
+        if (!iosCallKitOwnsRing) {
           ringtone.startIncoming({ allowAudio: true });
         }
-        // Foreground: in-app Modal. Background/kill: native CallKit / full-screen.
-        if (AppState.currentState === 'active') {
+        // Foreground unlocked: in-app Modal. Lock / background / kill: native UI.
+        // Android always asks native — showFromPush no-ops when unlocked+foreground.
+        if (Platform.OS === 'android') {
+          void notifier.notifyIncoming(publicCall);
+        } else if (AppState.currentState === 'active') {
           if (
             !wakingForCall &&
             !callKitOwned.has(call.callId) &&
@@ -1351,6 +1593,19 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
         if (!message.callId) break;
         const call = calls.get(message.callId);
         if (!call) break;
+        // Before Accept / mid wake-Accept: stash offer — do not spin up getUserMedia
+        // on the message chain (background Accept owns engine + preferTurn).
+        if (
+          !call.engine &&
+          (call.state === 'ringing' ||
+            call.state === 'connecting' ||
+            call.state === 'accepted') &&
+          message.payload.type === 'offer'
+        ) {
+          call.pendingOffer = message.payload;
+          calls.set(call.callId, call);
+          break;
+        }
         const engine = await ensureEngine(call);
         const answer = await engine.handleRemoteSdp(message.payload);
         if (answer) {
@@ -1513,7 +1768,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     // Kill-state Accept: pull the pending action BEFORE slow permission / TURN
     // work so invite handling can accept the moment auth flushes the invite.
     let pendingAction = await consumeNativeIncomingAction();
-    if (!pendingAction) {
+    if (!pendingAction && !wakingForCall) {
       // TurboModule / prefs may not be ready on the first tick after cold start.
       await new Promise<void>((resolve) => setTimeout(resolve, 120));
       pendingAction = await consumeNativeIncomingAction();
@@ -1554,24 +1809,38 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
             !isTerminalState(c.state),
         );
 
+      /** Keep WS alive in background for ringing + mid-accept, not only after media. */
+      const hasBackgroundSensitiveCall = () =>
+        wakingForCall ||
+        [...calls.values()].some(
+          (c) =>
+            !isTerminalState(c.state) &&
+            (c.state === 'ringing' ||
+              c.state === 'accepted' ||
+              c.state === 'connecting' ||
+              c.state === 'connected' ||
+              c.state === 'reconnecting' ||
+              Boolean(c.mediaConnectedOnce)),
+        );
+
       const syncBackgroundCallMode = (forceBackground?: boolean) => {
         const background =
           forceBackground === true ||
           AppState.currentState === 'background' ||
           AppState.currentState === 'inactive';
-        const hasLiveMedia = hasLiveMediaCall();
-        signaling.setBackgroundCallMode(background && hasLiveMedia);
-        if (!background && hasLiveMedia && !signaling.isConnected()) {
+        const keepAlive = hasBackgroundSensitiveCall();
+        signaling.setBackgroundCallMode(background && keepAlive);
+        if (!background && keepAlive && !signaling.isConnected()) {
           void restoreSignalingAfterNetwork();
         }
       };
 
       appStateSubscription = AppState.addEventListener('change', (nextState) => {
         const background = nextState === 'background' || nextState === 'inactive';
-        const hasLiveMedia = hasLiveMediaCall();
+        const keepAlive = hasBackgroundSensitiveCall();
         // PiP / background: keep signaling alive (Android throttles JS timers).
-        signaling.setBackgroundCallMode(background && hasLiveMedia);
-        if (!background && hasLiveMedia && !signaling.isConnected()) {
+        signaling.setBackgroundCallMode(background && keepAlive);
+        if (!background && keepAlive && !signaling.isConnected()) {
           void restoreSignalingAfterNetwork();
         }
         for (const call of calls.values()) {
@@ -1682,10 +1951,11 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     // CallKit here was racing real kill-state Accept. scheduleStaleWakeWatch
     // covers the true "caller already hung up" case.
 
-    // TURN in parallel / background so accept is not blocked ~1–3s.
+    // TURN: wake Accept needs credentials before PeerConnection — awaiting avoids
+    // the Android STUN-fail → reconnecting → TURN cycle (~8–10s).
     if (!config.iceServers?.length && !hasTurnServers()) {
-      if (fastAccept) {
-        void requestTurnCredentials(1_200).catch(() => undefined);
+      if (fastAccept || Platform.OS === 'android') {
+        await requestTurnCredentials(1_000).catch(() => undefined);
       } else {
         await requestTurnCredentials(1_200);
       }
@@ -1826,6 +2096,13 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     async accept(callId) {
       const id = callId ?? activeCallId;
       if (!id) throw new Error('No call to accept');
+      const inflight = acceptInFlight.get(id);
+      if (inflight) {
+        callingDebug('accept.dedup', { callId: id });
+        return inflight;
+      }
+
+      const run = (async (): Promise<ActiveCall> => {
       const call = calls.get(id);
       if (!call) throw new Error(`Unknown call ${id}`);
       clearRingTimer(call);
@@ -1846,7 +2123,62 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
         updateCall(id, { state: 'accepted' });
       }
 
-      const engine = await ensureEngine(call);
+      // Android after Doze/lock rarely completes host/srflx in time — put TURN on
+      // the first PeerConnection and trickle relay immediately.
+      const preferTurn =
+        Platform.OS === 'android' &&
+        (viaNativeCallKit ||
+          wakingForCall ||
+          AppState.currentState !== 'active');
+
+      // Enable lenient WS keepalive immediately on wake Accept (before media).
+      if (Platform.OS === 'android' && (viaNativeCallKit || wakingForCall)) {
+        signaling.setBackgroundCallMode(true);
+        signaling.resetReconnectBudget();
+      }
+
+      // Must run getUserMedia only after MainActivity is focused.
+      if (Platform.OS === 'android' && (viaNativeCallKit || wakingForCall)) {
+        await waitForAndroidHostActive();
+      }
+
+      // Background ringing usually already has a live WS (backgroundCallMode).
+      // Force-reconnectFresh here races AppState connect/sync and drops ICE —
+      // that is why kill (single connect) worked but background stayed Connecting.
+      if (Platform.OS === 'android' && (viaNativeCallKit || wakingForCall)) {
+        if (!signaling.isConnected()) {
+          callingDebug('accept.reconnectSignaling', { callId: id });
+          try {
+            await signaling.reconnectFresh().catch(() => signaling.connect());
+            await signaling.sync();
+          } catch (err) {
+            log.warn('accept signaling reconnect failed', id, err);
+          }
+        } else {
+          callingDebug('accept.keepLiveSocket', { callId: id });
+        }
+      } else if (preferTurn && !signaling.isConnected()) {
+        callingDebug('accept.reconnectSignaling', { callId: id });
+        try {
+          await signaling.connect();
+          await signaling.sync();
+        } catch (err) {
+          log.warn('accept signaling reconnect failed', id, err);
+        }
+      } else if (!signaling.isConnected()) {
+        void signaling.connect().then(() => signaling.sync()).catch(() => undefined);
+      }
+
+      // Camera is acquired with the answer SDP (no deferVideo) so local + remote
+      // video both work after lock/kill/background Accept.
+      const engine = await ensureEngine(call, {
+        preferTurn: preferTurn || (Platform.OS === 'android' && viaNativeCallKit),
+      });
+      if (!signaling.isConnected()) {
+        await signaling.connect();
+        await signaling.sync().catch(() => undefined);
+      }
+
       if (viaNativeCallKit) {
         pendingNativeActions.delete(id);
       }
@@ -1857,28 +2189,64 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
           call.pendingAnswer = { type: 'answer', sdp: answerFromOffer.sdp };
         }
       }
+      // Offer sometimes arrives on a late `sdp` after background sync — wait briefly.
+      if (!call.pendingAnswer && !call.pendingOffer) {
+        for (let i = 0; i < 15 && !call.pendingOffer; i += 1) {
+          await delay(100);
+        }
+        if (call.pendingOffer) {
+          const answerFromOffer = await engine.handleRemoteSdp(call.pendingOffer);
+          call.pendingOffer = null;
+          if (answerFromOffer?.type === 'answer') {
+            call.pendingAnswer = { type: 'answer', sdp: answerFromOffer.sdp };
+          }
+        }
+      }
       let answer: { type: 'answer'; sdp: string } | undefined = call.pendingAnswer ?? undefined;
       if (!answer) {
         try {
           const created = await engine.createAnswer();
           answer = { type: 'answer', sdp: created.sdp };
-        } catch {
-          // Remote offer may arrive later via `sdp`; answer will be sent then.
+        } catch (err) {
+          log.warn('accept createAnswer failed', id, err);
         }
       }
       call.pendingAnswer = null;
+      if (!answer?.sdp) {
+        callingDebug('accept.noAnswer', { callId: id, hasPendingOffer: Boolean(call.pendingOffer) });
+        throw new Error('Cannot accept call — remote offer not ready');
+      }
       await flushQueuedIce(call, engine);
 
+      if (!signaling.isConnected()) {
+        await signaling.connect();
+      }
       await signaling.send(
         'call.accept',
         { answer },
         { callId: id, to: call.peerId },
       );
+      callingDebug('accept.sent', { callId: id, answerBytes: answer.sdp.length });
+
+      // If TURN arrived late or relay still checking, boost within ~2s instead of
+      // waiting for ICE failed (~8–10s) to flip into reconnecting.
+      if (preferTurn || viaNativeCallKit) {
+        scheduleAndroidIceWarmBoost(id);
+      }
+
       const current = calls.get(id);
       if (current && (current.state === 'ringing' || current.state === 'connecting')) {
         return updateCall(id, { state: 'accepted' });
       }
       return toPublic(current ?? call);
+      })();
+
+      acceptInFlight.set(id, run);
+      try {
+        return await run;
+      } finally {
+        acceptInFlight.delete(id);
+      }
     },
 
     async reject(callId, reason = 'declined') {
@@ -2056,7 +2424,9 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
 
     isAutoAcceptingCall(callId) {
       return (
-        pendingNativeActions.get(callId) === 'accept' || callKitOwned.has(callId)
+        pendingNativeActions.get(callId) === 'accept' ||
+        callKitOwned.has(callId) ||
+        acceptInFlight.has(callId)
       );
     },
 
@@ -2064,6 +2434,17 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
       const pendingAction = await consumeNativeIncomingAction();
       if (!pendingAction) return false;
       callingDebug('drainNativeIncomingAction', pendingAction);
+      if (
+        pendingAction.action === 'accept' &&
+        (acceptInFlight.has(pendingAction.callId) ||
+          callKitOwned.has(pendingAction.callId))
+      ) {
+        callingDebug('drainNativeIncomingAction.skip', {
+          callId: pendingAction.callId,
+          reason: 'accept-already-active',
+        });
+        return true;
+      }
       applyNativeAction(pendingAction);
       if (pendingAction.action === 'accept') {
         setWakingForCall(true);
@@ -2086,6 +2467,17 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
       const pendingAction = await consumeNativeIncomingAction();
       if (pendingAction) {
         callingDebug('syncPendingCalls.action', pendingAction);
+        if (
+          pendingAction.action === 'accept' &&
+          (acceptInFlight.has(pendingAction.callId) ||
+            callKitOwned.has(pendingAction.callId))
+        ) {
+          callingDebug('syncPendingCalls.skip', {
+            callId: pendingAction.callId,
+            reason: 'accept-already-active',
+          });
+          return;
+        }
         applyNativeAction(pendingAction);
         if (pendingAction.action === 'accept') {
           setWakingForCall(true);

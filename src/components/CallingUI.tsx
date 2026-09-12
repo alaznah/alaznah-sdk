@@ -15,6 +15,7 @@ import { IncomingCallScreen } from './IncomingCallScreen.js';
 import { mergeTheme } from './theme.js';
 import type { CallingUIProps } from './ui-types.js';
 import { useAndroidPipArming } from '../native/PictureInPicture.js';
+import { getPeerAvatarUrl, getPeerInitials, isRemoteVideoEnabled } from './peerDisplay.js';
 
 const TERMINAL = new Set(['ended', 'failed', 'rejected', 'missed', 'busy']);
 const IN_CALL = new Set(['accepted', 'connecting', 'connected', 'reconnecting']);
@@ -52,8 +53,11 @@ function shouldShowIncomingCall(
 }
 
 /**
- * Normal call: RN Modal (proven layout).
+ * Normal call: RN Modal (proven flex layout on iOS + Android).
  * Native PiP: hide the Modal so the app is usable; call state stays in CallManager.
+ *
+ * Android background Accept: IncomingCallActivity → MainActivity often leaves the
+ * first Modal Dialog blank. Remount Modal on foreground / wake-accept (key bump).
  */
 export function CallingUI({
   client,
@@ -97,7 +101,11 @@ export function CallingUI({
         resetCallFloatPositions();
         return;
       }
-      if (IN_CALL.has(active.state)) {
+      if (
+        IN_CALL.has(active.state) ||
+        client.isWakingForCall() ||
+        client.isAutoAcceptingCall(active.callId)
+      ) {
         suppressIncoming(active.callId);
       }
       setCall(active);
@@ -185,23 +193,38 @@ export function CallingUI({
     return () => sub.remove();
   }, []);
 
+  // Wake Accept / native auto-accept: never keep the inbound ringing gate that
+  // hides ActiveCall (background Accept used to flash a blank host screen).
+  const wakeAccepting =
+    !!call && (client.isWakingForCall() || client.isAutoAcceptingCall(call.callId));
+
+  // Do NOT remount Modal during/after background Accept.
+  // Key remount destroyed the Android Dialog under live Camera/WebRTC and left
+  // calls stuck on Connecting. Proven Modal + flex:1 layout is enough.
+
   const showIncoming =
     !!incoming &&
     incoming.state === 'ringing' &&
     suppressedIncomingId !== incoming.callId &&
     AppState.currentState !== 'background' &&
     !client.isAutoAcceptingCall(incoming.callId) &&
+    !wakeAccepting &&
     !(call && call.callId === incoming.callId && IN_CALL.has(call.state));
 
   const showActive =
     !!call &&
     !TERMINAL.has(call.state) &&
-    !(call.direction === 'inbound' && call.state === 'ringing' && !suppressedIncomingId) &&
+    (wakeAccepting ||
+      !(call.direction === 'inbound' && call.state === 'ringing' && !suppressedIncomingId)) &&
     !(showIncoming && call.callId === incoming?.callId);
 
   const showActiveLocked =
     showActive ||
-    (!!call && !TERMINAL.has(call.state) && suppressedIncomingId === call.callId && !showIncoming);
+    (!!call &&
+      !TERMINAL.has(call.state) &&
+      suppressedIncomingId === call.callId &&
+      !showIncoming) ||
+    wakeAccepting;
 
   useEffect(() => {
     if (!showActiveLocked) {
@@ -217,6 +240,13 @@ export function CallingUI({
     Boolean(call.remoteStream || (call.videoEnabled && call.localStream)) &&
     showActiveLocked &&
     !showIncoming;
+  const iosPipPresentationEligible =
+    Platform.OS === 'ios' &&
+    !!call &&
+    call.mediaType === 'video' &&
+    !TERMINAL.has(call.state) &&
+    showActiveLocked &&
+    !showIncoming;
   const androidPipStreamUrl =
     (call?.remoteStream && typeof call.remoteStream.toURL === 'function'
       ? call.remoteStream.toURL()
@@ -224,11 +254,32 @@ export function CallingUI({
     (call?.videoEnabled && call.localStream && typeof call.localStream.toURL === 'function'
       ? call.localStream.toURL()
       : undefined);
-  useAndroidPipArming(androidPipEligible, androidPipStreamUrl);
+  useAndroidPipArming(
+    androidPipEligible || iosPipPresentationEligible,
+    androidPipStreamUrl,
+    call
+      ? {
+          remoteVideoActive: isRemoteVideoEnabled(call),
+          initials: getPeerInitials(call),
+          avatarUrl: getPeerAvatarUrl(call),
+          surfaceColor: theme.colors.surface,
+          accentColor: theme.colors.accent,
+        }
+      : undefined,
+  );
 
   const enterSystemPip = useCallback(() => {
     const native = NativeModules.AlaznahCallingPip as
-      | { enter?: () => Promise<boolean> }
+      | {
+          enter?: () => Promise<boolean>;
+          setRemoteVideoActive?: (
+            active: boolean,
+            initials: string,
+            avatarUrl: string,
+            surfaceColor: string,
+            accentColor: string,
+          ) => Promise<boolean>;
+        }
       | undefined;
     if (Platform.OS === 'ios') {
       if (!native?.enter) return;
@@ -236,10 +287,21 @@ export function CallingUI({
       return;
     }
     if (!native?.enter) return;
+    if (call && native.setRemoteVideoActive) {
+      void native
+        .setRemoteVideoActive(
+          isRemoteVideoEnabled(call),
+          getPeerInitials(call),
+          getPeerAvatarUrl(call) ?? '',
+          theme.colors.surface,
+          theme.colors.accent,
+        )
+        .catch(() => undefined);
+    }
     void native.enter().then((ok) => {
       if (ok) setPipActive(true);
     });
-  }, []);
+  }, [call, theme.colors.accent, theme.colors.surface]);
 
   if (!showIncoming && !showActiveLocked) {
     return null;

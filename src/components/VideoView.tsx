@@ -30,6 +30,8 @@ export type VideoViewProps = {
   zOrder?: number;
   /** iOS only — enables system video-call Picture-in-Picture via react-native-webrtc. */
   iosPIP?: IosPipOptions;
+  /** iOS PiP fallback (avatar) — reparented into AVKit fallbackView. */
+  children?: React.ReactNode;
   onDimensionsChange?: (event: { nativeEvent: { width: number; height: number } }) => void;
 };
 
@@ -99,7 +101,7 @@ function resolveRtcStyle(style: VideoViewProps['style']): StyleProp<ViewStyle> {
  * Front/back switch updates the same track in place.
  */
 export const VideoView = forwardRef<unknown, VideoViewProps>(function VideoView(
-  { stream, mirror = false, objectFit = 'cover', style, zOrder, iosPIP, onDimensionsChange },
+  { stream, mirror = false, objectFit = 'cover', style, zOrder, iosPIP, children, onDimensionsChange },
   ref,
 ) {
   const streamURL = useMemo(() => {
@@ -138,16 +140,20 @@ export const VideoView = forwardRef<unknown, VideoViewProps>(function VideoView(
 
   if (!RTCView) return null;
 
-  return React.createElement(RTCView as React.ComponentType<RTCViewProps & { ref?: unknown }>, {
-    ref,
-    streamURL,
-    mirror,
-    objectFit,
-    style: resolveRtcStyle(style),
-    zOrder,
-    iosPIP: Platform.OS === 'ios' ? iosPIP : undefined,
-    onDimensionsChange,
-  });
+  return React.createElement(
+    RTCView as React.ComponentType<RTCViewProps & { ref?: unknown; children?: React.ReactNode }>,
+    {
+      ref,
+      streamURL,
+      mirror,
+      objectFit,
+      style: resolveRtcStyle(style),
+      zOrder,
+      iosPIP: Platform.OS === 'ios' ? iosPIP : undefined,
+      onDimensionsChange,
+    },
+    children,
+  );
 });
 
 export const LocalVideoView = forwardRef<

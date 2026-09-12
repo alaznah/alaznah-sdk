@@ -2,6 +2,7 @@ package com.alaznah.calling
 
 import android.app.Activity
 import android.app.PictureInPictureParams
+import android.graphics.Color
 import android.os.Build
 import android.util.Log
 import android.util.Rational
@@ -221,6 +222,13 @@ class AlaznahCallingPipModule(
         ActiveCallKeepAliveService.start(appContext)
       } else {
         dismiss()
+        AlaznahPipVideoController.setRemoteVideoPresentation(
+          videoActive = true,
+          initials = "?",
+          avatarUrl = null,
+          surfaceColor = null,
+          accentColor = null,
+        )
         ActiveCallKeepAliveService.stop(appContext)
       }
       Log.i(TAG, "PiP armed=$enabledFlag")
@@ -236,6 +244,47 @@ class AlaznahCallingPipModule(
         AlaznahPipActivity.attachIfActive()
       }
       promise.resolve(true)
+    }
+  }
+
+  @ReactMethod
+  fun setRemoteVideoActive(
+    active: Boolean,
+    initials: String?,
+    avatarUrl: String?,
+    surfaceColor: String?,
+    accentColor: String?,
+    promise: Promise,
+  ) {
+    UiThreadUtil.runOnUiThread {
+      AlaznahPipVideoController.setRemoteVideoPresentation(
+        videoActive = active,
+        initials = initials,
+        avatarUrl = avatarUrl,
+        surfaceColor = parseCssColor(surfaceColor),
+        accentColor = parseCssColor(accentColor),
+      )
+      if (AlaznahPipActivity.isInPip()) {
+        AlaznahPipActivity.attachIfActive()
+      } else {
+        val activity = reactContext.currentActivity
+        if (activity != null &&
+          Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
+          activity.isInPictureInPictureMode
+        ) {
+          AlaznahPipVideoController.attach(activity)
+        }
+      }
+      promise.resolve(true)
+    }
+  }
+
+  private fun parseCssColor(value: String?): Int? {
+    if (value.isNullOrBlank()) return null
+    return try {
+      Color.parseColor(value.trim())
+    } catch (_: Exception) {
+      null
     }
   }
 
