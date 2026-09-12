@@ -3,7 +3,7 @@
 **1:1 voice & video calling for React Native** — provider, hooks, and ready-made call UI on Alaznah Cloud.
 
 > [!IMPORTANT]
-> Public **beta**. APIs can still change before `1.0.0`. Prefer pinning a beta version and follow [docs.alaznah.com](https://docs.alaznah.com) for the latest guides.
+> First stable release: **`@alaznah/calling@0.1.0`**. Pin this version. Group calling and further API freeze land in `1.0.0`. Guides: [docs.alaznah.com](https://docs.alaznah.com).
 
 ---
 
@@ -29,10 +29,10 @@
 
 | Package | State | Notes |
 |---------|-------|--------|
-| **`@alaznah/calling` `0.1.x-beta`** | 🚀 Active beta | Public npm · New Architecture–friendly RN **0.76+** |
-| **Protocol** [`@alaznah/protocol`](https://github.com/alaznah/alaznah-protocol) | ✅ Published | Shared message contracts |
+| **`@alaznah/calling` `0.1.0`** | ✅ Stable | Public npm · New Architecture–friendly RN **0.76+** |
+| **Protocol** [`@alaznah/protocol`](https://github.com/alaznah/alaznah-protocol) | ✅ `0.1.1` | Shared message contracts |
 | **Hosted Cloud** | ✅ Live | Signaling + Console minting |
-| **`1.0.0`** | 🏗️ Ahead | Stabilize APIs, polish default UI, group calling |
+| **`1.0.0`** | 🏗️ Ahead | Group calling and further API freeze |
 
 ---
 
@@ -139,7 +139,11 @@ function Dialer() {
         disabled={!ready}
         title="Call"
         onPress={() =>
-          void client.startCall({ calleeId: 'bob', mediaType: 'video' })
+          void client.startCall({
+            calleeId: 'bob',
+            calleeDisplayName: 'Bob',
+            mediaType: 'video',
+          })
         }
       />
       <CallingUI client={client} />
@@ -154,6 +158,7 @@ export function App() {
         // omit signalingUrl to use Hosted Signaling default
         signalingUrl: 'wss://signal.alaznah.com',
         userId: 'alice',
+        displayName: 'Alice',
         getAuthToken: fetchCallingToken,
       }}
     >
