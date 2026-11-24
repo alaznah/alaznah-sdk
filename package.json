@@ -40,9 +40,12 @@
     "react-native.config.cjs",
     "AlaznahCalling.podspec",
     "patches",
+    "scripts",
     "README.md"
   ],
   "scripts": {
+    "postinstall": "node scripts/apply-webrtc-ios-pip-patch.cjs",
+    "patch:webrtc-ios-pip": "node scripts/apply-webrtc-ios-pip-patch.cjs",
     "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
     "build": "npm run clean && tsc -p tsconfig.json",
     "prepack": "npm run build",
@@ -68,7 +71,8 @@
     }
   },
   "dependencies": {
-    "@alaznah/protocol": "0.1.1"
+    "@alaznah/protocol": "0.1.1",
+    "patch-package": "^8.0.1"
   },
   "devDependencies": {
     "@react-native-community/netinfo": "^11.4.1",

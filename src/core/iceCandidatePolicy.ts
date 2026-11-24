@@ -21,7 +21,9 @@ export function iceCandidatePriority(candidate: string): number {
 }
 
 /**
- * P2P-first trickle policy: defer relay candidates until ICE recovery enables TURN.
+ * Trickle host/srflx always. Relay is sent when `allowRelay` is true.
+ * ICE still prefers host → srflx → relay by candidate priority; trickle only
+ * decides whether the peer *sees* relay in time for cellular/CGNAT.
  */
 export function shouldTrickleLocalCandidate(
   candidate: string,

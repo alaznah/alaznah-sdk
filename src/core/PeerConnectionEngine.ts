@@ -69,7 +69,8 @@ export class PeerConnectionEngine {
   private pendingRemoteIce: IceCandidatePayload[] = [];
   private remoteDescriptionSet = false;
   private statsState: StatsCollectorState = {};
-  private allowRelayTrickle = false;
+  /** Trickle TURN relay from the first gather — ICE still prefers host/srflx. */
+  private allowRelayTrickle = true;
   private statsPaused = false;
   private readonly maxIceRestartAttempts = 5;
   private audioOnlyStreak = 0;

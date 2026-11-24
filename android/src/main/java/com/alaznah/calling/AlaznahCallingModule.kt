@@ -205,6 +205,13 @@ class AlaznahCallingModule(reactContext: ReactApplicationContext) :
 
   override fun setCameraTorch(enabled: Boolean, facingMode: String, promise: Promise) {
     try {
+      // Prefer WebRTC in-call path — CameraManager.setTorchMode fails with
+      // CAMERA_IN_USE while getUserMedia holds the camera.
+      if (WebRtcInCallTorch.setTorch(reactApplicationContext, enabled)) {
+        promise.resolve(enabled)
+        return
+      }
+
       val cameraId = findTorchCameraId(facingMode)
         ?: run {
           promise.reject("audio_video_call_torch_error", "Torch not available on this camera")

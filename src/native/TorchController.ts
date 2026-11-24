@@ -1,4 +1,4 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeModules } from 'react-native';
 import { NativeAlaznahCalling } from './NativeAlaznahCalling.js';
 
 type TorchNative = {
@@ -45,8 +45,8 @@ export class TorchController {
     try {
       return Boolean(await this.native.setCameraTorch(enabled, facingMode));
     } catch (err) {
-      // Android: setTorchMode can fail while WebRTC holds the camera — surface clearly.
-      if (Platform.OS === 'android' && __DEV__) {
+      // Android native now prefers WebRTC in-call torch; still log failures in DEV.
+      if (__DEV__) {
         console.warn('[Torch] setCameraTorch failed', err);
       }
       throw err instanceof Error ? err : new Error(String(err));

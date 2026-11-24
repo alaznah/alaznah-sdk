@@ -26,4 +26,23 @@ Pod::Spec.new do |spec|
   spec.pod_target_xcconfig = {
     "CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES" => "YES"
   }
+
+  # npm may install this pod before react-native-webrtc, so postinstall can
+  # miss the patch. Re-apply on every iOS compile if the marker is absent.
+  spec.script_phases = [
+    {
+      :name => "Alaznah apply WebRTC iOS PiP patch",
+      :execution_position => :before_compile,
+      :always_out_of_date => "1",
+      :script => %(
+        SCRIPT_PATH="${PODS_TARGET_SRCROOT}/scripts/apply-webrtc-ios-pip-patch.cjs"
+        if [ ! -f "$SCRIPT_PATH" ]; then
+          exit 0
+        fi
+        export ALAZNAH_APP_ROOT="${SRCROOT}/.."
+        NODE_BIN="${NODE_BINARY:-node}"
+        "$NODE_BIN" "$SCRIPT_PATH" || true
+      )
+    }
+  ]
 end

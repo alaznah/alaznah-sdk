@@ -47,6 +47,11 @@ import { CallMetricsCollector } from '../metrics/CallMetricsCollector.js';
 import { EventEmitter } from '../utils/EventEmitter.js';
 import { PeerConnectionEngine } from './PeerConnectionEngine.js';
 import { sortIceCandidatesByPriority } from './iceCandidatePolicy.js';
+import {
+  DEFAULT_STUN_SERVERS,
+  hasTurnServers as iceListHasTurn,
+  iceServersForPeerConnection,
+} from './icePeerConfig.js';
 import { loadWebRtcAdapters } from './loadAdapters.js';
 import { resolvePeerDisplayName, requireDisplayName } from '../utils/displayName.js';
 
@@ -530,31 +535,11 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     await delay(250);
   };
 
-  const DEFAULT_STUN_SERVERS: IceServerConfig[] = [
-    { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] },
-  ];
-
   /** Prefer STUN immediately so kill-state accept is not blocked on TURN. */
   const ensureStunFallback = () => {
     if (iceServers.length === 0) {
       iceServers = DEFAULT_STUN_SERVERS;
     }
-  };
-
-  /**
-   * Dead/unreachable TURN (e.g. coturn not running) makes many WebRTC stacks
-   * wait ~10–15s on allocation timeout before host/srflx connects. Initial
-   * PeerConnections use STUN-only; TURN is reserved for ICE recovery.
-   */
-  const stunOnlyIceServers = (servers: IceServerConfig[]): IceServerConfig[] => {
-    const out: IceServerConfig[] = [];
-    for (const server of servers) {
-      const urls = (Array.isArray(server.urls) ? server.urls : [server.urls])
-        .map(String)
-        .filter((url) => url.startsWith('stun:'));
-      if (urls.length) out.push({ urls });
-    }
-    return out.length ? out : DEFAULT_STUN_SERVERS;
   };
 
   /** Stop alerts + route AVAudioSession to speaker before VoiceProcessing. */
@@ -748,8 +733,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
       call.mediaType === 'video' ? 'video' : 'audio',
     );
 
-    // Android lock/kill/background: host/srflx often fails until radio wakes.
-    // STUN-only → ICE failed (~8–10s) → reconnecting → TURN. Prefer TURN up front.
+    // Android lock/kill/background: wait a bit longer for TURN before PC create.
     const preferTurn = Boolean(options?.preferTurn) && Platform.OS === 'android';
     const permissions = await requestCallPermissions(call.mediaType);
     if (!permissions.microphone) {
@@ -766,26 +750,24 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     // Seed STUN so we never block getUserMedia/PC on a slow TURN round-trip.
     ensureStunFallback();
 
-    if (preferTurn) {
-      if (!signaling.isConnected()) {
+    if (!config.iceServers?.length && !hasTurnServers()) {
+      if (!signaling.isConnected() && preferTurn) {
         try {
           await signaling.connect();
         } catch (err) {
           log.warn('preferTurn signaling connect failed', err);
         }
       }
-      if (signaling.isConnected() && !hasTurnServers() && !config.iceServers?.length) {
+      if (signaling.isConnected()) {
         await requestTurnCredentials(1_000).catch(() => undefined);
+      } else {
+        void requestTurnCredentials(1_200).catch(() => undefined);
       }
-    } else if (!hasTurnServers()) {
-      // Refresh TURN in the background for later recovery; initial PC stays STUN-only.
-      void requestTurnCredentials(1_200).catch(() => undefined);
     }
 
-    const iceForPc =
-      preferTurn && (hasTurnServers() || iceServers.length > 0)
-        ? iceServers
-        : stunOnlyIceServers(iceServers);
+    // Keep TURN on the first PC when credentials exist (WhatsApp/Zoom path).
+    // Host/srflx still win on LAN; relay is ready for cellular/CGNAT.
+    const iceForPc = iceServersForPeerConnection(iceServers);
     callingDebug('engine.iceServers', {
       callId: call.callId,
       preferTurn,
@@ -937,10 +919,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     });
     call.engine = engine;
     calls.set(call.callId, call);
-    if (preferTurn) {
-      // Trickle relay candidates immediately — deferring them forces the fail→recover cycle.
-      engine.enableIceRecovery();
-    }
+    engine.enableIceRecovery();
     await engine.acquireLocalMedia();
     await flushQueuedIce(call, engine);
     // Preserve session speaker intent (same pattern as muted / videoEnabled).
@@ -1039,9 +1018,8 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     }
     iceServers = next;
 
-    // Android wake: if PC already exists and media is not up yet, hot-apply TURN
-    // and allow relay trickle so we do not wait for ICE failed (~8–10s).
-    if (Platform.OS === 'android' && turn.length && activeCallId) {
+    // TURN arrived after PC create (slow credentials): attach + trickle relay.
+    if (turn.length && activeCallId) {
       const active = calls.get(activeCallId);
       if (active?.engine && !active.mediaConnectedOnce && !active.iceRecovering) {
         callingDebug('turn.hotApply', { callId: activeCallId });
@@ -1099,8 +1077,9 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
   };
 
   /**
-   * Android wake Accept: if media still not up ~2s after answer, promote TURN /
-   * restart ICE without waiting for PC `failed` (~8–10s) or flashing Reconnecting.
+   * If media is still not up after answer, promote TURN / restart ICE without
+   * waiting for PC `failed` (~8–12s). Default 5s so 3–5s STUN (different Wi‑Fi)
+   * can finish; Android wake uses 2s because the radio is often still asleep.
    */
   const iceWarmBoostTimers = new Map<string, ReturnType<typeof setTimeout>>();
   const clearAndroidIceWarmBoost = (callId: string) => {
@@ -1110,7 +1089,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
       iceWarmBoostTimers.delete(callId);
     }
   };
-  const scheduleAndroidIceWarmBoost = (callId: string) => {
+  const scheduleAndroidIceWarmBoost = (callId: string, delayMs = 5_000) => {
     clearAndroidIceWarmBoost(callId);
     iceWarmBoostTimers.set(
       callId,
@@ -1122,9 +1101,9 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
         const pc = call.engine.getConnectionState();
         const ice = call.engine.getIceConnectionState();
         if (pc === 'connected' || ice === 'connected' || ice === 'completed') return;
-        callingDebug('ice.warmBoost', { callId, pc, ice });
+        callingDebug('ice.warmBoost', { callId, pc, ice, delayMs });
         void recoverIce(callId);
-      }, 2_000),
+      }, delayMs),
     );
   };
 
@@ -1491,6 +1470,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
         if (call?.engine && message.payload.answer) {
           await call.engine.handleRemoteSdp(message.payload.answer);
           await flushQueuedIce(call, call.engine);
+          scheduleAndroidIceWarmBoost(message.callId, 5_000);
         }
         break;
       }
@@ -1703,11 +1683,7 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
     }
   };
 
-  const hasTurnServers = () =>
-    iceServers.some((server) => {
-      const urls = Array.isArray(server.urls) ? server.urls : [server.urls];
-      return urls.some((url) => String(url).startsWith('turn'));
-    });
+  const hasTurnServers = () => iceListHasTurn(iceServers);
 
   const connectInternal = async () => {
     requireDisplayName(config.displayName, 'CallingProvider config.displayName');
@@ -2228,11 +2204,12 @@ export function createCallingClient(config: CallingClientConfig): CallingClient 
       );
       callingDebug('accept.sent', { callId: id, answerBytes: answer.sdp.length });
 
-      // If TURN arrived late or relay still checking, boost within ~2s instead of
-      // waiting for ICE failed (~8–10s) to flip into reconnecting.
-      if (preferTurn || viaNativeCallKit) {
-        scheduleAndroidIceWarmBoost(id);
-      }
+      // Cellular / stuck checking: restart ICE if still not up. Wake radio is
+      // slower — 2s; foreground different-Wi‑Fi STUN often lands in 3–5s.
+      scheduleAndroidIceWarmBoost(
+        id,
+        preferTurn || viaNativeCallKit ? 2_000 : 5_000,
+      );
 
       const current = calls.get(id);
       if (current && (current.state === 'ringing' || current.state === 'connecting')) {
