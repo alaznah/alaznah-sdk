@@ -1,6 +1,6 @@
 {
   "name": "@alaznah/calling",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Alaznah Calling — voice & video for real-time experiences in React Native",
   "type": "module",
   "main": "./dist/index.js",
